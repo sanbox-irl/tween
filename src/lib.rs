@@ -1,11 +1,19 @@
 use std::{marker::PhantomData, ops::RangeInclusive};
 
-pub trait Tween<TValue, TTime>
+pub trait Tween<TValue, TTime>: Sized
 where
     TValue: TweenValue,
     TTime: TweenTime,
 {
     fn update(&mut self, new_time: TTime) -> TValue;
+
+    fn range(&self) -> &RangeInclusive<TValue>;
+    fn duration(&self) -> TTime;
+    fn delta(&self) -> TValue;
+
+    fn to_fixed_tweener(self, delta: TTime) -> FixedDeltaTweener<Self, TValue, TTime> {
+        FixedDeltaTweener::new(self, delta)
+    }
 }
 
 #[derive(Debug)]
@@ -40,6 +48,18 @@ where
         let new_value = self.delta.scale(percent_time);
 
         new_value.add(*self.range.start())
+    }
+
+    fn range(&self) -> &RangeInclusive<V> {
+        &self.range
+    }
+
+    fn duration(&self) -> T {
+        self.duration
+    }
+
+    fn delta(&self) -> V {
+        self.delta
     }
 }
 
@@ -80,6 +100,7 @@ pub trait TweenTime: Copy {
     const ZERO: Self;
     fn percent(duration: Self, current_time: Self) -> f32;
     fn add(self, other: Self) -> Self;
+    fn is_complete(self, duration: Self) -> bool;
 }
 impl TweenTime for f32 {
     const ZERO: Self = 0.0;
@@ -89,6 +110,10 @@ impl TweenTime for f32 {
 
     fn add(self, other: Self) -> Self {
         self + other
+    }
+
+    fn is_complete(self, duration: Self) -> bool {
+        self >= duration
     }
 }
 impl TweenTime for usize {
@@ -101,6 +126,10 @@ impl TweenTime for usize {
     fn add(self, other: Self) -> Self {
         self + other
     }
+
+    fn is_complete(self, duration: Self) -> bool {
+        self >= duration
+    }
 }
 impl TweenTime for i32 {
     const ZERO: Self = 0;
@@ -112,16 +141,21 @@ impl TweenTime for i32 {
     fn add(self, other: Self) -> Self {
         self + other
     }
+
+    fn is_complete(self, duration: Self) -> bool {
+        self >= duration
+    }
 }
 
-pub struct DeltaTweener<Tween, TValue, TTime> {
+pub struct FixedDeltaTweener<Tween, TValue, TTime> {
     tween: Tween,
     last_time: TTime,
     delta: TTime,
+    fused: bool,
     _value: PhantomData<fn(&mut Self, TTime) -> TValue>,
 }
 
-impl<T, TValue, TTime> DeltaTweener<T, TValue, TTime>
+impl<T, TValue, TTime> FixedDeltaTweener<T, TValue, TTime>
 where
     T: Tween<TValue, TTime>,
     TValue: TweenValue,
@@ -132,12 +166,14 @@ where
             tween,
             last_time: TTime::ZERO,
             delta,
+            fused: false,
+
             _value: PhantomData,
         }
     }
 }
 
-impl<T, TValue, TTime> Iterator for DeltaTweener<T, TValue, TTime>
+impl<T, TValue, TTime> Iterator for FixedDeltaTweener<T, TValue, TTime>
 where
     T: Tween<TValue, TTime>,
     TValue: TweenValue,
@@ -146,9 +182,18 @@ where
     type Item = TValue;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.last_time = self.last_time.add(self.delta);
+        if !self.fused {
+            self.last_time = self.last_time.add(self.delta);
 
-        Some(self.tween.update(self.last_time))
+            if self.last_time.is_complete(self.tween.duration()) {
+                self.fused = true;
+                Some(*self.tween.range().end())
+            } else {
+                Some(self.tween.update(self.last_time))
+            }
+        } else {
+            None
+        }
     }
 }
 
@@ -181,9 +226,9 @@ mod tests {
 
     #[test]
     fn tweener() {
-        let mut value = 0;
-        let mut tweener = DeltaTweener::new(Linear::new(value..=100, 10), 1);
+        let tweener = FixedDeltaTweener::new(Linear::new(0..=100, 10), 1);
+        let values: Vec<_> = tweener.collect();
 
-        value = tweener.next().unwrap();
+        assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
     }
 }
