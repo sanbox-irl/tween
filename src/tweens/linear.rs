@@ -2,7 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 #[derive(Debug)]
-pub struct Linear<TValue, TTime> {
+pub struct Linear<TValue = f32, TTime = f32> {
     range: RangeInclusive<TValue>,
     value_delta: TValue,
     duration: TTime,

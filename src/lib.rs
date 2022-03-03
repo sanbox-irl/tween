@@ -10,7 +10,7 @@ use std::ops::RangeInclusive;
 ///
 /// If you choose to use a Tween directly, rather than through a `DeltaTweener`
 /// or `FixedDeltaTweener`, you'll rarely deal with this directly.
-pub trait Tween<TValue, TTime>: Sized
+pub trait Tween<TValue = f32, TTime = f32>: Sized
 where
     TValue: TweenValue,
     TTime: TweenTime,
