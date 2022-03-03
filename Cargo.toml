@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 easer = "0.2.1"
+
+[dev-dependencies]
 approx = "0.5"
