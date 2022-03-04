@@ -1,31 +1,6 @@
 use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
-/*
-
-    fn ease_in(t: F, b: F, c: F, d: F) -> F {
-        let t = t / d;
-        c * (t * t * t) + b
-    }
-
-    fn ease_out(t: F, b: F, c: F, d: F) -> F {
-        let t = t / d - f(1.0);
-        c * ((t * t * t) + f(1.0)) + b
-    }
-
-    fn ease_in_out(t: F, b: F, c: F, d: F) -> F {
-        let t = t / (d / f(2.0));
-        if t < f(1.0) {
-            c / f(2.0) * (t * t * t) + b
-        }
-        else {
-            let t = t - f(2.0);
-            c / f(2.0) * (t * t * t + f(2.0)) + b
-        }
-    }
-
-*/
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CubicIn<TValue = f32, TTime = f32> {
     range: RangeInclusive<TValue>,
@@ -152,23 +127,12 @@ where
     T: TweenTime,
 {
     fn update(&mut self, new_time: T) -> V {
-        // let t = t / (d / f(2.0));
-        // if t < f(1.0) {
-        //     c / f(2.0) * (t * t * t) + b
-        // }
-        // else {
-        //     let t = t - f(2.0);
-        //     c / f(2.0) * (t * t * t + f(2.0)) + b
-        // }
-
         let percent_time = T::percent(self.duration, new_time);
-        if percent_time < 0.5 {
-            self.value_delta
-                .scale(percent_time * percent_time * percent_time);
+        let percent_time = if percent_time < 0.5 {
+            percent_time
         } else {
-            let percent_time = 1.0 - percent_time;
-            self.value_delta
-        }
+            1.0 - percent_time
+        };
         let new_value = self
             .value_delta
             .scale(percent_time * percent_time * percent_time);
@@ -192,15 +156,16 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use approx::assert_ulps_eq;
+    use easer::functions::{Cubic as EaseCubic, Easing};
 
     #[test]
-    fn linear_over_frames() {
-        let mut value = 0;
-        let mut tweener = CubicIn::new(value..=100, 10);
+    fn cubic_in() {
+        let mut value = 0.0;
+        let mut tweener = CubicIn::new(value..=100.0, 10);
 
-        for val in 1..=10 {
-            value = tweener.update(val);
-            assert_eq!(value, val * 10);
-        }
+        let v = tweener.update(1);
+
+        EaseCubic::ease_in();
     }
 }
