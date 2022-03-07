@@ -10,20 +10,21 @@ use std::ops::RangeInclusive;
 ///
 /// If you choose to use a Tween directly, rather than through a `DeltaTweener`
 /// or `FixedDeltaTweener`, you'll rarely deal with this directly.
-pub trait Tween<TValue = f32, TTime = f32>: Sized
-where
-    TValue: TweenValue,
-    TTime: TweenTime,
-{
-    fn update(&mut self, new_time: TTime) -> TValue;
+pub trait Tween: Sized {
+    type Value: TweenValue;
+    type Time: TweenTime;
 
-    fn range(&self) -> &RangeInclusive<TValue>;
-    fn duration(&self) -> TTime;
-    fn delta(&self) -> TValue;
+    fn update(&mut self, new_time: Self::Time) -> Self::Value;
 
-    fn to_fixed_tweener(self, delta: TTime) -> FixedDeltaTweener<Self, TValue, TTime> {
-        FixedDeltaTweener::new(self, delta)
-    }
+    fn range(&self) -> &RangeInclusive<Self::Value>;
+    fn duration(&self) -> Self::Time;
+
+    // fn to_fixed_tweener(
+    //     self,
+    //     delta: Self::TTime,
+    // ) -> FixedDeltaTweener<Self, Self::TValue, Self::TTime> {
+    //     FixedDeltaTweener::new(self, delta)
+    // }
 }
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs

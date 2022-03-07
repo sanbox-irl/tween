@@ -2,7 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Linear<TValue = f32, TTime = f32> {
+pub struct Linear<TValue, TTime> {
     range: RangeInclusive<TValue>,
     value_delta: TValue,
     duration: TTime,
@@ -23,11 +23,14 @@ where
     }
 }
 
-impl<V, T> Tween<V, T> for Linear<V, T>
+impl<V, T> Tween for Linear<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
+    type Value = V;
+    type Time = T;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time);
@@ -42,24 +45,21 @@ where
     fn duration(&self) -> T {
         self.duration
     }
-
-    fn delta(&self) -> V {
-        self.value_delta
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use approx::assert_ulps_eq;
 
     #[test]
     fn linear_over_frames() {
-        let mut value = 0;
-        let mut tweener = Linear::new(value..=100, 10);
+        let mut value = 0.0;
+        let mut tweener = Linear::new(value..=100.0, 10);
 
         for val in 1..=10 {
             value = tweener.update(val);
-            assert_eq!(value, val * 10);
+            assert_ulps_eq!(value, val as f32 * 10.0);
         }
     }
 }

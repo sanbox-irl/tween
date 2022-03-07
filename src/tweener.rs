@@ -11,9 +11,9 @@ pub struct DeltaTweener<Tween, TValue, TTime> {
 
 impl<T, TValue, TTime> DeltaTweener<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
     TValue: TweenValue,
     TTime: TweenTime,
+    T: Tween<Time = TTime, Value = TValue>,
 {
     pub fn new(tween: T) -> Self {
         Self {
@@ -49,9 +49,9 @@ pub struct Looper<T, TValue, TTime>(DeltaTweener<T, TValue, TTime>);
 
 impl<T, TValue, TTime> Looper<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
     TValue: TweenValue,
     TTime: TweenTime,
+    T: Tween<Time = TTime, Value = TValue>,
 {
     pub fn new(delta_tweener: DeltaTweener<T, TValue, TTime>) -> Self {
         Self(delta_tweener)
@@ -80,7 +80,7 @@ pub struct FixedDeltaTweener<Tween, TValue, TTime> {
 
 impl<T, TValue, TTime> FixedDeltaTweener<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
+    T: Tween,
     TValue: TweenValue,
     TTime: TweenTime,
 {
@@ -102,9 +102,9 @@ where
 
 impl<T, TValue, TTime> Iterator for FixedDeltaTweener<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
     TValue: TweenValue,
     TTime: TweenTime,
+    T: Tween<Time = TTime, Value = TValue>,
 {
     type Item = TValue;
 
@@ -128,7 +128,7 @@ pub struct FixedLooper<T, TValue, TTime>(FixedDeltaTweener<T, TValue, TTime>);
 
 impl<T, TValue, TTime> FixedLooper<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
+    T: Tween,
     TValue: TweenValue,
     TTime: TweenTime,
 {
@@ -139,9 +139,9 @@ where
 
 impl<T, TValue, TTime> Iterator for FixedLooper<T, TValue, TTime>
 where
-    T: Tween<TValue, TTime>,
     TValue: TweenValue,
     TTime: TweenTime,
+    T: Tween<Time = TTime, Value = TValue>,
 {
     type Item = TValue;
 

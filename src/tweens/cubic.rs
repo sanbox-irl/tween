@@ -23,11 +23,14 @@ where
     }
 }
 
-impl<V, T> Tween<V, T> for CubicIn<V, T>
+impl<V, T> Tween for CubicIn<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
+    type Value = V;
+    type Time = T;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self
@@ -43,10 +46,6 @@ where
 
     fn duration(&self) -> T {
         self.duration
-    }
-
-    fn delta(&self) -> V {
-        self.value_delta
     }
 }
 
@@ -72,16 +71,19 @@ where
     }
 }
 
-impl<V, T> Tween<V, T> for CubicOut<V, T>
+impl<V, T> Tween for CubicOut<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
+    type Value = V;
+    type Time = T;
+
     fn update(&mut self, new_time: T) -> V {
-        let percent_time = 1.0 - T::percent(self.duration, new_time);
+        let percent_time = T::percent(self.duration, new_time) - 1.0;
         let new_value = self
             .value_delta
-            .scale(percent_time * percent_time * percent_time);
+            .scale(percent_time * percent_time * percent_time + 1.0);
 
         new_value.add(*self.range.start())
     }
@@ -93,16 +95,12 @@ where
     fn duration(&self) -> T {
         self.duration
     }
-
-    fn delta(&self) -> V {
-        self.value_delta
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CubicInOut<TValue = f32, TTime = f32> {
     range: RangeInclusive<TValue>,
-    value_delta: TValue,
+    half_delta: TValue,
     duration: TTime,
 }
 
@@ -112,44 +110,44 @@ where
     TTime: TweenTime,
 {
     pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
-        let delta = TValue::calculate_delta(*range.end(), *range.start());
+        let value_delta = TValue::calculate_delta(*range.end(), *range.start());
+        let half_delta = TValue::scale(value_delta, 0.5);
         Self {
             range,
-            value_delta: delta,
+            half_delta,
             duration,
         }
     }
 }
 
-impl<V, T> Tween<V, T> for CubicInOut<V, T>
+impl<TValue, TTime> Tween for CubicInOut<TValue, TTime>
 where
-    V: TweenValue,
-    T: TweenTime,
+    TValue: TweenValue,
+    TTime: TweenTime,
 {
-    fn update(&mut self, new_time: T) -> V {
-        let percent_time = T::percent(self.duration, new_time);
-        let percent_time = if percent_time < 0.5 {
-            percent_time
+    type Value = TValue;
+    type Time = TTime;
+
+    fn update(&mut self, new_time: TTime) -> TValue {
+        let percent_time = TTime::percent(self.duration, new_time) * 2.0;
+
+        let scalar = if percent_time < 1.0 {
+            percent_time * percent_time * percent_time
         } else {
-            1.0 - percent_time
+            let p = percent_time - 2.0;
+            p * p * p + 2.0
         };
-        let new_value = self
-            .value_delta
-            .scale(percent_time * percent_time * percent_time);
+        let new_value = self.half_delta.scale(scalar);
 
         new_value.add(*self.range.start())
     }
 
-    fn range(&self) -> &RangeInclusive<V> {
+    fn range(&self) -> &RangeInclusive<TValue> {
         &self.range
     }
 
-    fn duration(&self) -> T {
+    fn duration(&self) -> TTime {
         self.duration
-    }
-
-    fn delta(&self) -> V {
-        self.value_delta
     }
 }
 
@@ -161,11 +159,43 @@ mod tests {
 
     #[test]
     fn cubic_in() {
-        let mut value = 0.0;
-        let mut tweener = CubicIn::new(value..=100.0, 10);
+        let mut tweener = CubicIn::new(0.0..=100.0, 10.0);
 
-        let v = tweener.update(1);
+        for time in 0..=10 {
+            let time = time as f32;
 
-        EaseCubic::ease_in();
+            let v = tweener.update(time);
+            let o = EaseCubic::ease_in(time, 0.0, 100.0, 10.0);
+
+            assert_ulps_eq!(v, o);
+        }
+    }
+
+    #[test]
+    fn cubic_out() {
+        let mut tweener = CubicOut::new(0.0..=100.0, 10.0);
+
+        for time in 0..=10 {
+            let time = time as f32;
+
+            let v = tweener.update(time);
+            let o = EaseCubic::ease_out(time, 0.0, 100.0, 10.0);
+
+            assert_ulps_eq!(v, o);
+        }
+    }
+
+    #[test]
+    fn cubic_in_out() {
+        let mut tweener = CubicInOut::new(0.0..=100.0, 10.0);
+
+        for time in 0..=10 {
+            let time = time as f32;
+
+            let our_value = tweener.update(time);
+            let easer = EaseCubic::ease_in_out(time, 0.0, 100.0, 10.0);
+
+            assert_ulps_eq!(our_value, easer);
+        }
     }
 }
