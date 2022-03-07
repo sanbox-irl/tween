@@ -1,3 +1,6 @@
+#[macro_use]
+mod macros;
+
 mod tweener;
 mod tweens;
 
@@ -38,7 +41,7 @@ pub trait Tween: Sized {
 pub trait TweenValue: Copy {
     fn calculate_delta(destination: Self, start: Self) -> Self;
     fn add(self, other: Self) -> Self;
-    fn scale(self, scale: f32) -> Self;
+    fn scale(self, scale: f64) -> Self;
 }
 
 /// A `TweenTime` is a representation of Time. The two most common will be `f32`/`f64` for
@@ -51,84 +54,25 @@ pub trait TweenValue: Copy {
 /// if that is needed for your workflow.
 pub trait TweenTime: Copy {
     const ZERO: Self;
-    fn percent(duration: Self, current_time: Self) -> f32;
+    fn percent(duration: Self, current_time: Self) -> f64;
     fn add(self, other: Self) -> Self;
     fn is_complete(self, duration: Self) -> bool;
 }
 
-/// This is internal to the library, but allows for simple numeric
-/// types to be made into a time value.
-macro_rules! create_time_value {
-    ($t:ty) => {
-        impl TweenTime for $t {
-            const ZERO: Self = 0;
+declare_time!(i32);
+declare_time!(i64);
+declare_time!(u32);
+declare_time!(u64);
+declare_time!(usize);
+declare_time!(isize);
+declare_time!(float f32);
+declare_time!(float f64);
 
-            fn percent(duration: Self, current_time: Self) -> f32 {
-                current_time as f32 / duration as f32
-            }
-
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn is_complete(self, duration: Self) -> bool {
-                self >= duration
-            }
-        }
-    };
-    (float $t:ty) => {
-        impl TweenTime for $t {
-            const ZERO: Self = 0.0;
-
-            fn percent(duration: Self, current_time: Self) -> f32 {
-                current_time as f32 / duration as f32
-            }
-
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn is_complete(self, duration: Self) -> bool {
-                self >= duration
-            }
-        }
-    };
-}
-
-create_time_value!(i32);
-create_time_value!(i64);
-create_time_value!(u32);
-create_time_value!(u64);
-create_time_value!(usize);
-create_time_value!(isize);
-create_time_value!(float f32);
-create_time_value!(float f64);
-
-/// This is internal to the library, but allows for simple numeric
-/// types to be made into a tween_value.
-macro_rules! tween_value_num {
-    ($t:ty) => {
-        impl TweenValue for $t {
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn calculate_delta(destination: Self, start: Self) -> Self {
-                destination - start
-            }
-
-            fn scale(self, scale: f32) -> Self {
-                (self as f32 * scale) as $t
-            }
-        }
-    };
-}
-
-tween_value_num!(f32);
-tween_value_num!(f64);
-tween_value_num!(i32);
-tween_value_num!(i64);
-tween_value_num!(u32);
-tween_value_num!(u64);
-tween_value_num!(usize);
-tween_value_num!(isize);
+declare_value!(f32);
+declare_value!(f64);
+declare_value!(i32);
+declare_value!(i64);
+declare_value!(u32);
+declare_value!(u64);
+declare_value!(usize);
+declare_value!(isize);
