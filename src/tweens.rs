@@ -6,3 +6,6 @@ pub use cubic::{CubicIn, CubicInOut, CubicOut};
 
 mod sine;
 pub use sine::{SineIn, SineInOut, SineOut};
+
+mod quint;
+pub use quint::{QuintIn, QuintInOut, QuintOut};
