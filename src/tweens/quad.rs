@@ -14,7 +14,7 @@ declare_tween!(
 declare_tween!(
     QuadOut,
     fn update(&mut self, new_time: T) -> V {
-        let percent_time = T::percent(self.duration, new_time) - 1.0;
+        let percent_time = T::percent(self.duration, new_time);
         let new_value = self
             .value_delta
             .scale(-percent_time)
@@ -32,8 +32,9 @@ declare_in_out_tween!(
         let scalar = if percent_time < 1.0 {
             percent_time * percent_time
         } else {
-            let p = percent_time - 2.0;
-            p * p + 2.0
+            let p = percent_time - 1.0;
+
+            (p * (p - 2.0) - 1.0) * -1.0
         };
         let new_value = self.half_delta.scale(scalar);
 
