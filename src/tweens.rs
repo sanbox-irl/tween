@@ -9,3 +9,6 @@ pub use sine::{SineIn, SineInOut, SineOut};
 
 mod quint;
 pub use quint::{QuintIn, QuintInOut, QuintOut};
+
+mod quad;
+pub use quad::{QuadIn, QuadInOut, QuadOut};
