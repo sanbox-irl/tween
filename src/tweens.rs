@@ -21,3 +21,6 @@ pub use expo::{ExpoIn, ExpoInOut, ExpoOut};
 
 mod circ;
 pub use circ::{CircIn, CircInOut, CircOut};
+
+mod back;
+pub use back::{BackIn, BackInOut, BackOut};
