@@ -18,3 +18,6 @@ pub use quart::{QuartIn, QuartInOut, QuartOut};
 
 mod expo;
 pub use expo::{ExpoIn, ExpoInOut, ExpoOut};
+
+mod circ;
+pub use circ::{CircIn, CircInOut, CircOut};
