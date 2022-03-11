@@ -12,3 +12,6 @@ pub use quint::{QuintIn, QuintInOut, QuintOut};
 
 mod quad;
 pub use quad::{QuadIn, QuadInOut, QuadOut};
+
+mod quart;
+pub use quart::{QuartIn, QuartInOut, QuartOut};
