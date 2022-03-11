@@ -15,3 +15,6 @@ pub use quad::{QuadIn, QuadInOut, QuadOut};
 
 mod quart;
 pub use quart::{QuartIn, QuartInOut, QuartOut};
+
+mod expo;
+pub use expo::{ExpoIn, ExpoInOut, ExpoOut};
