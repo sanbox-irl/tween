@@ -2,14 +2,15 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 /// This appears to be a magic constant for Back eases. I have no idea
-/// where it's from, but we'll use it 
+/// where it's from, but we'll use it
 const BACK_CONST: f64 = 1.70158;
 
 declare_tween!(
     BackIn,
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
-        let scalar = 1.0 - (1.0 - t * t).sqrt();
+        let scalar = t * t * ((BACK_CONST + 1.0) * t - BACK_CONST);
+
         let new_value = self.value_delta.scale(scalar);
 
         new_value.add(*self.range.start())
@@ -20,8 +21,8 @@ declare_tween!(
     BackOut,
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) - 1.0;
+        let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST);
 
-        let scalar = (1.0 - t * t).sqrt();
         let new_value = self.value_delta.scale(scalar);
 
         new_value.add(*self.range.start())
