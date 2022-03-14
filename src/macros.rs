@@ -131,21 +131,21 @@ macro_rules! declare_in_out_tween {
             }
         }
 
-        impl<TValue, TTime> Tween for $name<TValue, TTime>
+        impl<V, T> Tween for $name<V, T>
         where
-            TValue: TweenValue,
-            TTime: TweenTime,
+            V: TweenValue,
+            T: TweenTime,
         {
-            type Value = TValue;
-            type Time = TTime;
+            type Value = V;
+            type Time = T;
 
             $update
 
-            fn range(&self) -> &RangeInclusive<TValue> {
+            fn range(&self) -> &RangeInclusive<V> {
                 &self.range
             }
 
-            fn duration(&self) -> TTime {
+            fn duration(&self) -> T {
                 self.duration
             }
         }

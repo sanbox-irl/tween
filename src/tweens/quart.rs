@@ -27,8 +27,8 @@ declare_tween!(
 
 declare_in_out_tween!(
     QuartInOut,
-    fn update(&mut self, new_time: TTime) -> TValue {
-        let percent_time = TTime::percent(self.duration, new_time) * 2.0;
+    fn update(&mut self, new_time: T) -> V {
+        let percent_time = T::percent(self.duration, new_time) * 2.0;
 
         let scalar = if percent_time < 1.0 {
             percent_time * percent_time * percent_time * percent_time

@@ -26,8 +26,8 @@ declare_tween!(
 
 declare_in_out_tween!(
     CircInOut,
-    fn update(&mut self, new_time: TTime) -> TValue {
-        let t = TTime::percent(self.duration, new_time) * 2.0;
+    fn update(&mut self, new_time: T) -> V {
+        let t = T::percent(self.duration, new_time) * 2.0;
 
         let scalar = if t < 1.0 {
             1.0 - (1.0 - t * t).sqrt()

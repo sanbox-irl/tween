@@ -5,6 +5,10 @@ use std::ops::RangeInclusive;
 /// where it's from, but we'll use it
 const BACK_CONST: f64 = 1.70158;
 
+/// This is another magic constant for the back in out tween.
+/// Where it comes from, I do not know!
+const BACK_IN_OUT_CONST: f64 = BACK_CONST * 1.525;
+
 declare_tween!(
     BackIn,
     fn update(&mut self, new_time: T) -> V {
@@ -21,7 +25,7 @@ declare_tween!(
     BackOut,
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) - 1.0;
-        let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST);
+        let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
 
         let new_value = self.value_delta.scale(scalar);
 
@@ -31,15 +35,15 @@ declare_tween!(
 
 declare_in_out_tween!(
     BackInOut,
-    fn update(&mut self, new_time: TTime) -> TValue {
-        let t = TTime::percent(self.duration, new_time) * 2.0;
+    fn update(&mut self, new_time: T) -> V {
+        let t = T::percent(self.duration, new_time) * 2.0;
 
         let scalar = if t < 1.0 {
-            1.0 - (1.0 - t * t).sqrt()
+            t * t * ((BACK_IN_OUT_CONST + 1.0) * t - BACK_IN_OUT_CONST)
         } else {
             let t = t - 2.0;
 
-            (1.0 - t * t).sqrt() + 1.0
+            t * t * ((BACK_IN_OUT_CONST + 1.0) * t + BACK_IN_OUT_CONST) + 2.0
         };
         let new_value = self.half_delta.scale(scalar);
 
