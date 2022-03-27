@@ -52,9 +52,10 @@ pub trait TweenValue: Copy {
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
 /// if that is needed for your workflow.
-pub trait TweenTime: Copy + PartialEq  {
+pub trait TweenTime: Copy + PartialEq {
     const ZERO: Self;
     fn percent(duration: Self, current_time: Self) -> f64;
+    fn as_f64(self) -> f64;
     fn add(self, other: Self) -> Self;
     fn is_complete(self, duration: Self) -> bool;
 }

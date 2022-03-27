@@ -13,6 +13,10 @@ macro_rules! declare_time {
                 self + other
             }
 
+            fn as_f64(self) -> f64 {
+                self as f64
+            }
+
             fn is_complete(self, duration: Self) -> bool {
                 self >= duration
             }
@@ -28,6 +32,10 @@ macro_rules! declare_time {
 
             fn add(self, other: Self) -> Self {
                 self + other
+            }
+
+            fn as_f64(self) -> f64 {
+                self as f64
             }
 
             fn is_complete(self, duration: Self) -> bool {

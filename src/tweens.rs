@@ -24,3 +24,6 @@ pub use circ::{CircIn, CircInOut, CircOut};
 
 mod back;
 pub use back::{BackIn, BackInOut, BackOut};
+
+mod elastic;
+pub use elastic::{ElasticIn, ElasticInOut, ElasticOut};
