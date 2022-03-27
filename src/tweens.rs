@@ -27,3 +27,6 @@ pub use back::{BackIn, BackInOut, BackOut};
 
 mod elastic;
 pub use elastic::{ElasticIn, ElasticInOut, ElasticOut};
+
+mod bounce;
+pub use bounce::{BounceIn, BounceInOut, BounceOut};

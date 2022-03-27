@@ -39,6 +39,8 @@ pub trait Tween: Sized {
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
 /// if that is needed for your workflow.
 pub trait TweenValue: Copy {
+    const ZERO: Self;
+
     fn calculate_delta(destination: Self, start: Self) -> Self;
     fn add(self, other: Self) -> Self;
     fn scale(self, scale: f64) -> Self;
@@ -57,6 +59,8 @@ pub trait TweenTime: Copy + PartialEq {
     fn percent(duration: Self, current_time: Self) -> f64;
     fn as_f64(self) -> f64;
     fn add(self, other: Self) -> Self;
+    fn sub(self, other: Self) -> Self;
+    fn scale(self, multiplier: f64) -> Self;
     fn is_complete(self, duration: Self) -> bool;
 }
 
@@ -69,8 +73,8 @@ declare_time!(isize);
 declare_time!(float f32);
 declare_time!(float f64);
 
-declare_value!(f32);
-declare_value!(f64);
+declare_value!(float f32);
+declare_value!(float f64);
 declare_value!(i32);
 declare_value!(i64);
 declare_value!(u32);
