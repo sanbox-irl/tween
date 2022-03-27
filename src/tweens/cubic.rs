@@ -2,32 +2,31 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// A cubic tween in. Go [here](https://easings.net/#easeInCubic) for a visual demonstration.
     pub struct CubicIn;
 
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
-        let new_value = self
-            .value_delta
-            .scale(percent_time * percent_time * percent_time);
+        let new_value = self.value_delta.scale(percent_time * percent_time * percent_time);
 
         new_value.add(*self.range.start())
     }
 );
 
 declare_tween!(
+    /// A cubic tween out. Go [here](https://easings.net/#easeOutCubic) for a visual demonstration.
     pub struct CubicOut;
 
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time) - 1.0;
-        let new_value = self
-            .value_delta
-            .scale(percent_time * percent_time * percent_time + 1.0);
+        let new_value = self.value_delta.scale(percent_time * percent_time * percent_time + 1.0);
 
         new_value.add(*self.range.start())
     }
 );
 
 declare_in_out_tween!(
+    /// A cubic tween in and out. Go [here](https://easings.net/#easeInOutCubic) for a visual demonstration.
     pub struct CubicInOut;
 
     fn update(&mut self, new_time: T) -> V {

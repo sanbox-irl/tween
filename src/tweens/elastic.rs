@@ -1,7 +1,7 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::f64::consts::PI;
-use std::ops::RangeInclusive;
+use std::{f64::consts::PI, ops::RangeInclusive};
 
+/// An elastic tween in. Go [here](https://easings.net/#easeInElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticIn<TValue, TTime> {
     range: RangeInclusive<TValue>,
@@ -16,6 +16,7 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
+    /// Creates a new tween out of a range with a duration.
     pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
         let delta = TValue::calculate_delta(*range.end(), *range.start());
         let three_tenths = duration.as_f64() * 0.3;
@@ -65,6 +66,7 @@ where
     }
 }
 
+/// An elastic tween out. Go [here](https://easings.net/#easeOutElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticOut<TValue, TTime> {
     range: RangeInclusive<TValue>,
@@ -79,6 +81,7 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
+    /// Creates a new tween out of a range with a duration.
     pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
         let delta = TValue::calculate_delta(*range.end(), *range.start());
         let three_tenths = duration.as_f64() * 0.3;
@@ -128,6 +131,7 @@ where
     }
 }
 
+/// An elastic tween in and out. Go [here](https://easings.net/#easeInOutElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticInOut<TValue, TTime> {
     range: RangeInclusive<TValue>,
@@ -142,6 +146,7 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
+    /// Creates a new tween out of a range with a duration.
     pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
         let delta = TValue::calculate_delta(*range.end(), *range.start());
         let p = duration.as_f64() * 0.45;

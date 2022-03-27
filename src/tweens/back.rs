@@ -10,6 +10,7 @@ const BACK_CONST: f64 = 1.70158;
 const BACK_IN_OUT_CONST: f64 = BACK_CONST * 1.525;
 
 declare_tween!(
+    /// An tween that goes out and then back in a bit. Go [here](https://easings.net/#easeInBack) for a visual demonstration.
     pub struct BackIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -23,6 +24,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An tween that goes in and then back out a bit. Go [here](https://easings.net/#easeOutBack) for a visual demonstration.
     pub struct BackOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -36,6 +38,7 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
+    /// An tween that goes out, in, and then back in and out a bit. Go [here](https://easings.net/#easeInOutBack) for a visual demonstration.
     pub struct BackInOut;
 
     fn update(&mut self, new_time: T) -> V {

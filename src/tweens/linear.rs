@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// A Linear tween is a simple lerp from one value to another.
     pub struct Linear;
 
     fn update(&mut self, new_time: T) -> V {

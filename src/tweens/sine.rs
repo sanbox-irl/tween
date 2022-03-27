@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::{f64::consts::PI, ops::RangeInclusive};
 
 declare_tween!(
+    /// An sine based tween in. Go [here](https://easings.net/#easeInSine) for a visual demonstration.
     pub struct SineIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -14,6 +15,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An sine based tween out. Go [here](https://easings.net/#easeOutSine) for a visual demonstration.
     pub struct SineOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -26,6 +28,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An sine based tween in out. Go [here](https://easings.net/#easeInOutSine) for a visual demonstration.
     pub struct SineInOut;
 
     fn update(&mut self, new_time: T) -> V {

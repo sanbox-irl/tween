@@ -123,6 +123,7 @@ macro_rules! declare_tween {
             TValue: TweenValue,
             TTime: TweenTime,
         {
+            /// Creates a new tween out of a range with a duration.
             pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
                 let delta = TValue::calculate_delta(*range.end(), *range.start());
                 Self {
@@ -176,6 +177,7 @@ macro_rules! declare_in_out_tween {
             TValue: TweenValue,
             TTime: TweenTime,
         {
+            /// Creates a new tween out of a range with a duration.
             pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
                 let value_delta = TValue::calculate_delta(*range.end(), *range.start());
                 let half_delta = TValue::scale(value_delta, 0.5);

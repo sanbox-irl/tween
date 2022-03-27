@@ -1,6 +1,6 @@
 #![doc = include_str!("../README.md")]
 #![deny(rust_2018_idioms)]
-// #![deny(missing_docs)]
+#![deny(missing_docs)]
 #![deny(rustdoc::all)]
 
 #[macro_use]

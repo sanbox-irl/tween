@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// An exponenential tween in. See [here](https://easings.net/#easeInExpo)
     pub struct ExpoIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -17,6 +18,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An exponenential tween out. See [here](https://easings.net/#easeOutExpo)
     pub struct ExpoOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -33,6 +35,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An exponenential tween in and out. See [here](https://easings.net/#easeInOutExpo)
     pub struct ExpoInOut;
 
     fn update(&mut self, new_time: T) -> V {

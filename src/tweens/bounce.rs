@@ -7,6 +7,7 @@ const STAGE_ONE: f64 = 2.0 / 2.75;
 const STAGE_TWO: f64 = 2.5 / 2.75;
 
 declare_tween!(
+    /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeInBounce) for a visual demonstration.
     pub struct BounceIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -35,6 +36,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeOutBounce) for a visual demonstration.
     pub struct BounceOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -59,6 +61,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeInOutBounce) for a visual demonstration.
     pub struct BounceInOut;
 
     fn update(&mut self, new_time: T) -> V {

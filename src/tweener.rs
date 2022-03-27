@@ -112,8 +112,26 @@ where
     }
 }
 
-/// A Fixed tweener "drives" a tween for you, allowing
-/// you to provide *deltas* in time, rather than new time values.
+/// A FixedTweener "drives" a tween for you, allowing you provide *deltas*
+/// instead of concrete values, per call. Moreover, a FixedTweener always works on
+/// the same delta per `update`, rather than allowing for a variable delta. If you need a variable
+/// delta use [Tweener].
+///
+/// Because fixed tweener works on a fixed delta, it can provide a simple interface, which should be
+/// especially useful for games which used a fixed delta update loop.
+///
+/// ```
+/// # use tween::{FixedTweener, Linear};
+///
+/// // we provide a tweener which goes from 0 up to 4, in 4 ticks,
+/// // and we progress it by 1 each time we call it.
+/// let mut fixed_tweener = FixedTweener::new(Linear::new(0..=4, 4), 1);
+/// assert_eq!(fixed_tweener.next().unwrap(), 1);
+/// assert_eq!(fixed_tweener.next().unwrap(), 2);
+/// assert_eq!(fixed_tweener.next().unwrap(), 3);
+/// assert_eq!(fixed_tweener.next().unwrap(), 4);
+/// assert_eq!(fixed_tweener.next(), None);
+/// ```
 pub struct FixedTweener<Tween, TValue, TTime> {
     tween: Tween,
     last_time: TTime,
@@ -128,6 +146,8 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
+    /// Creates a new [FixedTweener], and takes in the delta time
+    /// it will use per tick.
     pub fn new(tween: T, delta: TTime) -> Self {
         Self {
             tween,
@@ -139,6 +159,7 @@ where
         }
     }
 
+    /// Converts this tweener to a [FixedLooper].
     pub fn looper(self) -> FixedLooper<T, TValue, TTime> {
         FixedLooper::new(self)
     }
@@ -168,6 +189,8 @@ where
     }
 }
 
+/// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
+/// every time the tweener *would* fuse (end), it instead loops.
 pub struct FixedLooper<T, TValue, TTime>(FixedTweener<T, TValue, TTime>);
 
 impl<T, TValue, TTime> FixedLooper<T, TValue, TTime>
@@ -176,8 +199,16 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
-    pub fn new(fixed_delta_tweener: FixedTweener<T, TValue, TTime>) -> Self {
-        Self(fixed_delta_tweener)
+    /// Creates a new FixedLooper. If the tweener is already complete, then it will
+    /// reset it.
+    pub fn new(mut tweener: FixedTweener<T, TValue, TTime>) -> Self {
+        // unfuse it...
+        if tweener.fused {
+            tweener.last_time = TTime::ZERO;
+            tweener.fused = false;
+        }
+
+        Self(tweener)
     }
 }
 

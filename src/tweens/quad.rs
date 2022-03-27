@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// An quadratic tween in. Go [here](https://easings.net/#easeInQuad) for a visual demonstration.
     pub struct QuadIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -13,20 +14,19 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An quadratic tween out. Go [here](https://easings.net/#easeOutQuad) for a visual demonstration.
     pub struct QuadOut;
 
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
-        let new_value = self
-            .value_delta
-            .scale(-percent_time)
-            .scale(percent_time - 2.0);
+        let new_value = self.value_delta.scale(-percent_time).scale(percent_time - 2.0);
 
         new_value.add(*self.range.start())
     }
 );
 
 declare_in_out_tween!(
+    /// An quadratic tween in and out. Go [here](https://easings.net/#easeInOutQuad) for a visual demonstration.
     pub struct QuadInOut;
 
     fn update(&mut self, new_time: T) -> V {

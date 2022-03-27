@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// A circular tween in. Go [here](https://easings.net/#easeInCirc) for a visual demonstration.
     pub struct CircIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -14,6 +15,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// A circular tween out. Go [here](https://easings.net/#easeOutCirc) for a visual demonstration.
     pub struct CircOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -27,6 +29,7 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
+    /// A circular tween in and out. Go [here](https://easings.net/#easeInOutCirc) for a visual demonstration.
     pub struct CircInOut;
 
     fn update(&mut self, new_time: T) -> V {

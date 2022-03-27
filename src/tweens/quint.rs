@@ -2,6 +2,7 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
+    /// An quintic tween in. Go [here](https://easings.net/#easeInQuint) for a visual demonstration.
     pub struct QuintIn;
 
     fn update(&mut self, new_time: T) -> V {
@@ -15,6 +16,7 @@ declare_tween!(
 );
 
 declare_tween!(
+    /// An quintic tween out. Go [here](https://easings.net/#easeOutQuint) for a visual demonstration.
     pub struct QuintOut;
 
     fn update(&mut self, new_time: T) -> V {
@@ -28,6 +30,7 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
+    /// An quintic tween in out. Go [here](https://easings.net/#easeInOutQuint) for a visual demonstration.
     pub struct QuintInOut;
 
     fn update(&mut self, new_time: T) -> V {
