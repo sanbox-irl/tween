@@ -2,7 +2,8 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::{f64::consts::PI, ops::RangeInclusive};
 
 declare_tween!(
-    SineIn,
+    pub struct SineIn;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let time = (percent_time * PI / 2.0).cos();
@@ -13,7 +14,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    SineOut,
+    pub struct SineOut;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let time = (percent_time * PI / 2.0).sin();
@@ -24,7 +26,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    SineInOut,
+    pub struct SineInOut;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let time = (percent_time * PI).cos() - 1.0;

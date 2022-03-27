@@ -104,7 +104,13 @@ macro_rules! declare_value {
 /// This is internal to the library, but allows for creating simple ease-style
 /// tweens.
 macro_rules! declare_tween {
-    ($name:ident, $update:item) => {
+    (
+        $(#[$struct_meta:meta])*
+        pub struct $name:ident;
+
+        $update:item
+    ) => {
+        $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
             range: RangeInclusive<TValue>,
@@ -151,7 +157,13 @@ macro_rules! declare_tween {
 /// This is internal to the library, but allows for creating simple ease-style
 /// tweens.
 macro_rules! declare_in_out_tween {
-    ($name:ident, $update:item) => {
+    (
+        $(#[$struct_meta:meta])*
+        pub struct $name:ident;
+
+        $update:item
+    ) => {
+        $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
             range: RangeInclusive<TValue>,

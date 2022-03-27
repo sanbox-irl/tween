@@ -2,7 +2,8 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
-    ExpoIn,
+    pub struct ExpoIn;
+
     fn update(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
             *self.range.start()
@@ -16,7 +17,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    ExpoOut,
+    pub struct ExpoOut;
+
     fn update(&mut self, new_time: T) -> V {
         if new_time == self.duration {
             *self.range.end()
@@ -31,7 +33,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    ExpoInOut,
+    pub struct ExpoInOut;
+
     fn update(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
             return *self.range.start();

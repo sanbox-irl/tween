@@ -10,7 +10,8 @@ const BACK_CONST: f64 = 1.70158;
 const BACK_IN_OUT_CONST: f64 = BACK_CONST * 1.525;
 
 declare_tween!(
-    BackIn,
+    pub struct BackIn;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
         let scalar = t * t * ((BACK_CONST + 1.0) * t - BACK_CONST);
@@ -22,7 +23,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    BackOut,
+    pub struct BackOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) - 1.0;
         let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
@@ -34,7 +36,8 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
-    BackInOut,
+    pub struct BackInOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) * 2.0;
 

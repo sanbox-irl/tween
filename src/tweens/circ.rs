@@ -2,7 +2,8 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
-    CircIn,
+    pub struct CircIn;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
         let scalar = 1.0 - (1.0 - t * t).sqrt();
@@ -13,7 +14,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    CircOut,
+    pub struct CircOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) - 1.0;
 
@@ -25,7 +27,8 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
-    CircInOut,
+    pub struct CircInOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) * 2.0;
 

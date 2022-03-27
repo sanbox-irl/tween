@@ -2,7 +2,8 @@ use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
 declare_tween!(
-    QuadIn,
+    pub struct QuadIn;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time * percent_time);
@@ -12,7 +13,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    QuadOut,
+    pub struct QuadOut;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self
@@ -25,7 +27,8 @@ declare_tween!(
 );
 
 declare_in_out_tween!(
-    QuadInOut,
+    pub struct QuadInOut;
+
     fn update(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time) * 2.0;
 

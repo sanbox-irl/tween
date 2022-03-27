@@ -7,7 +7,8 @@ const STAGE_ONE: f64 = 2.0 / 2.75;
 const STAGE_TWO: f64 = 2.5 / 2.75;
 
 declare_tween!(
-    BounceIn,
+    pub struct BounceIn;
+
     fn update(&mut self, new_time: T) -> V {
         let v = {
             let t = T::percent(self.duration, self.duration.sub(new_time));
@@ -34,7 +35,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    BounceOut,
+    pub struct BounceOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
@@ -57,7 +59,8 @@ declare_tween!(
 );
 
 declare_tween!(
-    BounceInOut,
+    pub struct BounceInOut;
+
     fn update(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
