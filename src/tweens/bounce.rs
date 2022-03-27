@@ -1,15 +1,15 @@
 use crate::{Tween, TweenTime, TweenValue};
 use std::ops::RangeInclusive;
 
+const MAGIC: f64 = 7.5625;
+const STAGE_ZERO: f64 = 1.0 / 2.75;
+const STAGE_ONE: f64 = 2.0 / 2.75;
+const STAGE_TWO: f64 = 2.5 / 2.75;
+
 declare_tween!(
     BounceIn,
     fn update(&mut self, new_time: T) -> V {
         let v = {
-            const MAGIC: f64 = 7.5625;
-            const STAGE_ZERO: f64 = 1.0 / 2.75;
-            const STAGE_ONE: f64 = 2.0 / 2.75;
-            const STAGE_TWO: f64 = 2.5 / 2.75;
-
             let t = T::percent(self.duration, self.duration.sub(new_time));
 
             let multip = if t < STAGE_ZERO {
@@ -36,11 +36,6 @@ declare_tween!(
 declare_tween!(
     BounceOut,
     fn update(&mut self, new_time: T) -> V {
-        const MAGIC: f64 = 7.5625;
-        const STAGE_ZERO: f64 = 1.0 / 2.75;
-        const STAGE_ONE: f64 = 2.0 / 2.75;
-        const STAGE_TWO: f64 = 2.5 / 2.75;
-
         let t = T::percent(self.duration, new_time);
 
         let multip = if t < STAGE_ZERO {
@@ -64,11 +59,6 @@ declare_tween!(
 declare_tween!(
     BounceInOut,
     fn update(&mut self, new_time: T) -> V {
-        const MAGIC: f64 = 7.5625;
-        const STAGE_ZERO: f64 = 1.0 / 2.75;
-        const STAGE_ONE: f64 = 2.0 / 2.75;
-        const STAGE_TWO: f64 = 2.5 / 2.75;
-
         let t = T::percent(self.duration, new_time);
 
         if t < 0.5 {
