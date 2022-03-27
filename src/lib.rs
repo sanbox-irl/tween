@@ -1,3 +1,8 @@
+#![doc = include_str!("../README.md")]
+#![deny(rust_2018_idioms)]
+// #![deny(missing_docs)]
+#![deny(rustdoc::all)]
+
 #[macro_use]
 mod macros;
 
@@ -11,15 +16,22 @@ use std::ops::RangeInclusive;
 
 /// This is the core trait of the Library, which all `tweens` implement.
 ///
-/// If you choose to use a Tween directly, rather than through a `DeltaTweener`
-/// or `FixedDeltaTweener`, you'll rarely deal with this directly.
+/// If you choose to use a Tween directly, rather than through a [DeltaTweener]
+/// or [FixedDeltaTweener], you'll rarely deal with this directly.
 pub trait Tween: Sized {
+    /// This is the value which we tween over time.
     type Value: TweenValue;
+    /// This is the kind of Time we use. For most users, it will be an `f32` or
+    /// similar simple number.
     type Time: TweenTime;
 
+    /// Update the given Tween with a new time.
     fn update(&mut self, new_time: Self::Time) -> Self::Value;
 
+    /// Get a reference to the Tween's range.
     fn range(&self) -> &RangeInclusive<Self::Value>;
+
+    /// Get a reference to the Tween's total duration.
     fn duration(&self) -> Self::Time;
 
     // fn to_fixed_tweener(
@@ -39,10 +51,19 @@ pub trait Tween: Sized {
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
 /// if that is needed for your workflow.
 pub trait TweenValue: Copy {
+    /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
 
+    /// This should be implemented as a simple subtraction. For f32, for example,
+    /// it's implemented as just `destination - start`.
     fn calculate_delta(destination: Self, start: Self) -> Self;
+
+    /// This should be implemented as a simple addition. For f32, for example,
+    /// it's implemented as `self + other`.
     fn add(self, other: Self) -> Self;
+
+    /// This should be implemented as a simple multiplication. For f32, for example,
+    /// it's implemented as `(self as f64 * scale) as f32`.
     fn scale(self, scale: f64) -> Self;
 }
 
@@ -55,12 +76,22 @@ pub trait TweenValue: Copy {
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
 /// if that is needed for your workflow.
 pub trait TweenTime: Copy + PartialEq {
+    /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
+    /// This should be implemented as a simple division. For f32, for example,
+    /// it's implemented as `(current_time / duration) as f64`.
     fn percent(duration: Self, current_time: Self) -> f64;
+    /// Converts the self to an `f64`.
     fn as_f64(self) -> f64;
+    /// Adds `self` to `other`. This should be implemented as simple addition.
     fn add(self, other: Self) -> Self;
+    /// Subtracts `self` from `other`. This should be implemented as a simple
+    /// subtraction, such as `self - other`. Notice the order.
     fn sub(self, other: Self) -> Self;
+    /// This is implemented as a simple multipler, such as `self * multiplier`.
     fn scale(self, multiplier: f64) -> Self;
+    /// This checks if a given time is greater than another time. For f32, for example,
+    /// it's implemented as `self >= duration`.
     fn is_complete(self, duration: Self) -> bool;
 }
 

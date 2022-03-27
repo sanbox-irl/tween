@@ -2,19 +2,41 @@ use std::marker::PhantomData;
 
 use crate::{Tween, TweenTime, TweenValue};
 
-pub struct DeltaTweener<Tween, TValue, TTime> {
+/// A delta tweener is "drives" a tween for you, allowing
+/// you to provide *deltas* in time, rather than new time values.
+///
+/// This can be significantly easier as a user in a variadic time loop
+/// (ie, you loop as fast as you can), since you can now just provide a delta
+/// time as a fixed time.
+///
+/// If, on the other hand, you use a *fixed* time loop, see [FixedTweener],
+/// which provides a simpler interface, and implements Iterator.
+///
+/// ```
+/// # use tween::{Tweener, Linear};
+///
+/// // a tween which takes 10 ticks, and moves a value from 0 to 10.
+/// let mut delta_tweener = Tweener::new(Linear::new(0..=10, 10));
+///
+/// assert_eq!(delta_tweener.update(1), Some(1)); // one tick
+/// assert_eq!(delta_tweener.update(2), Some(3)); // two ticks
+/// assert_eq!(delta_tweener.update(100), Some(10)); // completes the tween, returning end value
+/// assert_eq!(delta_tweener.update(100), None); // tween is done forever now.
+/// ```
+pub struct Tweener<Tween, TValue, TTime> {
     tween: Tween,
     last_time: TTime,
     fused: bool,
     _value: PhantomData<fn(&mut Self, TTime) -> TValue>,
 }
 
-impl<T, TValue, TTime> DeltaTweener<T, TValue, TTime>
+impl<T, TValue, TTime> Tweener<T, TValue, TTime>
 where
     TValue: TweenValue,
     TTime: TweenTime,
     T: Tween<Time = TTime, Value = TValue>,
 {
+    /// Creates a new [Tweener] out of an existing tween.
     pub fn new(tween: T) -> Self {
         Self {
             tween,
@@ -25,6 +47,10 @@ where
         }
     }
 
+    /// Drives the [Tweener] forward X steps in time.
+    ///
+    /// If an input higher than the tween's `duration` is given, you will
+    /// receive the max value of the tween.
     pub fn update(&mut self, delta: TTime) -> Option<TValue> {
         if !self.fused {
             self.last_time = self.last_time.add(delta);
@@ -40,12 +66,15 @@ where
         }
     }
 
+    /// Converts this tweener to a [Looper].
     pub fn looper(self) -> Looper<T, TValue, TTime> {
         Looper::new(self)
     }
 }
 
-pub struct Looper<T, TValue, TTime>(DeltaTweener<T, TValue, TTime>);
+/// A [Looper] is a wrapper around a [Tweener], which makes it so that
+/// every time the tweener *would*
+pub struct Looper<T, TValue, TTime>(Tweener<T, TValue, TTime>);
 
 impl<T, TValue, TTime> Looper<T, TValue, TTime>
 where
@@ -53,10 +82,23 @@ where
     TTime: TweenTime,
     T: Tween<Time = TTime, Value = TValue>,
 {
-    pub fn new(delta_tweener: DeltaTweener<T, TValue, TTime>) -> Self {
+    /// Creates a new Looper around a [Tweener].
+    ///
+    /// If the [Tweener] is *already* fused, this will reset it to starting
+    /// values.
+    pub fn new(mut delta_tweener: Tweener<T, TValue, TTime>) -> Self {
+        // unfuse it...
+        if delta_tweener.fused {
+            delta_tweener.last_time = TTime::ZERO;
+            delta_tweener.fused = false;
+        }
+
         Self(delta_tweener)
     }
 
+    /// Drives the inner [Tweener] forward X steps in time, looping if required.
+    ///
+    /// If the delta given is great enough, you may loop around several times.
     pub fn update(&mut self, delta: TTime) -> Option<TValue> {
         let output = self.0.update(delta).unwrap(); // we make sure this ALWAYS returns `some`.
 
@@ -70,7 +112,9 @@ where
     }
 }
 
-pub struct FixedDeltaTweener<Tween, TValue, TTime> {
+/// A Fixed tweener "drives" a tween for you, allowing
+/// you to provide *deltas* in time, rather than new time values.
+pub struct FixedTweener<Tween, TValue, TTime> {
     tween: Tween,
     last_time: TTime,
     delta: TTime,
@@ -78,7 +122,7 @@ pub struct FixedDeltaTweener<Tween, TValue, TTime> {
     _value: PhantomData<fn(&mut Self, TTime) -> TValue>,
 }
 
-impl<T, TValue, TTime> FixedDeltaTweener<T, TValue, TTime>
+impl<T, TValue, TTime> FixedTweener<T, TValue, TTime>
 where
     T: Tween,
     TValue: TweenValue,
@@ -100,7 +144,7 @@ where
     }
 }
 
-impl<T, TValue, TTime> Iterator for FixedDeltaTweener<T, TValue, TTime>
+impl<T, TValue, TTime> Iterator for FixedTweener<T, TValue, TTime>
 where
     TValue: TweenValue,
     TTime: TweenTime,
@@ -124,7 +168,7 @@ where
     }
 }
 
-pub struct FixedLooper<T, TValue, TTime>(FixedDeltaTweener<T, TValue, TTime>);
+pub struct FixedLooper<T, TValue, TTime>(FixedTweener<T, TValue, TTime>);
 
 impl<T, TValue, TTime> FixedLooper<T, TValue, TTime>
 where
@@ -132,7 +176,7 @@ where
     TValue: TweenValue,
     TTime: TweenTime,
 {
-    pub fn new(fixed_delta_tweener: FixedDeltaTweener<T, TValue, TTime>) -> Self {
+    pub fn new(fixed_delta_tweener: FixedTweener<T, TValue, TTime>) -> Self {
         Self(fixed_delta_tweener)
     }
 }
@@ -165,7 +209,7 @@ mod tests {
 
     #[test]
     fn tweener() {
-        let tweener = FixedDeltaTweener::new(Linear::new(0..=100, 10), 1);
+        let tweener = FixedTweener::new(Linear::new(0..=100, 10), 1);
         let values: Vec<_> = tweener.collect();
 
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
@@ -173,7 +217,7 @@ mod tests {
 
     #[test]
     fn fixed_tweener_loop() {
-        let mut looper = FixedDeltaTweener::new(Linear::new(0..=2, 2), 1).looper();
+        let mut looper = FixedTweener::new(Linear::new(0..=2, 2), 1).looper();
 
         assert_eq!(looper.next().unwrap(), 1);
         assert_eq!(looper.next().unwrap(), 2);
@@ -183,7 +227,7 @@ mod tests {
 
     #[test]
     fn tweener_loop() {
-        let mut looper = DeltaTweener::new(Linear::new(0..=2, 2)).looper();
+        let mut looper = Tweener::new(Linear::new(0..=2, 2)).looper();
 
         assert_eq!(looper.update(1).unwrap(), 1);
         assert_eq!(looper.update(1).unwrap(), 2);
