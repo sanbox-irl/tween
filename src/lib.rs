@@ -48,8 +48,8 @@ pub trait Tween: Sized {
 /// If you want to implement your own values to be tweened (for example, your favorite color lib),
 /// then you'll need to implement this trait.
 ///
-/// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
-/// if that is needed for your workflow.
+/// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
+/// issue if that is needed for your workflow.
 pub trait TweenValue: Copy {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
@@ -73,8 +73,8 @@ pub trait TweenValue: Copy {
 /// If you want to implement your own time for duration, then you'll need to implement this
 /// trait somewhere.
 ///
-/// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an issue
-/// if that is needed for your workflow.
+/// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
+/// issue if that is needed for your workflow.
 pub trait TweenTime: Copy + PartialEq {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
