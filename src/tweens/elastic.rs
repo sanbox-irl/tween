@@ -1,5 +1,5 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::{f64::consts::PI, ops::RangeInclusive};
+use core::{f64::consts::PI, ops::RangeInclusive};
 
 /// An elastic tween in. Go [here](https://easings.net/#easeInElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
@@ -38,7 +38,7 @@ where
     type Value = V;
     type Time = T;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
         if t == 0.0 {
@@ -51,10 +51,22 @@ where
 
         let t: f64 = t - 1.0;
 
-        let post_fix = self.value_delta.scale(2f64.powf(t * 10.0));
+        #[cfg(feature = "libm")]
+        let scalar = libm::pow(2.0, t * 10.0);
+
+        #[cfg(feature = "std")]
+        let scalar = 2f64.powf(t * 10.0);
+
+        let post_fix = self.value_delta.scale(scalar);
         let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.three_tenths;
 
-        post_fix.scale(-temp.sin()).add(*self.range.start())
+        #[cfg(feature = "libm")]
+        let scalar = -libm::sin(temp);
+
+        #[cfg(feature = "std")]
+        let scalar = -temp.sin();
+
+        post_fix.scale(scalar).add(*self.range.start())
     }
 
     fn range(&self) -> &RangeInclusive<V> {
@@ -103,7 +115,7 @@ where
     type Value = V;
     type Time = T;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
         if t == 0.0 {
@@ -116,8 +128,14 @@ where
 
         let temp = (t * self.duration.as_f64() - self.s) * (2.0 * PI) / self.three_tenths;
 
+        #[cfg(feature = "libm")]
+        let scalar = libm::pow(2.0, -10.0 * t) * libm::sin(temp);
+
+        #[cfg(feature = "std")]
+        let scalar = 2f64.powf(-10.0 * t) * temp.sin();
+
         self.value_delta
-            .scale(2f64.powf(-10.0 * t) * temp.sin())
+            .scale(scalar)
             .add(self.value_delta)
             .add(*self.range.start())
     }
@@ -168,7 +186,7 @@ where
     type Value = V;
     type Time = T;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) * 2.0;
 
         if t == 0.0 {
@@ -181,13 +199,39 @@ where
 
         let t = t - 1.0;
         if t < 0.0 {
-            let post_fix = self.value_delta.scale(2f64.powf(10.0 * t));
+            #[cfg(feature = "libm")]
+            let scalar = libm::pow(2.0, t * 10.0);
+
+            #[cfg(feature = "std")]
+            let scalar = 2f64.powf(t * 10.0);
+
+            let post_fix = self.value_delta.scale(scalar);
             let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.p;
-            post_fix.scale(-0.5 * temp.sin()).add(*self.range.start())
+
+            #[cfg(feature = "libm")]
+            let temp_sin = libm::sin(temp);
+
+            #[cfg(feature = "std")]
+            let temp_sin = temp.sin();
+
+            post_fix.scale(-0.5 * temp_sin).add(*self.range.start())
         } else {
-            let post_fix = self.value_delta.scale(2f64.powf(-10.0 * t));
+            #[cfg(feature = "libm")]
+            let scalar = libm::pow(2.0, t * -10.0);
+
+            #[cfg(feature = "std")]
+            let scalar = 2f64.powf(-10.0 * t);
+
+            let post_fix = self.value_delta.scale(scalar);
             let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.p;
-            post_fix.scale(temp.sin() * 0.5).add(*self.range.end())
+
+            #[cfg(feature = "libm")]
+            let temp_sin = libm::sin(temp);
+
+            #[cfg(feature = "std")]
+            let temp_sin = temp.sin();
+
+            post_fix.scale(temp_sin * 0.5).add(*self.range.end())
         }
     }
 
@@ -214,7 +258,7 @@ mod tests {
             let time = time as f64;
             println!("t = {}", time);
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Elastic::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -228,7 +272,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Elastic::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -242,7 +286,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let our_value = tweener.update(time);
+            let our_value = tweener.run(time);
             let easer = Elastic::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(our_value, easer);

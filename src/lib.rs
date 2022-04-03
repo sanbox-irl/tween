@@ -2,6 +2,11 @@
 #![deny(rust_2018_idioms)]
 #![deny(missing_docs)]
 #![deny(rustdoc::all)]
+#![no_std]
+
+#[cfg(any(feature = "std", test))]
+#[macro_use]
+extern crate std;
 
 #[macro_use]
 mod macros;
@@ -12,7 +17,7 @@ mod tweens;
 pub use tweener::*;
 pub use tweens::*;
 
-use std::ops::RangeInclusive;
+use core::ops::RangeInclusive;
 
 /// This is the core trait of the Library, which all `tweens` implement.
 ///
@@ -25,8 +30,8 @@ pub trait Tween: Sized {
     /// similar simple number.
     type Time: TweenTime;
 
-    /// Update the given Tween with a new time.
-    fn update(&mut self, new_time: Self::Time) -> Self::Value;
+    /// Run the given Tween with a new time.
+    fn run(&mut self, new_time: Self::Time) -> Self::Value;
 
     /// Get a reference to the Tween's range.
     fn range(&self) -> &RangeInclusive<Self::Value>;

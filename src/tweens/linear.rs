@@ -1,11 +1,11 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::ops::RangeInclusive;
+use core::ops::RangeInclusive;
 
 declare_tween!(
     /// A Linear tween is a simple lerp from one value to another.
     pub struct Linear;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time);
 
@@ -24,7 +24,7 @@ mod tests {
         let mut tweener = Linear::new(value..=100.0, 10);
 
         for val in 1..=10 {
-            value = tweener.update(val);
+            value = tweener.run(val);
             assert_ulps_eq!(value, val as f32 * 10.0);
         }
     }

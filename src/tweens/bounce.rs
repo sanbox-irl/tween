@@ -1,5 +1,5 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::ops::RangeInclusive;
+use core::ops::RangeInclusive;
 
 const MAGIC: f64 = 7.5625;
 const STAGE_ZERO: f64 = 1.0 / 2.75;
@@ -10,7 +10,7 @@ declare_tween!(
     /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeInBounce) for a visual demonstration.
     pub struct BounceIn;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let v = {
             let t = T::percent(self.duration, self.duration.sub(new_time));
 
@@ -39,7 +39,7 @@ declare_tween!(
     /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeOutBounce) for a visual demonstration.
     pub struct BounceOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
         let multip = if t < STAGE_ZERO {
@@ -64,7 +64,7 @@ declare_tween!(
     /// An bouncy tween, similar to gravity. Go [here](https://easings.net/#easeInOutBounce) for a visual demonstration.
     pub struct BounceInOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
         if t < 0.5 {
@@ -131,7 +131,7 @@ mod tests {
             let time = time as f64;
             println!("t = {}", time);
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Bounce::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -145,7 +145,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Bounce::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -160,7 +160,7 @@ mod tests {
             println!("time = {time}");
             let time = time as f64;
 
-            let our_value = tweener.update(time);
+            let our_value = tweener.run(time);
             let easer = Bounce::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(our_value, easer);

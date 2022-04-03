@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 use crate::{Tween, TweenTime, TweenValue};
 
@@ -59,7 +59,7 @@ where
                 self.fused = true;
                 Some(*self.tween.range().end())
             } else {
-                Some(self.tween.update(self.last_time))
+                Some(self.tween.run(self.last_time))
             }
         } else {
             None
@@ -181,7 +181,7 @@ where
                 self.fused = true;
                 Some(*self.tween.range().end())
             } else {
-                Some(self.tween.update(self.last_time))
+                Some(self.tween.run(self.last_time))
             }
         } else {
             None
@@ -241,7 +241,7 @@ mod tests {
     #[test]
     fn tweener() {
         let tweener = FixedTweener::new(Linear::new(0..=100, 10), 1);
-        let values: Vec<_> = tweener.collect();
+        let values: std::vec::Vec<_> = tweener.collect();
 
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
     }

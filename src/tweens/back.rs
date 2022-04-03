@@ -1,5 +1,5 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::ops::RangeInclusive;
+use core::ops::RangeInclusive;
 
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
@@ -13,7 +13,7 @@ declare_tween!(
     /// An tween that goes out and then back in a bit. Go [here](https://easings.net/#easeInBack) for a visual demonstration.
     pub struct BackIn;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
         let scalar = t * t * ((BACK_CONST + 1.0) * t - BACK_CONST);
 
@@ -27,7 +27,7 @@ declare_tween!(
     /// An tween that goes in and then back out a bit. Go [here](https://easings.net/#easeOutBack) for a visual demonstration.
     pub struct BackOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) - 1.0;
         let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
 
@@ -41,7 +41,7 @@ declare_in_out_tween!(
     /// An tween that goes out, in, and then back in and out a bit. Go [here](https://easings.net/#easeInOutBack) for a visual demonstration.
     pub struct BackInOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) * 2.0;
 
         let scalar = if t < 1.0 {
@@ -71,7 +71,7 @@ mod tests {
             let time = time as f64;
             println!("t = {}", time);
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Back::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -85,7 +85,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = Back::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -99,7 +99,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let our_value = tweener.update(time);
+            let our_value = tweener.run(time);
             let easer = Back::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(our_value, easer);

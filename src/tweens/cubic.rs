@@ -1,11 +1,11 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::ops::RangeInclusive;
+use core::ops::RangeInclusive;
 
 declare_tween!(
     /// A cubic tween in. Go [here](https://easings.net/#easeInCubic) for a visual demonstration.
     pub struct CubicIn;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time * percent_time * percent_time);
 
@@ -17,7 +17,7 @@ declare_tween!(
     /// A cubic tween out. Go [here](https://easings.net/#easeOutCubic) for a visual demonstration.
     pub struct CubicOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time) - 1.0;
         let new_value = self.value_delta.scale(percent_time * percent_time * percent_time + 1.0);
 
@@ -29,7 +29,7 @@ declare_in_out_tween!(
     /// A cubic tween in and out. Go [here](https://easings.net/#easeInOutCubic) for a visual demonstration.
     pub struct CubicInOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time) * 2.0;
 
         let scalar = if percent_time < 1.0 {
@@ -57,7 +57,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = EaseCubic::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -71,7 +71,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = EaseCubic::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -85,7 +85,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let our_value = tweener.update(time);
+            let our_value = tweener.run(time);
             let easer = EaseCubic::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(our_value, easer);

@@ -132,6 +132,14 @@ macro_rules! declare_tween {
                     duration,
                 }
             }
+
+            /// Run the given Tween with a new time.
+            pub fn run(&mut self, new_time: <Self as Tween>::Time) -> <Self as Tween>::Value {
+                // we pass this through so that we don't require users to (annoyingly) import
+                // a trait. Inherent methods in traits pls!
+                <Self as Tween>::run(self, new_time)
+            }
+
         }
 
         impl<V, T> Tween for $name<V, T>

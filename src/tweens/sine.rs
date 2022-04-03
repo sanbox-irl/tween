@@ -1,13 +1,19 @@
 use crate::{Tween, TweenTime, TweenValue};
-use std::{f64::consts::PI, ops::RangeInclusive};
+use core::{f64::consts::PI, ops::RangeInclusive};
 
 declare_tween!(
     /// An sine based tween in. Go [here](https://easings.net/#easeInSine) for a visual demonstration.
     pub struct SineIn;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
+
+        #[cfg(feature = "libm")]
+        let time = libm::cos(percent_time * PI / 2.0);
+
+        #[cfg(feature = "std")]
         let time = (percent_time * PI / 2.0).cos();
+
         let new_value = self.value_delta.scale(-time);
 
         new_value.add(*self.range.start()).add(self.value_delta)
@@ -18,9 +24,15 @@ declare_tween!(
     /// An sine based tween out. Go [here](https://easings.net/#easeOutSine) for a visual demonstration.
     pub struct SineOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
+
+        #[cfg(feature = "libm")]
+        let time = libm::sin(percent_time * PI / 2.0);
+
+        #[cfg(feature = "std")]
         let time = (percent_time * PI / 2.0).sin();
+
         let new_value = self.value_delta.scale(time);
 
         new_value.add(*self.range.start())
@@ -31,8 +43,12 @@ declare_tween!(
     /// An sine based tween in out. Go [here](https://easings.net/#easeInOutSine) for a visual demonstration.
     pub struct SineInOut;
 
-    fn update(&mut self, new_time: T) -> V {
+    fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
+        #[cfg(feature = "libm")]
+        let time = libm::cos(percent_time * PI);
+
+        #[cfg(feature = "std")]
         let time = (percent_time * PI).cos() - 1.0;
         let new_value = self.value_delta.scale(-time / 2.0);
 
@@ -53,7 +69,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = EaseSine::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -67,7 +83,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let v = tweener.update(time);
+            let v = tweener.run(time);
             let o = EaseSine::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(v, o);
@@ -81,7 +97,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f32;
 
-            let our_value = tweener.update(time);
+            let our_value = tweener.run(time);
             let easer = EaseSine::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_ulps_eq!(our_value, easer);

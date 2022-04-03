@@ -3,6 +3,13 @@ name = "tween"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["std"]
+std = []
+
+[dependencies]
+libm = { version = "0.2.2", optional = true }
+
 [dev-dependencies]
 approx = "0.5"
 easer = "0.2.1"

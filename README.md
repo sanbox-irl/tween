@@ -6,24 +6,26 @@ This trait exports a trait `Tween`, a variety of structs which implement common 
 
 First, tweens are simple to create:
 
-```rs
+```rust
 use tween::SineIn;
 
 let range = 0.0..=200.0;
 let duration = 60;
 
 let mut sine_in = SineIn::new(range, duration);
-let _value0 = sine_in.update(0);
-let _value1 = sine_in.update(1);
-let _value2 = sine_in.update(2);
-let _value3 = sine_in.update(3);
+let _value0 = sine_in.run(0);
+let _value1 = sine_in.run(1);
+let _value2 = sine_in.run(2);
+let _value3 = sine_in.run(3);
 ```
 
-Notice how we work over a RangeInclusive to provide values.
+Notice how we work over a `RangeInclusive` to provide values.
 
-However, as the above example shows, it's more typical that you'll want to simply drive a tween through time, rather than giving arbitrary times within a duration. For that, we use tweeners, which come in two kinds: `Tweener` and `FixedTweener`. For both, users provide *deltas*, rather than arbitrary times. A `FixedTweener` uses just *one* delta (appropriate in a game engine with a Fixed Update pipeline), whereas a `Tweener` can take a fixed delta.
+However, as the above example shows, it's more typical that you'll want to simply drive a tween over time, rather than giving arbitrary times within a duration.
 
-```rs
+For that, we use tweeners, which come in two kinds: `Tweener` and `FixedTweener`. For both, users provide *deltas*, rather than arbitrary times. A `FixedTweener` uses just *one* delta (appropriate in a game engine with a Fixed Update pipeline), whereas a `Tweener` can take a fixed delta.
+
+```rust
 use tween::{SineIn, FixedTweener};
 
 let range = 0.0..=200.0;
@@ -31,11 +33,21 @@ let duration = 60;
 
 let sine_in = SineIn::new(range, duration);
 let delta = 1;
-let sine_in_tweener = FixedTweener::new(sine_in, delta);
+let mut sine_in_tweener = FixedTweener::new(sine_in, delta);
 
-for value in sine_in_tweener {
+let _value0: Option<f32> = sine_in_tweener.next();
+let _value1: Option<f32> = sine_in_tweener.next();
+let _value2: Option<f32> = sine_in_tweener.next();
+let _value3: Option<f32> = sine_in_tweener.next();
+
+// we can finish off the tweener by using the iterator interface.
+// we only use `&mut` here to demonstrate the `None` after this loop, you can just
+// take it by value like normal.
+for value in &mut sine_in_tweener {
     // FixedTweener provides an iterator interface
 }
+
+assert!(sine_in_tweener.next().is_none());
 ```
 
 ## Std Optional
