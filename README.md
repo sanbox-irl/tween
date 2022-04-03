@@ -56,4 +56,4 @@ This library uses `std` with the default feature `std`. Disable default features
 
 ## Generics
 
-This library uses generics heavily. There are two core generics used: `TweenValue` and `TweenTime`. All built-in numeric types implement both traits. For your own code, you can implement either trait. For example, your favorite math library could easily implement `TweenValue`.
+This library uses generics heavily. There are two core generics used: `TweenValue` and `TweenTime`. All built-in numeric types implement both traits. For your own code, you can implement either trait. For example, you could easily implement `TweenValue` for your favorite math library.
