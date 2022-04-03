@@ -46,7 +46,7 @@ declare_tween!(
     fn run(&mut self, new_time: T) -> V {
         let percent_time = T::percent(self.duration, new_time);
         #[cfg(feature = "libm")]
-        let time = libm::cos(percent_time * PI);
+        let time = libm::cos(percent_time * PI) - 1.0;
 
         #[cfg(feature = "std")]
         let time = (percent_time * PI).cos() - 1.0;

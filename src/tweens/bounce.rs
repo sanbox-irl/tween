@@ -129,7 +129,6 @@ mod tests {
 
         for time in 0..=10 {
             let time = time as f64;
-            println!("t = {}", time);
 
             let v = tweener.run(time);
             let o = Bounce::ease_in(time, 0.0, 100.0, 10.0);
@@ -157,7 +156,6 @@ mod tests {
         let mut tweener = BounceInOut::new(0.0..=100.0, 10.0);
 
         for time in 0..=10 {
-            println!("time = {time}");
             let time = time as f64;
 
             let our_value = tweener.run(time);

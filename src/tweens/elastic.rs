@@ -256,7 +256,6 @@ mod tests {
 
         for time in 0..=10 {
             let time = time as f64;
-            println!("t = {}", time);
 
             let v = tweener.run(time);
             let o = Elastic::ease_in(time, 0.0, 100.0, 10.0);

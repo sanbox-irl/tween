@@ -4,7 +4,7 @@
 #![deny(rustdoc::all)]
 #![no_std]
 
-#[cfg(any(feature = "std", test))]
+#[cfg(any(feature = "std"))]
 #[macro_use]
 extern crate std;
 

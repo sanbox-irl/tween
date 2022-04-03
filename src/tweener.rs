@@ -238,6 +238,7 @@ mod tests {
     use super::*;
     use crate::Linear;
 
+    #[cfg(feature = "std")]
     #[test]
     fn tweener() {
         let tweener = FixedTweener::new(Linear::new(0..=100, 10), 1);
