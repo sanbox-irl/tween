@@ -1,0 +1,63 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    env:
+      RUSTFLAGS: -D warnings
+      RUST_BACKTRACE: 1
+    strategy:
+      fail-fast: false
+      matrix:
+        rust:
+          - stable
+        os:
+          - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - run: sudo apt install libxcb-shape0-dev libxcb-xfixes0-dev
+        if: runner.os == 'Linux'
+      # workaround for https://github.com/actions/cache/issues/403
+      - name: Install GNU tar
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install gnu-tar
+          echo PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH" >> $GITHUB_ENV
+      - name: Cache cargo directories
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-cargo-
+      - name: Cache cargo target dirs
+        uses: actions/cache@v2
+        with:
+          path: target
+          # note `cargo test` and `cargo clippy` don't use the same build
+          # artifacts, so this has a different key
+          key: ${{ runner.os }}-target-test-${{ matrix.rust }}-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-target-test-${{ matrix.rust }}-${{ hashFiles('**/Cargo.toml') }}
+            ${{ runner.os }}-target-test-${{ matrix.rust }}-
+
+      - name: test
+        run: cargo test
+
+      - name: test libm
+        run: cargo test --no-default-features --features=libm
