@@ -66,51 +66,51 @@ where
         }
     }
 
-    /// Converts this tweener to a [Looper].
-    pub fn looper(self) -> Looper<T, TValue, TTime> {
-        Looper::new(self)
-    }
+    // /// Converts this tweener to a [Looper].
+    // pub fn looper(self) -> Looper<T, TValue, TTime> {
+    //     Looper::new(self)
+    // }
 }
 
-/// A [Looper] is a wrapper around a [Tweener], which makes it so that
-/// every time the tweener *would*
-pub struct Looper<T, TValue, TTime>(Tweener<T, TValue, TTime>);
+// /// A [Looper] is a wrapper around a [Tweener], which makes it so that
+// /// every time the tweener *would*
+// pub struct Looper<T, TValue, TTime>(Tweener<T, TValue, TTime>);
 
-impl<T, TValue, TTime> Looper<T, TValue, TTime>
-where
-    TValue: TweenValue,
-    TTime: TweenTime,
-    T: Tween<Time = TTime, Value = TValue>,
-{
-    /// Creates a new Looper around a [Tweener].
-    ///
-    /// If the [Tweener] is *already* fused, this will reset it to starting
-    /// values.
-    pub fn new(mut delta_tweener: Tweener<T, TValue, TTime>) -> Self {
-        // unfuse it...
-        if delta_tweener.fused {
-            delta_tweener.last_time = TTime::ZERO;
-            delta_tweener.fused = false;
-        }
+// impl<T, TValue, TTime> Looper<T, TValue, TTime>
+// where
+//     TValue: TweenValue,
+//     TTime: TweenTime,
+//     T: Tween<Time = TTime, Value = TValue>,
+// {
+//     /// Creates a new Looper around a [Tweener].
+//     ///
+//     /// If the [Tweener] is *already* fused, this will reset it to starting
+//     /// values.
+//     pub fn new(mut delta_tweener: Tweener<T, TValue, TTime>) -> Self {
+//         // unfuse it...
+//         if delta_tweener.fused {
+//             delta_tweener.last_time = TTime::ZERO;
+//             delta_tweener.fused = false;
+//         }
 
-        Self(delta_tweener)
-    }
+//         Self(delta_tweener)
+//     }
 
-    /// Drives the inner [Tweener] forward X steps in time, looping if required.
-    ///
-    /// If the delta given is great enough, you may loop around several times.
-    pub fn update(&mut self, delta: TTime) -> Option<TValue> {
-        let output = self.0.update(delta).unwrap(); // we make sure this ALWAYS returns `some`.
+//     /// Drives the inner [Tweener] forward X steps in time, looping if required.
+//     ///
+//     /// If the delta given is great enough, you may loop around several times.
+//     pub fn update(&mut self, delta: TTime) -> Option<TValue> {
+//         let output = self.0.update(delta).unwrap(); // we make sure this ALWAYS returns `some`.
 
-        // catch the fused here...
-        if self.0.fused {
-            self.0.last_time = TTime::ZERO;
-            self.0.fused = false;
-        }
+//         // catch the fused here...
+//         if self.0.fused {
+//             self.0.last_time = TTime::ZERO;
+//             self.0.fused = false;
+//         }
 
-        Some(output)
-    }
-}
+//         Some(output)
+//     }
+// }
 
 /// A FixedTweener "drives" a tween for you, allowing you provide *deltas*
 /// instead of concrete values, per call. Moreover, a FixedTweener always works on
@@ -159,10 +159,10 @@ where
         }
     }
 
-    /// Converts this tweener to a [FixedLooper].
-    pub fn looper(self) -> FixedLooper<T, TValue, TTime> {
-        FixedLooper::new(self)
-    }
+    // /// Converts this tweener to a [FixedLooper].
+    // pub fn looper(self) -> FixedLooper<T, TValue, TTime> {
+    //     FixedLooper::new(self)
+    // }
 }
 
 impl<T, TValue, TTime> Iterator for FixedTweener<T, TValue, TTime>
@@ -189,56 +189,56 @@ where
     }
 }
 
-/// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
-/// every time the tweener *would* fuse (end), it instead loops.
-pub struct FixedLooper<T, TValue, TTime>(FixedTweener<T, TValue, TTime>);
+// /// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
+// /// every time the tweener *would* fuse (end), it instead loops.
+// pub struct FixedLooper<T, TValue, TTime>(FixedTweener<T, TValue, TTime>);
 
-impl<T, TValue, TTime> FixedLooper<T, TValue, TTime>
-where
-    T: Tween,
-    TValue: TweenValue,
-    TTime: TweenTime,
-{
-    /// Creates a new FixedLooper. If the tweener is already complete, then it will
-    /// reset it.
-    pub fn new(mut tweener: FixedTweener<T, TValue, TTime>) -> Self {
-        // unfuse it...
-        if tweener.fused {
-            tweener.last_time = TTime::ZERO;
-            tweener.fused = false;
-        }
+// impl<T, TValue, TTime> FixedLooper<T, TValue, TTime>
+// where
+//     T: Tween,
+//     TValue: TweenValue,
+//     TTime: TweenTime,
+// {
+//     /// Creates a new FixedLooper. If the tweener is already complete, then it will
+//     /// reset it.
+//     pub fn new(mut tweener: FixedTweener<T, TValue, TTime>) -> Self {
+//         // unfuse it...
+//         if tweener.fused {
+//             tweener.last_time = TTime::ZERO;
+//             tweener.fused = false;
+//         }
 
-        Self(tweener)
-    }
-}
+//         Self(tweener)
+//     }
+// }
 
-impl<T, TValue, TTime> Iterator for FixedLooper<T, TValue, TTime>
-where
-    TValue: TweenValue,
-    TTime: TweenTime,
-    T: Tween<Time = TTime, Value = TValue>,
-{
-    type Item = TValue;
+// impl<T, TValue, TTime> Iterator for FixedLooper<T, TValue, TTime>
+// where
+//     TValue: TweenValue,
+//     TTime: TweenTime,
+//     T: Tween<Time = TTime, Value = TValue>,
+// {
+//     type Item = TValue;
 
-    fn next(&mut self) -> Option<Self::Item> {
-        let output = self.0.next().unwrap(); // we make sure this ALWAYS returns `some`.
+//     fn next(&mut self) -> Option<Self::Item> {
+//         let output = self.0.next().unwrap(); // we make sure this ALWAYS returns `some`.
 
-        // catch the fused here...
-        if self.0.fused {
-            self.0.last_time = TTime::ZERO;
-            self.0.fused = false;
-        }
+//         // catch the fused here...
+//         if self.0.fused {
+//             self.0.last_time = TTime::ZERO;
+//             self.0.fused = false;
+//         }
 
-        Some(output)
-    }
-}
+//         Some(output)
+//     }
+// }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::Linear;
 
-    #[cfg(feature = "std")]
     #[test]
     fn tweener() {
         let tweener = FixedTweener::new(Linear::new(0..=100, 10), 1);
@@ -247,23 +247,23 @@ mod tests {
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
     }
 
-    #[test]
-    fn fixed_tweener_loop() {
-        let mut looper = FixedTweener::new(Linear::new(0..=2, 2), 1).looper();
+    // #[test]
+    // fn fixed_tweener_loop() {
+    //     let mut looper = FixedTweener::new(Linear::new(0..=2, 2), 1).looper();
 
-        assert_eq!(looper.next().unwrap(), 1);
-        assert_eq!(looper.next().unwrap(), 2);
-        assert_eq!(looper.next().unwrap(), 1);
-        assert_eq!(looper.next().unwrap(), 2);
-    }
+    //     assert_eq!(looper.next().unwrap(), 1);
+    //     assert_eq!(looper.next().unwrap(), 2);
+    //     assert_eq!(looper.next().unwrap(), 1);
+    //     assert_eq!(looper.next().unwrap(), 2);
+    // }
 
-    #[test]
-    fn tweener_loop() {
-        let mut looper = Tweener::new(Linear::new(0..=2, 2)).looper();
+    // #[test]
+    // fn tweener_loop() {
+    //     let mut looper = Tweener::new(Linear::new(0..=2, 2)).looper();
 
-        assert_eq!(looper.update(1).unwrap(), 1);
-        assert_eq!(looper.update(1).unwrap(), 2);
-        assert_eq!(looper.update(1).unwrap(), 1);
-        assert_eq!(looper.update(1).unwrap(), 2);
-    }
+    //     assert_eq!(looper.update(1).unwrap(), 1);
+    //     assert_eq!(looper.update(1).unwrap(), 2);
+    //     assert_eq!(looper.update(1).unwrap(), 1);
+    //     assert_eq!(looper.update(1).unwrap(), 2);
+    // }
 }
