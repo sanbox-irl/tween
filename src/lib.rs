@@ -8,6 +8,11 @@
 #[macro_use]
 extern crate std;
 
+#[cfg(all(not(feature = "std"), not(feature = "libm")))]
+compile_error!(
+    "Please enable feature `libm` (You used `no-default-features`, turning off `std`, but we need `libm` for `f64` math.)"
+);
+
 #[macro_use]
 mod macros;
 
