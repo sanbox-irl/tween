@@ -1,5 +1,9 @@
 # tween
 
+![docs.rs](https://img.shields.io/docsrs/tween)
+![Crates.io](https://img.shields.io/crates/v/tween)
+![Crates.io](https://img.shields.io/crates/l/tween)
+
 `tween` is an std-optional tweening library, designed for use in games and animations.
 
 This trait exports a trait `Tween`, a variety of structs which implement common tweens (such as `Elastic`, `Quart`, etc), and two `Tweeners`, which wrap around tweens, allowing users to drive them trivially.
