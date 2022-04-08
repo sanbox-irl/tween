@@ -19,6 +19,9 @@ mod macros;
 mod tweener;
 mod tweens;
 
+#[cfg(feature = "glam")]
+mod glam;
+
 pub use tweener::*;
 pub use tweens::*;
 

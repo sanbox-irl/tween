@@ -1,6 +1,4 @@
-use core::marker::PhantomData;
-
-use crate::{Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenTime};
 
 /// A delta tweener is "drives" a tween for you, allowing
 /// you to provide *deltas* in time, rather than new time values.
@@ -23,27 +21,22 @@ use crate::{Tween, TweenTime, TweenValue};
 /// assert_eq!(delta_tweener.update(100), Some(10)); // completes the tween, returning end value
 /// assert_eq!(delta_tweener.update(100), None); // tween is done forever now.
 /// ```
-pub struct Tweener<Tween, TValue, TTime> {
-    tween: Tween,
-    last_time: TTime,
+pub struct Tweener<T: Tween> {
+    tween: T,
+    last_time: T::Time,
     fused: bool,
-    _value: PhantomData<fn(&mut Self, TTime) -> TValue>,
 }
 
-impl<T, TValue, TTime> Tweener<T, TValue, TTime>
+impl<T> Tweener<T>
 where
-    TValue: TweenValue,
-    TTime: TweenTime,
-    T: Tween<Time = TTime, Value = TValue>,
+    T: Tween,
 {
     /// Creates a new [Tweener] out of an existing tween.
     pub fn new(tween: T) -> Self {
         Self {
             tween,
-            last_time: TTime::ZERO,
+            last_time: T::Time::ZERO,
             fused: false,
-
-            _value: PhantomData,
         }
     }
 
@@ -51,7 +44,7 @@ where
     ///
     /// If an input higher than the tween's `duration` is given, you will
     /// receive the max value of the tween.
-    pub fn update(&mut self, delta: TTime) -> Option<TValue> {
+    pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
         if !self.fused {
             self.last_time = self.last_time.add(delta);
 
@@ -132,30 +125,25 @@ where
 /// assert_eq!(fixed_tweener.next().unwrap(), 4);
 /// assert_eq!(fixed_tweener.next(), None);
 /// ```
-pub struct FixedTweener<Tween, TValue, TTime> {
-    tween: Tween,
-    last_time: TTime,
-    delta: TTime,
+pub struct FixedTweener<T: Tween> {
+    tween: T,
+    last_time: T::Time,
+    delta: T::Time,
     fused: bool,
-    _value: PhantomData<fn(&mut Self, TTime) -> TValue>,
 }
 
-impl<T, TValue, TTime> FixedTweener<T, TValue, TTime>
+impl<T> FixedTweener<T>
 where
     T: Tween,
-    TValue: TweenValue,
-    TTime: TweenTime,
 {
     /// Creates a new [FixedTweener], and takes in the delta time
     /// it will use per tick.
-    pub fn new(tween: T, delta: TTime) -> Self {
+    pub fn new(tween: T, delta: T::Time) -> Self {
         Self {
             tween,
-            last_time: TTime::ZERO,
+            last_time: T::Time::ZERO,
             delta,
             fused: false,
-
-            _value: PhantomData,
         }
     }
 
@@ -165,13 +153,11 @@ where
     // }
 }
 
-impl<T, TValue, TTime> Iterator for FixedTweener<T, TValue, TTime>
+impl<T> Iterator for FixedTweener<T>
 where
-    TValue: TweenValue,
-    TTime: TweenTime,
-    T: Tween<Time = TTime, Value = TValue>,
+    T: Tween,
 {
-    type Item = TValue;
+    type Item = T::Value;
 
     fn next(&mut self) -> Option<Self::Item> {
         if !self.fused {
