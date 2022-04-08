@@ -147,6 +147,16 @@ where
         }
     }
 
+    /// Allows inspections of a given tween.
+    pub fn tween(&self) -> &T {
+        &self.tween
+    }
+
+    /// The current time of the tween.
+    pub fn current_time(&self) -> T::Time {
+        self.last_time
+    }
+
     // /// Converts this tweener to a [FixedLooper].
     // pub fn looper(self) -> FixedLooper<T, TValue, TTime> {
     //     FixedLooper::new(self)
