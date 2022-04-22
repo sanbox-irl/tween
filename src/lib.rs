@@ -108,6 +108,8 @@ pub trait TweenTime: Copy + PartialEq {
     fn is_complete(self, duration: Self) -> bool;
 }
 
+declare_time!(u8);
+declare_time!(i8);
 declare_time!(i32);
 declare_time!(i64);
 declare_time!(u32);
@@ -119,6 +121,8 @@ declare_time!(float f64);
 
 declare_value!(float f32);
 declare_value!(float f64);
+declare_value!(u8);
+declare_value!(i8);
 declare_value!(i32);
 declare_value!(i64);
 declare_value!(u32);
