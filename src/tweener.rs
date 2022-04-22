@@ -21,6 +21,7 @@ use crate::{Tween, TweenTime};
 /// assert_eq!(delta_tweener.update(100), Some(10)); // completes the tween, returning end value
 /// assert_eq!(delta_tweener.update(100), None); // tween is done forever now.
 /// ```
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
 pub struct Tweener<T: Tween> {
     tween: T,
     last_time: T::Time,
@@ -125,6 +126,7 @@ where
 /// assert_eq!(fixed_tweener.next().unwrap(), 4);
 /// assert_eq!(fixed_tweener.next(), None);
 /// ```
+#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
 pub struct FixedTweener<T: Tween> {
     tween: T,
     last_time: T::Time,
