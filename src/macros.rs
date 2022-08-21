@@ -113,7 +113,8 @@ macro_rules! declare_tween {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
-            range: RangeInclusive<TValue>,
+            initial_value: TValue,
+            final_value: TValue,
             value_delta: TValue,
             duration: TTime,
         }
@@ -124,10 +125,11 @@ macro_rules! declare_tween {
             TTime: TweenTime,
         {
             /// Creates a new tween out of a range with a duration.
-            pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
-                let delta = TValue::calculate_delta(*range.end(), *range.start());
+            pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
+                let delta = TValue::calculate_delta(final_value, initial_value);
                 Self {
-                    range,
+                    initial_value,
+                    final_value,
                     value_delta: delta,
                     duration,
                 }
@@ -139,7 +141,6 @@ macro_rules! declare_tween {
                 // a trait. Inherent methods in traits pls!
                 <Self as Tween>::run(self, new_time)
             }
-
         }
 
         impl<V, T> Tween for $name<V, T>
@@ -152,12 +153,16 @@ macro_rules! declare_tween {
 
             $update
 
-            fn range(&self) -> &RangeInclusive<V> {
-                &self.range
-            }
-
             fn duration(&self) -> T {
                 self.duration
+            }
+
+            fn initial_value(&self) -> V {
+                self.initial_value
+            }
+
+            fn final_value(&self) -> V {
+                self.final_value
             }
         }
     };
@@ -175,7 +180,8 @@ macro_rules! declare_in_out_tween {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
-            range: RangeInclusive<TValue>,
+            initial_value: TValue,
+            final_value: TValue,
             half_delta: TValue,
             duration: TTime,
         }
@@ -186,11 +192,12 @@ macro_rules! declare_in_out_tween {
             TTime: TweenTime,
         {
             /// Creates a new tween out of a range with a duration.
-            pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
-                let value_delta = TValue::calculate_delta(*range.end(), *range.start());
+            pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
+                let value_delta = TValue::calculate_delta(final_value, initial_value);
                 let half_delta = TValue::scale(value_delta, 0.5);
                 Self {
-                    range,
+                    initial_value,
+                    final_value,
                     half_delta,
                     duration,
                 }
@@ -207,12 +214,16 @@ macro_rules! declare_in_out_tween {
 
             $update
 
-            fn range(&self) -> &RangeInclusive<V> {
-                &self.range
-            }
-
             fn duration(&self) -> T {
                 self.duration
+            }
+
+            fn initial_value(&self) -> V {
+                self.initial_value
+            }
+
+            fn final_value(&self) -> V {
+                self.final_value
             }
         }
     };

@@ -1,5 +1,4 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
 
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
@@ -19,7 +18,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -33,7 +32,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -53,7 +52,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -65,7 +64,7 @@ mod tests {
 
     #[test]
     fn tween_in() {
-        let mut tweener = BackIn::new(0.0..=100.0, 10.0);
+        let mut tweener = BackIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -79,7 +78,7 @@ mod tests {
 
     #[test]
     fn tween_out() {
-        let mut tweener = BackOut::new(0.0..=100.0, 10.0);
+        let mut tweener = BackOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -93,7 +92,7 @@ mod tests {
 
     #[test]
     fn tween_in_out() {
-        let mut tweener = BackInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = BackInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;

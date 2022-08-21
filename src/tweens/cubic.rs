@@ -1,5 +1,4 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
 
 declare_tween!(
     /// A cubic tween in. Go [here](https://easings.net/#easeInCubic) for a visual demonstration.
@@ -9,7 +8,7 @@ declare_tween!(
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time * percent_time * percent_time);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -21,7 +20,7 @@ declare_tween!(
         let percent_time = T::percent(self.duration, new_time) - 1.0;
         let new_value = self.value_delta.scale(percent_time * percent_time * percent_time + 1.0);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -40,7 +39,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -52,7 +51,7 @@ mod tests {
 
     #[test]
     fn cubic_in() {
-        let mut tweener = CubicIn::new(0.0..=100.0, 10.0);
+        let mut tweener = CubicIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -66,7 +65,7 @@ mod tests {
 
     #[test]
     fn cubic_out() {
-        let mut tweener = CubicOut::new(0.0..=100.0, 10.0);
+        let mut tweener = CubicOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -80,7 +79,7 @@ mod tests {
 
     #[test]
     fn cubic_in_out() {
-        let mut tweener = CubicInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = CubicInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;

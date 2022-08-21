@@ -25,13 +25,11 @@ mod glam;
 pub use tweener::*;
 pub use tweens::*;
 
-use core::ops::RangeInclusive;
-
 /// This is the core trait of the Library, which all `tweens` implement.
 ///
-/// If you choose to use a Tween directly, rather than through a [DeltaTweener]
+/// Unless you choose to use a Tween directly, rather than through a [DeltaTweener]
 /// or [FixedDeltaTweener], you'll rarely deal with this directly.
-pub trait Tween: Sized {
+pub trait Tween {
     /// This is the value which we tween over time.
     type Value: TweenValue;
     /// This is the kind of Time we use. For most users, it will be an `f32` or
@@ -41,18 +39,14 @@ pub trait Tween: Sized {
     /// Run the given Tween with a new time.
     fn run(&mut self, new_time: Self::Time) -> Self::Value;
 
-    /// Get a reference to the Tween's range.
-    fn range(&self) -> &RangeInclusive<Self::Value>;
+    /// The initial value a tween was set to start at.
+    fn initial_value(&self) -> Self::Value;
+
+    /// The final value the tween should end at.
+    fn final_value(&self) -> Self::Value;
 
     /// Get a reference to the Tween's total duration.
     fn duration(&self) -> Self::Time;
-
-    // fn to_fixed_tweener(
-    //     self,
-    //     delta: Self::TTime,
-    // ) -> FixedDeltaTweener<Self, Self::TValue, Self::TTime> {
-    //     FixedDeltaTweener::new(self, delta)
-    // }
 }
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs

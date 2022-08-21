@@ -1,5 +1,4 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
 
 const MAGIC: f64 = 7.5625;
 const STAGE_ZERO: f64 = 1.0 / 2.75;
@@ -31,7 +30,7 @@ declare_tween!(
             self.value_delta.scale(multip)
         };
 
-        TweenValue::calculate_delta(self.value_delta, v).add(*self.range.start())
+        TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value())
     }
 );
 
@@ -56,7 +55,7 @@ declare_tween!(
             MAGIC * t * t + 0.984375
         };
 
-        self.value_delta.scale(multip).add(*self.range.start())
+        self.value_delta.scale(multip).add(self.initial_value())
     }
 );
 
@@ -90,7 +89,7 @@ declare_tween!(
 
             TweenValue::calculate_delta(self.value_delta, v)
                 .scale(0.5)
-                .add(*self.range.start())
+                .add(self.initial_value())
         } else {
             let t = T::percent(self.duration, new_time.scale(2.0).sub(self.duration));
 
@@ -112,7 +111,7 @@ declare_tween!(
                 .scale(multip)
                 .scale(0.5)
                 .add(self.value_delta.scale(0.5))
-                .add(*self.range.start())
+                .add(self.initial_value())
         }
     }
 );
@@ -125,7 +124,7 @@ mod tests {
 
     #[test]
     fn tween_in() {
-        let mut tweener = BounceIn::new(0.0..=100.0, 10.0);
+        let mut tweener = BounceIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -139,7 +138,7 @@ mod tests {
 
     #[test]
     fn tween_out() {
-        let mut tweener = BounceOut::new(0.0..=100.0, 10.0);
+        let mut tweener = BounceOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -153,7 +152,7 @@ mod tests {
 
     #[test]
     fn tween_in_out() {
-        let mut tweener = BounceInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = BounceInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;

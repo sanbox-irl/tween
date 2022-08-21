@@ -19,17 +19,15 @@ First, tweens are simple to create:
 ```rust
 use tween::SineIn;
 
-let range = 0.0..=200.0;
+let (start, end) = (0.0, 200.0);
 let duration = 60;
 
-let mut sine_in = SineIn::new(range, duration);
+let mut sine_in = SineIn::new(start, end, duration);
 let _value0 = sine_in.run(0);
 let _value1 = sine_in.run(1);
 let _value2 = sine_in.run(2);
 let _value3 = sine_in.run(3);
 ```
-
-Notice how we work over a `RangeInclusive` to provide values.
 
 However, as the above example shows, it's more typical that you'll want to simply drive a tween over time, rather than giving arbitrary times within a duration.
 
@@ -38,10 +36,10 @@ For that, we use tweeners, which come in two kinds: `Tweener` and `FixedTweener`
 ```rust
 use tween::{SineIn, FixedTweener};
 
-let range = 0.0..=200.0;
+let (start, end) = (0.0, 200.0);
 let duration = 60;
 
-let sine_in = SineIn::new(range, duration);
+let sine_in = SineIn::new(start, end, duration);
 let delta = 1;
 let mut sine_in_tweener = FixedTweener::new(sine_in, delta);
 

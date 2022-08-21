@@ -1,5 +1,4 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
 
 declare_tween!(
     /// A circular tween in. Go [here](https://easings.net/#easeInCirc) for a visual demonstration.
@@ -14,7 +13,7 @@ declare_tween!(
         let scalar = 1.0 - (1.0 - t * t).sqrt();
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -33,7 +32,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -65,7 +64,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -77,7 +76,7 @@ mod tests {
 
     #[test]
     fn tween_in() {
-        let mut tweener = CircIn::new(0.0..=100.0, 10.0);
+        let mut tweener = CircIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -91,7 +90,7 @@ mod tests {
 
     #[test]
     fn tween_out() {
-        let mut tweener = CircOut::new(0.0..=100.0, 10.0);
+        let mut tweener = CircOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;
@@ -105,7 +104,7 @@ mod tests {
 
     #[test]
     fn tween_in_out() {
-        let mut tweener = CircInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = CircInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f64;

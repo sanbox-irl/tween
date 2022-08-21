@@ -1,5 +1,4 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
 
 declare_tween!(
     /// An quartic tween in. Go [here](https://easings.net/#easeInQuart) for a visual demonstration.
@@ -11,7 +10,7 @@ declare_tween!(
             .value_delta
             .scale(percent_time * percent_time * percent_time * percent_time);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -25,7 +24,7 @@ declare_tween!(
             .value_delta
             .scale(-(percent_time * percent_time * percent_time * percent_time - 1.0));
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -44,7 +43,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -56,7 +55,7 @@ mod tests {
 
     #[test]
     fn tween_in() {
-        let mut tweener = QuartIn::new(0.0..=100.0, 10.0);
+        let mut tweener = QuartIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -70,7 +69,7 @@ mod tests {
 
     #[test]
     fn tween_out() {
-        let mut tweener = QuartOut::new(0.0..=100.0, 10.0);
+        let mut tweener = QuartOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -84,7 +83,7 @@ mod tests {
 
     #[test]
     fn tween_in_out() {
-        let mut tweener = QuartInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = QuartInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;

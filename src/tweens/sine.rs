@@ -1,5 +1,5 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::{f64::consts::PI, ops::RangeInclusive};
+use core::f64::consts::PI;
 
 declare_tween!(
     /// An sine based tween in. Go [here](https://easings.net/#easeInSine) for a visual demonstration.
@@ -16,7 +16,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(-time);
 
-        new_value.add(*self.range.start()).add(self.value_delta)
+        new_value.add(self.initial_value()).add(self.value_delta)
     }
 );
 
@@ -35,7 +35,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(time);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -52,7 +52,7 @@ declare_tween!(
         let time = (percent_time * PI).cos() - 1.0;
         let new_value = self.value_delta.scale(-time / 2.0);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value())
     }
 );
 
@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn tween_in() {
-        let mut tweener = SineIn::new(0.0..=100.0, 10.0);
+        let mut tweener = SineIn::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn tween_out() {
-        let mut tweener = SineOut::new(0.0..=100.0, 10.0);
+        let mut tweener = SineOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;
@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn tween_in_out() {
-        let mut tweener = SineInOut::new(0.0..=100.0, 10.0);
+        let mut tweener = SineInOut::new(0.0, 100.0, 10.0);
 
         for time in 0..=10 {
             let time = time as f32;

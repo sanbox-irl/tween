@@ -14,7 +14,7 @@ use crate::{Tween, TweenTime};
 /// # use tween::{Tweener, Linear};
 ///
 /// // a tween which takes 10 ticks, and moves a value from 0 to 10.
-/// let mut delta_tweener = Tweener::new(Linear::new(0..=10, 10));
+/// let mut delta_tweener = Tweener::new(Linear::new(0, 10, 10));
 ///
 /// assert_eq!(delta_tweener.update(1), Some(1)); // one tick
 /// assert_eq!(delta_tweener.update(2), Some(3)); // two ticks
@@ -51,7 +51,7 @@ where
 
             if self.last_time.is_complete(self.tween.duration()) {
                 self.fused = true;
-                Some(*self.tween.range().end())
+                Some(self.tween.final_value())
             } else {
                 Some(self.tween.run(self.last_time))
             }
@@ -119,7 +119,7 @@ where
 ///
 /// // we provide a tweener which goes from 0 up to 4, in 4 ticks,
 /// // and we progress it by 1 each time we call it.
-/// let mut fixed_tweener = FixedTweener::new(Linear::new(0..=4, 4), 1);
+/// let mut fixed_tweener = FixedTweener::new(Linear::new(0, 4, 4), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 2);
 /// assert_eq!(fixed_tweener.next().unwrap(), 3);
@@ -177,7 +177,7 @@ where
 
             if self.last_time.is_complete(self.tween.duration()) {
                 self.fused = true;
-                Some(*self.tween.range().end())
+                Some(self.tween.final_value())
             } else {
                 Some(self.tween.run(self.last_time))
             }
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn tweener() {
-        let tweener = FixedTweener::new(Linear::new(0..=100, 10), 1);
+        let tweener = FixedTweener::new(Linear::new(0, 100, 10), 1);
         let values: std::vec::Vec<_> = tweener.collect();
 
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
