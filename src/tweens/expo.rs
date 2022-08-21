@@ -6,7 +6,7 @@ declare_tween!(
 
     fn run(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
-            self.initial_value()
+            self.initial_value
         } else {
             let percent_time = 10.0 * (T::percent(self.duration, new_time) - 1.0);
             #[cfg(feature = "libm")]
@@ -17,7 +17,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(scalar);
 
-            new_value.add(self.initial_value())
+            new_value.add(self.initial_value)
         }
     }
 );
@@ -38,7 +38,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(1.0 - powf);
 
-            new_value.add(self.initial_value())
+            new_value.add(self.initial_value)
         }
     }
 );
@@ -49,7 +49,7 @@ declare_tween!(
 
     fn run(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
-            return self.initial_value();
+            return self.initial_value;
         }
 
         if new_time == self.duration {
@@ -80,7 +80,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(powf);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 

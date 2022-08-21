@@ -30,7 +30,7 @@ declare_tween!(
             self.value_delta.scale(multip)
         };
 
-        TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value())
+        TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value)
     }
 );
 
@@ -55,7 +55,7 @@ declare_tween!(
             MAGIC * t * t + 0.984375
         };
 
-        self.value_delta.scale(multip).add(self.initial_value())
+        self.value_delta.scale(multip).add(self.initial_value)
     }
 );
 
@@ -89,7 +89,7 @@ declare_tween!(
 
             TweenValue::calculate_delta(self.value_delta, v)
                 .scale(0.5)
-                .add(self.initial_value())
+                .add(self.initial_value)
         } else {
             let t = T::percent(self.duration, new_time.scale(2.0).sub(self.duration));
 
@@ -111,7 +111,7 @@ declare_tween!(
                 .scale(multip)
                 .scale(0.5)
                 .add(self.value_delta.scale(0.5))
-                .add(self.initial_value())
+                .add(self.initial_value)
         }
     }
 );

@@ -153,11 +153,11 @@ where
     }
 
     fn initial_value(&self) -> Self::Value {
-        todo!()
+        self.initial_value
     }
 
     fn final_value(&self) -> Self::Value {
-        todo!()
+        self.final_value
     }
 }
 
@@ -254,11 +254,11 @@ where
     }
 
     fn initial_value(&self) -> Self::Value {
-        todo!()
+        self.initial_value
     }
 
     fn final_value(&self) -> Self::Value {
-        todo!()
+        self.final_value
     }
 }
 

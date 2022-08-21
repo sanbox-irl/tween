@@ -8,7 +8,7 @@ declare_tween!(
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 

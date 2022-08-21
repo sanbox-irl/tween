@@ -16,7 +16,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(-time);
 
-        new_value.add(self.initial_value()).add(self.value_delta)
+        new_value.add(self.initial_value).add(self.value_delta)
     }
 );
 
@@ -35,7 +35,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(time);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -52,7 +52,7 @@ declare_tween!(
         let time = (percent_time * PI).cos() - 1.0;
         let new_value = self.value_delta.scale(-time / 2.0);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 

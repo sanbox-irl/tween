@@ -8,7 +8,7 @@ declare_tween!(
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(percent_time * percent_time);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -20,7 +20,7 @@ declare_tween!(
         let percent_time = T::percent(self.duration, new_time);
         let new_value = self.value_delta.scale(-percent_time).scale(percent_time - 2.0);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -40,7 +40,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(self.initial_value())
+        new_value.add(self.initial_value)
     }
 );
 
