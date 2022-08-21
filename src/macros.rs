@@ -228,3 +228,101 @@ macro_rules! declare_in_out_tween {
         }
     };
 }
+
+macro_rules! test_tween {
+    ($name:ident) => {
+        #[cfg(test)]
+        mod test {
+            paste::paste! {
+                use super::*;
+                use approx::assert_relative_eq;
+                use easer::functions::{$name as [<Ease $name>], Easing};
+
+                #[test]
+                fn t_in() {
+                    let mut tweener = [<$name In>]::new(0.0, 100.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_rev() {
+                    let mut tweener = [<$name In>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out() {
+                    let mut tweener = [<$name Out>]::new(0.0, 100.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out_rev() {
+                    let mut tweener = [<$name Out>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_out() {
+                    let mut tweener = [<$name InOut>]::new(0.0, 100.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let our_value = tweener.run(time);
+                        let easer = [<Ease $name>]::ease_in_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(our_value, easer, max_relative = 0.000001);
+                    }
+                }
+
+
+                #[test]
+                fn t_in_out_rev() {
+                    let mut tweener = [<$name InOut>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+            }
+        }
+    };
+}

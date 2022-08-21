@@ -27,4 +27,15 @@ mod tests {
             assert_ulps_eq!(value, val as f32 * 10.0);
         }
     }
+
+    #[test]
+    fn linear_over_frames_rev() {
+        let mut value = 100.0;
+        let mut tweener = Linear::new(value, 0.0, 10);
+
+        for val in 1..=10 {
+            value = tweener.run(val);
+            assert_ulps_eq!(value, 100.0 - val as f32 * 10.0);
+        }
+    }
 }

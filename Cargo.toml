@@ -15,6 +15,7 @@ std = []
 [dependencies]
 libm = { version = "0.2.2", optional = true }
 glam = { version = "0.21", optional = true }
+paste = "1.0.8"
 
 [dev-dependencies]
 approx = "0.5"

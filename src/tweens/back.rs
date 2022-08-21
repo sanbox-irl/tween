@@ -56,51 +56,22 @@ declare_in_out_tween!(
     }
 );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use approx::assert_ulps_eq;
-    use easer::functions::{Back, Easing};
+test_tween!(Back);
 
-    #[test]
-    fn tween_in() {
-        let mut tweener = BackIn::new(0.0, 100.0, 10.0);
+// #[cfg(test)]
+// #[test]
+// fn sigil() {
+//     use approx::assert_ulps_eq;
+//     use easer::functions::{Back as EaseBack, Easing};
 
-        for time in 0..=10 {
-            let time = time as f64;
+//     let mut tweener = BackIn::new(100.0, 0.0, 10.0);
 
-            let v = tweener.run(time);
-            let o = Back::ease_in(time, 0.0, 100.0, 10.0);
+//     for time in 0..=10 {
+//         let time = time as f64;
 
-            assert_ulps_eq!(v, o);
-        }
-    }
+//         let v = tweener.run(time);
+//         let o = EaseBack::ease_in(time, 100.0, -100.0, 10.0);
 
-    #[test]
-    fn tween_out() {
-        let mut tweener = BackOut::new(0.0, 100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Back::ease_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_in_out() {
-        let mut tweener = BackInOut::new(0.0, 100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let our_value = tweener.run(time);
-            let easer = Back::ease_in_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(our_value, easer);
-        }
-    }
-}
+//         assert_ulps_eq!(v, o);
+//     }
+// }
