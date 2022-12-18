@@ -126,13 +126,7 @@ macro_rules! declare_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-                let delta = TValue::calculate_delta(final_value, initial_value);
-                Self {
-                    initial_value,
-                    final_value,
-                    value_delta: delta,
-                    duration,
-                }
+                <Self as $crate::SizedTween>::new(initial_value, final_value, duration)
             }
 
             /// Run the given Tween with a new time.
@@ -165,6 +159,23 @@ macro_rules! declare_tween {
                 self.final_value
             }
         }
+
+        impl<V, T> $crate::SizedTween for $name<V, T>
+        where
+            V: TweenValue,
+            T: TweenTime,
+        {
+            /// Creates a new Tween
+            fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+                let delta = V::calculate_delta(final_value, initial_value);
+                Self {
+                    initial_value,
+                    final_value,
+                    value_delta: delta,
+                    duration,
+                }
+            }
+        }
     };
 }
 
@@ -193,14 +204,7 @@ macro_rules! declare_in_out_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-                let value_delta = TValue::calculate_delta(final_value, initial_value);
-                let half_delta = TValue::scale(value_delta, 0.5);
-                Self {
-                    initial_value,
-                    final_value,
-                    half_delta,
-                    duration,
-                }
+                <Self as $crate::SizedTween>::new(initial_value, final_value, duration)
             }
         }
 
@@ -224,6 +228,24 @@ macro_rules! declare_in_out_tween {
 
             fn final_value(&self) -> V {
                 self.final_value
+            }
+        }
+
+        impl<V, T> $crate::SizedTween for $name<V, T>
+        where
+            V: TweenValue,
+            T: TweenTime,
+        {
+            /// Creates a new Tween
+            fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+                let value_delta = V::calculate_delta(final_value, initial_value);
+                let half_delta = V::scale(value_delta, 0.5);
+                Self {
+                    initial_value,
+                    final_value,
+                    half_delta,
+                    duration,
+                }
             }
         }
     };

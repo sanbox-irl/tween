@@ -57,21 +57,3 @@ declare_in_out_tween!(
 );
 
 test_tween!(Back);
-
-// #[cfg(test)]
-// #[test]
-// fn sigil() {
-//     use approx::assert_ulps_eq;
-//     use easer::functions::{Back as EaseBack, Easing};
-
-//     let mut tweener = BackIn::new(100.0, 0.0, 10.0);
-
-//     for time in 0..=10 {
-//         let time = time as f64;
-
-//         let v = tweener.run(time);
-//         let o = EaseBack::ease_in(time, 100.0, -100.0, 10.0);
-
-//         assert_ulps_eq!(v, o);
-//     }
-// }

@@ -19,16 +19,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        let delta = TValue::calculate_delta(final_value, initial_value);
-        let three_tenths = duration.as_f64() * 0.3;
-        Self {
-            value_delta: delta,
-            duration,
-            three_tenths,
-            s: three_tenths * 0.25,
-            initial_value,
-            final_value,
-        }
+        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
     }
 }
 
@@ -84,6 +75,25 @@ where
     }
 }
 
+impl<V, T> crate::SizedTween for ElasticIn<V, T>
+where
+    V: TweenValue,
+    T: TweenTime,
+{
+    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+        let delta = V::calculate_delta(final_value, initial_value);
+        let three_tenths = duration.as_f64() * 0.3;
+        Self {
+            value_delta: delta,
+            duration,
+            three_tenths,
+            s: three_tenths * 0.25,
+            initial_value,
+            final_value,
+        }
+    }
+}
+
 /// An elastic tween out. Go [here](https://easings.net/#easeOutElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticOut<TValue, TTime> {
@@ -102,16 +112,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        let delta = TValue::calculate_delta(final_value, initial_value);
-        let three_tenths = duration.as_f64() * 0.3;
-        Self {
-            value_delta: delta,
-            duration,
-            three_tenths,
-            s: three_tenths * 0.25,
-            initial_value,
-            final_value,
-        }
+        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
     }
 }
 
@@ -161,6 +162,25 @@ where
     }
 }
 
+impl<V, T> crate::SizedTween for ElasticOut<V, T>
+where
+    V: TweenValue,
+    T: TweenTime,
+{
+    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+        let delta = V::calculate_delta(final_value, initial_value);
+        let three_tenths = duration.as_f64() * 0.3;
+        Self {
+            value_delta: delta,
+            duration,
+            three_tenths,
+            s: three_tenths * 0.25,
+            initial_value,
+            final_value,
+        }
+    }
+}
+
 /// An elastic tween in and out. Go [here](https://easings.net/#easeInOutElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticInOut<TValue, TTime> {
@@ -179,16 +199,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        let delta = TValue::calculate_delta(final_value, initial_value);
-        let p = duration.as_f64() * 0.45;
-        Self {
-            value_delta: delta,
-            duration,
-            p,
-            s: p * 0.25,
-            initial_value,
-            final_value,
-        }
+        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
     }
 }
 
@@ -259,6 +270,25 @@ where
 
     fn final_value(&self) -> Self::Value {
         self.final_value
+    }
+}
+
+impl<V, T> crate::SizedTween for ElasticInOut<V, T>
+where
+    V: TweenValue,
+    T: TweenTime,
+{
+    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+        let delta = V::calculate_delta(final_value, initial_value);
+        let p = duration.as_f64() * 0.45;
+        Self {
+            value_delta: delta,
+            duration,
+            p,
+            s: p * 0.25,
+            initial_value,
+            final_value,
+        }
     }
 }
 
