@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// A circular tween in. Go [here](https://easings.net/#easeInCirc) for a visual demonstration.
     pub struct CircIn;

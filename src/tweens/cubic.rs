@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// A cubic tween in. Go [here](https://easings.net/#easeInCubic) for a visual demonstration.
     pub struct CubicIn;

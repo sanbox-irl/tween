@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// An exponenential tween in. See [here](https://easings.net/#easeInExpo)
     pub struct ExpoIn;

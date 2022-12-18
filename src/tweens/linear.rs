@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// A Linear tween is a simple lerp from one value to another.
     pub struct Linear;

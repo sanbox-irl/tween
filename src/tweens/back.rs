@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
 const BACK_CONST: f64 = 1.70158;

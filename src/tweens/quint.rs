@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// An quintic tween in. Go [here](https://easings.net/#easeInQuint) for a visual demonstration.
     pub struct QuintIn;

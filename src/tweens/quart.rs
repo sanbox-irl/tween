@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 declare_tween!(
     /// An quartic tween in. Go [here](https://easings.net/#easeInQuart) for a visual demonstration.
     pub struct QuartIn;

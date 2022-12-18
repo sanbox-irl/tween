@@ -1,5 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-
 const MAGIC: f64 = 7.5625;
 const STAGE_ZERO: f64 = 1.0 / 2.75;
 const STAGE_ONE: f64 = 2.0 / 2.75;
@@ -30,7 +28,7 @@ declare_tween!(
             self.value_delta.scale(multip)
         };
 
-        TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value)
+        crate::TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value)
     }
 );
 
@@ -87,7 +85,7 @@ declare_tween!(
                 self.value_delta.scale(multip)
             };
 
-            TweenValue::calculate_delta(self.value_delta, v)
+            crate::TweenValue::calculate_delta(self.value_delta, v)
                 .scale(0.5)
                 .add(self.initial_value)
         } else {
