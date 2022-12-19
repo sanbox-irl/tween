@@ -1,5 +1,11 @@
 use crate::{Tween, TweenTime};
 
+mod looper;
+mod oscillator;
+
+pub use looper::{FixedLooper, Looper};
+pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
+
 /// A delta tweener is "drives" a tween for you, allowing
 /// you to provide *deltas* in time, rather than new time values.
 ///
@@ -66,44 +72,6 @@ where
     }
 }
 
-/// A [Looper] is a wrapper around a [Tweener], which makes it so that
-/// every time the tweener *would*
-pub struct Looper<T: Tween>(Tweener<T>);
-
-impl<T> Looper<T>
-where
-    T: Tween,
-{
-    /// Creates a new Looper around a [Tweener].
-    ///
-    /// If the [Tweener] is *already* fused, this will reset it to starting
-    /// values.
-    pub fn new(mut delta_tweener: Tweener<T>) -> Self {
-        // unfuse it...
-        if delta_tweener.fused {
-            delta_tweener.last_time = T::Time::ZERO;
-            delta_tweener.fused = false;
-        }
-
-        Self(delta_tweener)
-    }
-
-    /// Drives the inner [Tweener] forward X steps in time, looping if required.
-    ///
-    /// If the delta given is great enough, you may loop around several times.
-    pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
-        let output = self.0.update(delta).unwrap(); // we make sure this ALWAYS returns `some`.
-
-        // catch the fused here...
-        if self.0.fused {
-            self.0.last_time = T::Time::ZERO;
-            self.0.fused = false;
-        }
-
-        Some(output)
-    }
-}
-
 /// A FixedTweener "drives" a tween for you, allowing you provide *deltas*
 /// instead of concrete values, per call. Moreover, a FixedTweener always works on
 /// the same delta per `update`, rather than allowing for a variable delta. If you need a variable
@@ -161,6 +129,30 @@ where
     pub fn looper(self) -> FixedLooper<T> {
         FixedLooper::new(self)
     }
+
+    /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween. If
+    /// either tweener is complete, then they will be reset.
+    ///
+    /// Use `oscillator` to automatically generate an inverse `falling` tween.
+    ///
+    /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
+    pub fn oscillator_with(self, other: Self) -> FixedOscillator<T> {
+        FixedOscillator::with_falling(self, other)
+    }
+}
+
+impl<T> FixedTweener<T>
+where
+    T: crate::SizedTween,
+{
+    /// Creates a new FixedOscillator. If the tweener is already complete, then it will
+    /// reset it, and creates a backwards copy of the tween.
+    ///
+    /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
+    /// be the `falling` tween.
+    pub fn oscillator(self) -> FixedOscillator<T> {
+        FixedOscillator::new(self)
+    }
 }
 
 impl<T> Iterator for FixedTweener<T>
@@ -182,46 +174,6 @@ where
         } else {
             None
         }
-    }
-}
-
-/// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
-/// every time the tweener *would* fuse (end), it instead loops.
-pub struct FixedLooper<T: Tween>(FixedTweener<T>);
-
-impl<T> FixedLooper<T>
-where
-    T: Tween,
-{
-    /// Creates a new FixedLooper. If the tweener is already complete, then it will
-    /// reset it.
-    pub fn new(mut tweener: FixedTweener<T>) -> Self {
-        // unfuse it...
-        if tweener.fused {
-            tweener.last_time = T::Time::ZERO;
-            tweener.fused = false;
-        }
-
-        Self(tweener)
-    }
-}
-
-impl<T> Iterator for FixedLooper<T>
-where
-    T: Tween,
-{
-    type Item = T::Value;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let output = self.0.next().unwrap(); // we make sure this ALWAYS returns `some`.
-
-        // catch the fused here...
-        if self.0.fused {
-            self.0.last_time = T::Time::ZERO;
-            self.0.fused = false;
-        }
-
-        Some(output)
     }
 }
 
@@ -257,5 +209,43 @@ mod tests {
         assert_eq!(looper.update(1).unwrap(), 2);
         assert_eq!(looper.update(1).unwrap(), 1);
         assert_eq!(looper.update(1).unwrap(), 2);
+    }
+
+    #[test]
+    fn tweener_oscillator() {
+        let mut oscillator = Oscillator::new(Tweener::new(Linear::new(0, 2, 2)));
+
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.update(1).unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.update(1).unwrap(), 2);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.update(1).unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.update(1).unwrap(), 0);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.update(1).unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.update(1).unwrap(), 2);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+    }
+
+    #[test]
+    fn fixed_tweener_oscillator() {
+        let mut oscillator = FixedOscillator::new(FixedTweener::new(Linear::new(0, 2, 2), 1));
+
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.next().unwrap(), 2);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.next().unwrap(), 0);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.next().unwrap(), 2);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
     }
 }
