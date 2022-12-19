@@ -67,7 +67,7 @@ static_assertions::assert_obj_safe!(Tween<Value = i32, Time = f32>);
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenValue: Copy {
+pub trait TweenValue: Copy + PartialEq + std::fmt::Debug {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
 
@@ -92,7 +92,7 @@ pub trait TweenValue: Copy {
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenTime: Copy + PartialEq {
+pub trait TweenTime: Copy + PartialEq + std::fmt::Debug {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
     /// This should be implemented as a simple division. For f32, for example,

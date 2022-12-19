@@ -3,6 +3,7 @@ use crate::{Tween, TweenTime};
 
 /// A [Looper] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would*
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Looper<T: Tween>(Tweener<T>);
 
 impl<T> Looper<T>
@@ -41,6 +42,7 @@ where
 
 /// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
 /// every time the tweener *would* fuse (end), it instead loops.
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct FixedLooper<T: Tween>(FixedTweener<T>);
 
 impl<T> FixedLooper<T>

@@ -5,6 +5,7 @@ use crate::{Tween, TweenTime};
 /// every time the tweener *would* fuse (end), it instead starts reversing back to the start.
 ///
 /// You will always get an end edge on both ends for a tick.
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Oscillator<T: Tween> {
     rising: Tweener<T>,
     falling: Tweener<T>,
@@ -101,40 +102,11 @@ where
     }
 }
 
-// impl<T> Iterator for FixedOscillator<T>
-// where
-//     T: Tween,
-// {
-//     type Item = T::Value;
-
-//     fn next(&mut self) -> Option<Self::Item> {
-//         let tweener = match self.direction {
-//             OscillationDirection::Rising => &mut self.rising,
-//             OscillationDirection::Falling => &mut self.falling,
-//         };
-//         // we make sure this ALWAYS returns `some`.
-//         let output = tweener.next().unwrap();
-
-//         // catch the fused here...
-//         if tweener.fused {
-//             tweener.fused = false;
-//             tweener.last_time = T::Time::ZERO;
-
-//             // and flip our direction...
-//             self.direction = match self.direction {
-//                 OscillationDirection::Rising => OscillationDirection::Falling,
-//                 OscillationDirection::Falling => OscillationDirection::Rising,
-//             }
-//         }
-
-//         Some(output)
-//     }
-// }
-
 /// A [FixedOscillator] is a wrapper around a [FixedTweener], which makes it so that
 /// every time the tweener *would* fuse (end), it instead starts reversing back to the start.
 ///
 /// You will always get an end edge on both ends for a tick.
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct FixedOscillator<T: Tween> {
     rising: FixedTweener<T>,
     falling: FixedTweener<T>,
