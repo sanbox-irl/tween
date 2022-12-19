@@ -1,4 +1,4 @@
-use super::{FixedTweener, Tweener};
+use super::{FixedTweenDriver, TweenDriver};
 use crate::{Tween, TweenTime};
 
 /// An [Oscillator] is a wrapper around a [Tweener], which makes it so that
@@ -7,8 +7,8 @@ use crate::{Tween, TweenTime};
 /// You will always get an end edge on both ends for a tick.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Oscillator<T: Tween> {
-    rising: Tweener<T>,
-    falling: Tweener<T>,
+    rising: TweenDriver<T>,
+    falling: TweenDriver<T>,
     direction: OscillationDirection,
 }
 
@@ -21,14 +21,14 @@ where
     ///
     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
     /// be the `falling` tween.
-    pub fn new(mut rising: Tweener<T>) -> Self {
+    pub fn new(mut rising: TweenDriver<T>) -> Self {
         // unfuse it...
         if rising.fused {
             rising.last_time = T::Time::ZERO;
             rising.fused = false;
         }
 
-        let falling = Tweener::new(T::new(
+        let falling = TweenDriver::new(T::new(
             rising.tween.final_value(),
             rising.tween.initial_value(),
             rising.tween.duration(),
@@ -55,7 +55,7 @@ where
     /// complete, then they will be reset.
     ///
     /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    pub fn with_falling(mut rising: Tweener<T>, mut falling: Tweener<T>) -> Self {
+    pub fn with_falling(mut rising: TweenDriver<T>, mut falling: TweenDriver<T>) -> Self {
         // unfuse it...
         if rising.fused {
             rising.last_time = T::Time::ZERO;
@@ -108,8 +108,8 @@ where
 /// You will always get an end edge on both ends for a tick.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct FixedOscillator<T: Tween> {
-    rising: FixedTweener<T>,
-    falling: FixedTweener<T>,
+    rising: FixedTweenDriver<T>,
+    falling: FixedTweenDriver<T>,
     direction: OscillationDirection,
 }
 
@@ -122,20 +122,20 @@ where
     ///
     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
     /// be the `falling` tween.
-    pub fn new(mut rising: FixedTweener<T>) -> Self {
+    pub fn new(mut rising: FixedTweenDriver<T>) -> Self {
         // unfuse it...
-        if rising.fused {
-            rising.last_time = T::Time::ZERO;
-            rising.fused = false;
+        if rising.0.fused {
+            rising.0.last_time = T::Time::ZERO;
+            rising.0.fused = false;
         }
 
-        let falling = FixedTweener::new(
+        let falling = FixedTweenDriver::new(
             T::new(
-                rising.tween.final_value(),
-                rising.tween.initial_value(),
-                rising.tween.duration(),
+                rising.0.tween.final_value(),
+                rising.0.tween.initial_value(),
+                rising.0.tween.duration(),
             ),
-            rising.delta,
+            rising.1,
         );
 
         Self {
@@ -159,17 +159,17 @@ where
     /// complete, then they will be reset.
     ///
     /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    pub fn with_falling(mut rising: FixedTweener<T>, mut falling: FixedTweener<T>) -> Self {
+    pub fn with_falling(mut rising: FixedTweenDriver<T>, mut falling: FixedTweenDriver<T>) -> Self {
         // unfuse it...
-        if rising.fused {
-            rising.last_time = T::Time::ZERO;
-            rising.fused = false;
+        if rising.0.fused {
+            rising.0.last_time = T::Time::ZERO;
+            rising.0.fused = false;
         }
 
         // unfuse it...
-        if falling.fused {
-            falling.last_time = T::Time::ZERO;
-            falling.fused = false;
+        if falling.0.fused {
+            falling.0.last_time = T::Time::ZERO;
+            falling.0.fused = false;
         }
 
         Self {
@@ -195,9 +195,9 @@ where
         let output = tweener.next().unwrap();
 
         // catch the fused here...
-        if tweener.fused {
-            tweener.fused = false;
-            tweener.last_time = T::Time::ZERO;
+        if tweener.0.fused {
+            tweener.0.fused = false;
+            tweener.0.last_time = T::Time::ZERO;
 
             // and flip our direction...
             self.direction = match self.direction {

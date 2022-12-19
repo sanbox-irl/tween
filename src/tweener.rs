@@ -30,13 +30,13 @@ pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 /// assert_eq!(delta_tweener.update(100), None); // tween is done forever now.
 /// ```
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub struct Tweener<T: Tween> {
+pub struct TweenDriver<T: Tween> {
     tween: T,
     last_time: T::Time,
     fused: bool,
 }
 
-impl<T> Tweener<T>
+impl<T> TweenDriver<T>
 where
     T: Tween,
 {
@@ -99,36 +99,26 @@ where
 /// assert_eq!(fixed_tweener.next(), None);
 /// ```
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub struct FixedTweener<T: Tween> {
-    tween: T,
-    last_time: T::Time,
-    delta: T::Time,
-    fused: bool,
-}
+pub struct FixedTweenDriver<T: Tween>(TweenDriver<T>, T::Time);
 
-impl<T> FixedTweener<T>
+impl<T> FixedTweenDriver<T>
 where
     T: Tween,
 {
     /// Creates a new [FixedTweener], and takes in the delta time
     /// it will use per tick.
     pub fn new(tween: T, delta: T::Time) -> Self {
-        Self {
-            tween,
-            last_time: T::Time::ZERO,
-            delta,
-            fused: false,
-        }
+        Self(TweenDriver::new(tween), delta)
     }
 
     /// Allows inspections of a given tween.
     pub fn tween(&self) -> &T {
-        &self.tween
+        &self.0.tween
     }
 
     /// The current time of the tween.
     pub fn current_time(&self) -> T::Time {
-        self.last_time
+        self.0.last_time
     }
 
     /// Converts this tweener to a [FixedLooper].
@@ -147,7 +137,7 @@ where
     }
 }
 
-impl<T> FixedTweener<T>
+impl<T> FixedTweenDriver<T>
 where
     T: crate::SizedTween,
 {
@@ -161,21 +151,21 @@ where
     }
 }
 
-impl<T> Iterator for FixedTweener<T>
+impl<T> Iterator for FixedTweenDriver<T>
 where
     T: Tween,
 {
     type Item = T::Value;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if !self.fused {
-            self.last_time = self.last_time.add(self.delta);
+        if !self.0.fused {
+            self.0.last_time = self.0.last_time.add(self.1);
 
-            if self.last_time.is_complete(self.tween.duration()) {
-                self.fused = true;
-                Some(self.tween.final_value())
+            if self.0.last_time.is_complete(self.0.tween.duration()) {
+                self.0.fused = true;
+                Some(self.0.tween.final_value())
             } else {
-                Some(self.tween.run(self.last_time))
+                Some(self.0.tween.run(self.0.last_time))
             }
         } else {
             None
@@ -191,7 +181,7 @@ mod tests {
 
     #[test]
     fn tweener() {
-        let tweener = FixedTweener::new(Linear::new(0, 100, 10), 1);
+        let tweener = FixedTweenDriver::new(Linear::new(0, 100, 10), 1);
         let values: std::vec::Vec<_> = tweener.collect();
 
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
@@ -199,7 +189,7 @@ mod tests {
 
     #[test]
     fn fixed_tweener_loop() {
-        let mut looper = FixedTweener::new(Linear::new(0, 2, 2), 1).looper();
+        let mut looper = FixedTweenDriver::new(Linear::new(0, 2, 2), 1).looper();
 
         assert_eq!(looper.next().unwrap(), 1);
         assert_eq!(looper.next().unwrap(), 2);
@@ -209,7 +199,7 @@ mod tests {
 
     #[test]
     fn tweener_loop() {
-        let mut looper = Tweener::new(Linear::new(0, 2, 2)).looper();
+        let mut looper = TweenDriver::new(Linear::new(0, 2, 2)).looper();
 
         assert_eq!(looper.update(1).unwrap(), 1);
         assert_eq!(looper.update(1).unwrap(), 2);
@@ -219,7 +209,7 @@ mod tests {
 
     #[test]
     fn tweener_oscillator() {
-        let mut oscillator = Oscillator::new(Tweener::new(Linear::new(0, 2, 2)));
+        let mut oscillator = Oscillator::new(TweenDriver::new(Linear::new(0, 2, 2)));
 
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.update(1).unwrap(), 1);
@@ -239,7 +229,7 @@ mod tests {
     #[test]
     fn fixed_tweener_oscillator() {
         let mut oscillator: FixedOscillator<Linear<i32, i32>> =
-            FixedOscillator::new(FixedTweener::new(Linear::new(0, 2, 2), 1));
+            FixedOscillator::new(FixedTweenDriver::new(Linear::new(0, 2, 2), 1));
 
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.next().unwrap(), 1);

@@ -1,26 +1,26 @@
-use crate::{Tween, Tweener};
+use crate::{Tween, TweenDriver};
 
 /// A [Chain] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would* end, we move onto the next tweener in the sequence.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Chain<I, T>
 where
-    I: Iterator<Item = Tweener<T>>,
+    I: Iterator<Item = TweenDriver<T>>,
     T: Tween,
 {
     chain: I,
-    current: Option<Tweener<T>>,
+    current: Option<TweenDriver<T>>,
 }
 
 impl<I, T> Chain<I, T>
 where
-    I: Iterator<Item = Tweener<T>>,
+    I: Iterator<Item = TweenDriver<T>>,
     T: Tween,
 {
     /// Creates a new Chain around an iterator of [Tweener]s.
     pub fn new<It>(chain: It) -> Self
     where
-        It: IntoIterator<Item = Tweener<T>, IntoIter = I>,
+        It: IntoIterator<Item = TweenDriver<T>, IntoIter = I>,
     {
         Self {
             chain: chain.into_iter(),
@@ -141,9 +141,9 @@ mod tests {
     #[test]
     fn normal() {
         let mut looper = Chain::new([
-            Tweener::new(Linear::new(0, 2, 2)),
-            Tweener::new(Linear::new(2, 4, 2)),
-            Tweener::new(Linear::new(6, 8, 2)),
+            TweenDriver::new(Linear::new(0, 2, 2)),
+            TweenDriver::new(Linear::new(2, 4, 2)),
+            TweenDriver::new(Linear::new(6, 8, 2)),
         ]);
 
         assert_eq!(looper.update(0).unwrap(), 0);
@@ -163,9 +163,9 @@ mod tests {
     #[test]
     fn too_fast() {
         let mut looper = Chain::new([
-            Tweener::new(Linear::new(0, 2, 2)),
-            Tweener::new(Linear::new(2, 4, 2)),
-            Tweener::new(Linear::new(6, 8, 2)),
+            TweenDriver::new(Linear::new(0, 2, 2)),
+            TweenDriver::new(Linear::new(2, 4, 2)),
+            TweenDriver::new(Linear::new(6, 8, 2)),
         ]);
 
         assert_eq!(looper.update(3).unwrap(), 3);
@@ -176,7 +176,7 @@ mod tests {
     #[test]
     fn unique() {
         // extremely funky 0 length array!
-        let mut looper = Chain::new([Tweener::new(Linear::new(0, 2, 2)); 0]);
+        let mut looper = Chain::new([TweenDriver::new(Linear::new(0, 2, 2)); 0]);
 
         assert_eq!(looper.update(3), None);
     }
