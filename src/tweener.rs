@@ -1,8 +1,10 @@
 use crate::{Tween, TweenTime};
 
+mod chainer;
 mod looper;
 mod oscillator;
 
+pub use chainer::Chain;
 pub use looper::{FixedLooper, Looper};
 pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 
@@ -55,12 +57,16 @@ where
         if !self.fused {
             self.last_time = self.last_time.add(delta);
 
-            if self.last_time.is_complete(self.tween.duration()) {
+            let output = if self.last_time.is_complete(self.tween.duration()) {
                 self.fused = true;
-                Some(self.tween.final_value())
+                self.last_time = self.tween.duration();
+
+                self.tween.final_value()
             } else {
-                Some(self.tween.run(self.last_time))
-            }
+                self.tween.run(self.last_time)
+            };
+
+            Some(output)
         } else {
             None
         }
@@ -232,7 +238,8 @@ mod tests {
 
     #[test]
     fn fixed_tweener_oscillator() {
-        let mut oscillator = FixedOscillator::new(FixedTweener::new(Linear::new(0, 2, 2), 1));
+        let mut oscillator: FixedOscillator<Linear<i32, i32>> =
+            FixedOscillator::new(FixedTweener::new(Linear::new(0, 2, 2), 1));
 
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.next().unwrap(), 1);

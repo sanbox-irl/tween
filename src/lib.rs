@@ -30,7 +30,7 @@ pub use tweens::*;
 ///
 /// Unless you choose to use a Tween directly, rather than through a [FixedTweener]
 /// or [FixedTweener], you'll rarely deal with this directly.
-pub trait Tween {
+pub trait Tween: std::fmt::Debug {
     /// This is the value which we tween over time.
     type Value: TweenValue;
     /// This is the kind of Time we use. For most users, it will be an `f32` or

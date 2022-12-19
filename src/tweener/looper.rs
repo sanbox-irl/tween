@@ -2,7 +2,7 @@ use super::{FixedTweener, Tweener};
 use crate::{Tween, TweenTime};
 
 /// A [Looper] is a wrapper around a [Tweener], which makes it so that
-/// every time the tweener *would*
+/// every time the tweener *would* fuse (end), it loops from the start.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Looper<T: Tween>(Tweener<T>);
 
