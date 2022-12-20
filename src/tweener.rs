@@ -1,10 +1,10 @@
 use crate::{Tween, TweenTime};
 
-mod chainer;
+mod chain;
 mod looper;
 mod oscillator;
 
-pub use chainer::Chain;
+pub use chain::Chain;
 pub use looper::{FixedLooper, Looper};
 pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 
@@ -205,44 +205,5 @@ mod tests {
         assert_eq!(looper.update(1).unwrap(), 2);
         assert_eq!(looper.update(1).unwrap(), 1);
         assert_eq!(looper.update(1).unwrap(), 2);
-    }
-
-    #[test]
-    fn tweener_oscillator() {
-        let mut oscillator = Oscillator::new(TweenDriver::new(Linear::new(0, 2, 2)));
-
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.update(1).unwrap(), 0);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-    }
-
-    #[test]
-    fn fixed_tweener_oscillator() {
-        let mut oscillator: FixedOscillator<Linear<i32, i32>> =
-            FixedOscillator::new(FixedTweenDriver::new(Linear::new(0, 2, 2), 1));
-
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.next().unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.next().unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.next().unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.next().unwrap(), 0);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.next().unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.next().unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
     }
 }
