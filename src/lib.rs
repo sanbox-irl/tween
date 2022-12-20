@@ -30,35 +30,37 @@ pub use tweens::*;
 ///
 /// Unless you choose to use a Tween directly, rather than through a [FixedTweener]
 /// or [FixedTweener], you'll rarely deal with this directly.
-pub trait Tween: std::fmt::Debug {
-    /// This is the value which we tween over time.
-    type Value: TweenValue;
-    /// This is the kind of Time we use. For most users, it will be an `f32` or
-    /// similar simple number.
-    type Time: TweenTime;
-
+pub trait Tween<Value, Time>: std::fmt::Debug
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
     /// Run the given Tween with a new time.
-    fn run(&mut self, new_time: Self::Time) -> Self::Value;
+    fn run(&mut self, new_time: Time) -> Value;
 
     /// The initial value a tween was set to start at.
-    fn initial_value(&self) -> Self::Value;
+    fn initial_value(&self) -> Value;
 
     /// The final value the tween should end at.
-    fn final_value(&self) -> Self::Value;
+    fn final_value(&self) -> Value;
 
     /// Get a reference to the Tween's total duration.
-    fn duration(&self) -> Self::Time;
+    fn duration(&self) -> Time;
 }
 
 /// This is a helper trait, which all the tweens in this library support, which gives access
 /// to non-object-safe methods.
-pub trait SizedTween: Tween + Sized {
+pub trait SizedTween<Value, Time>: Tween<Value, Time> + Sized
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
     /// Creates a new `SizedTween`
-    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self;
+    fn new(initial_value: Value, final_value: Value, duration: Time) -> Self;
 }
 
 #[cfg(test)]
-static_assertions::assert_obj_safe!(Tween<Value = i32, Time = f32>);
+static_assertions::assert_obj_safe!(Tween<i32, f32>);
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs
 /// `TweenValue` eventually.

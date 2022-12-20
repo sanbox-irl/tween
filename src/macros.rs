@@ -126,25 +126,22 @@ macro_rules! declare_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-                <Self as $crate::SizedTween>::new(initial_value, final_value, duration)
+                <Self as $crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
             }
 
             /// Run the given Tween with a new time.
-            pub fn run(&mut self, new_time: <Self as $crate::Tween>::Time) -> <Self as $crate::Tween>::Value {
+            pub fn run(&mut self, new_time: TTime) -> TValue {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween>::run(self, new_time)
+                <Self as $crate::Tween<TValue, TTime>>::run(self, new_time)
             }
         }
 
-        impl<V, T> $crate::Tween for $name<V, T>
+        impl<V, T> $crate::Tween<V, T> for $name<V, T>
         where
             V: $crate::TweenValue,
             T: $crate::TweenTime,
         {
-            type Value = V;
-            type Time = T;
-
             $update
 
             fn duration(&self) -> T {
@@ -160,13 +157,13 @@ macro_rules! declare_tween {
             }
         }
 
-        impl<V, T> $crate::SizedTween for $name<V, T>
+        impl<V, T> $crate::SizedTween<V, T> for $name<V, T>
         where
             V: $crate::TweenValue,
             T: $crate::TweenTime,
         {
             /// Creates a new Tween
-            fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+            fn new(initial_value: V, final_value: V, duration: T) -> Self {
                 let delta = V::calculate_delta(final_value, initial_value);
                 Self {
                     initial_value,
@@ -204,24 +201,22 @@ macro_rules! declare_in_out_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-                <Self as $crate::SizedTween>::new(initial_value, final_value, duration)
+                <Self as $crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
             }
 
             /// Run the given Tween with a new time.
-            pub fn run(&mut self, new_time: <Self as $crate::Tween>::Time) -> <Self as $crate::Tween>::Value {
+            pub fn run(&mut self, new_time: TTime) -> TValue {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween>::run(self, new_time)
+                <Self as $crate::Tween<TValue, TTime>>::run(self, new_time)
             }
         }
 
-        impl<V, T> $crate::Tween for $name<V, T>
+        impl<V, T> $crate::Tween<V, T> for $name<V, T>
         where
             V: $crate::TweenValue,
             T: $crate::TweenTime,
         {
-            type Value = V;
-            type Time = T;
 
             $update
 
@@ -238,13 +233,13 @@ macro_rules! declare_in_out_tween {
             }
         }
 
-        impl<V, T> $crate::SizedTween for $name<V, T>
+        impl<V, T> $crate::SizedTween<V, T> for $name<V, T>
         where
             V: $crate::TweenValue,
             T: $crate::TweenTime,
         {
             /// Creates a new Tween
-            fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+            fn new(initial_value: V, final_value: V, duration: T) -> Self {
                 let value_delta = V::calculate_delta(final_value, initial_value);
                 let half_delta = V::scale(value_delta, 0.5);
                 Self {

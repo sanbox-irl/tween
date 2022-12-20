@@ -3,9 +3,9 @@ use crate::{Tween, TweenDriver};
 /// A [Chain] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would* end, we move onto the next tweener in the sequence.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Chain<I, T>
+pub struct Chain<I, Value, Time>
 where
-    I: Iterator<Item = TweenDriver<T>>,
+    I: Iterator<Item = TweenDriver<impl Tween<Value = Value, Time = Time>>>,
     T: Tween,
 {
     chain: I,
@@ -136,7 +136,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Linear;
+    use crate::{Linear, QuadIn};
 
     #[test]
     fn normal() {
@@ -176,18 +176,17 @@ mod tests {
     #[test]
     fn unique() {
         // extremely funky 0 length array!
-        let mut looper = Chain::new([TweenDriver::new(Linear::new(0, 2, 2)); 0]);
+        let empty_array: [TweenDriver<_>; 0] = [TweenDriver::new(Linear::new(0, 2, 2)); 0];
+        let mut looper = Chain::new(empty_array);
 
         assert_eq!(looper.update(3), None);
     }
 
-    // #[test]
-    // fn fixed() {
-    //     let mut looper = Tweener::new(Linear::new(0, 2, 2)).looper();
-
-    //     assert_eq!(looper.next().unwrap(), 1);
-    //     assert_eq!(looper.next().unwrap(), 2);
-    //     assert_eq!(looper.next().unwrap(), 1);
-    //     assert_eq!(looper.next().unwrap(), 2);
-    // }
+    #[test]
+    fn fixed() {
+        Chain::new([
+            TweenDriver::new(Linear::new(0, 2, 2)),
+            TweenDriver::new(QuadIn::new(2, 4, 2)),
+        ]);
+    }
 }

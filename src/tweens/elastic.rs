@@ -19,18 +19,15 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
+        <Self as crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
     }
 }
 
-impl<V, T> Tween for ElasticIn<V, T>
+impl<V, T> Tween<V, T> for ElasticIn<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    type Value = V;
-    type Time = T;
-
     fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
@@ -66,21 +63,21 @@ where
         self.duration
     }
 
-    fn initial_value(&self) -> Self::Value {
+    fn initial_value(&self) -> V {
         self.initial_value
     }
 
-    fn final_value(&self) -> Self::Value {
+    fn final_value(&self) -> V {
         self.final_value
     }
 }
 
-impl<V, T> crate::SizedTween for ElasticIn<V, T>
+impl<V, T> crate::SizedTween<V, T> for ElasticIn<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+    fn new(initial_value: V, final_value: V, duration: T) -> Self {
         let delta = V::calculate_delta(final_value, initial_value);
         let three_tenths = duration.as_f64() * 0.3;
         Self {
@@ -112,18 +109,15 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
+        <Self as crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
     }
 }
 
-impl<V, T> Tween for ElasticOut<V, T>
+impl<V, T> Tween<V, T> for ElasticOut<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    type Value = V;
-    type Time = T;
-
     fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time);
 
@@ -153,21 +147,21 @@ where
         self.duration
     }
 
-    fn initial_value(&self) -> Self::Value {
+    fn initial_value(&self) -> V {
         self.initial_value
     }
 
-    fn final_value(&self) -> Self::Value {
+    fn final_value(&self) -> V {
         self.final_value
     }
 }
 
-impl<V, T> crate::SizedTween for ElasticOut<V, T>
+impl<V, T> crate::SizedTween<V, T> for ElasticOut<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+    fn new(initial_value: V, final_value: V, duration: T) -> Self {
         let delta = V::calculate_delta(final_value, initial_value);
         let three_tenths = duration.as_f64() * 0.3;
         Self {
@@ -199,18 +193,15 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
-        <Self as crate::SizedTween>::new(initial_value, final_value, duration)
+        <Self as crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
     }
 }
 
-impl<V, T> Tween for ElasticInOut<V, T>
+impl<V, T> Tween<V, T> for ElasticInOut<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    type Value = V;
-    type Time = T;
-
     fn run(&mut self, new_time: T) -> V {
         let t = T::percent(self.duration, new_time) * 2.0;
 
@@ -264,21 +255,21 @@ where
         self.duration
     }
 
-    fn initial_value(&self) -> Self::Value {
+    fn initial_value(&self) -> V {
         self.initial_value
     }
 
-    fn final_value(&self) -> Self::Value {
+    fn final_value(&self) -> V {
         self.final_value
     }
 }
 
-impl<V, T> crate::SizedTween for ElasticInOut<V, T>
+impl<V, T> crate::SizedTween<V, T> for ElasticInOut<V, T>
 where
     V: TweenValue,
     T: TweenTime,
 {
-    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self {
+    fn new(initial_value: V, final_value: V, duration: T) -> Self {
         let delta = V::calculate_delta(final_value, initial_value);
         let p = duration.as_f64() * 0.45;
         Self {
