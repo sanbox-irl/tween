@@ -28,8 +28,8 @@ pub use tweens::*;
 
 /// This is the core trait of the Library, which all `tweens` implement.
 ///
-/// Unless you choose to use a Tween directly, rather than through a [FixedTweener]
-/// or [FixedTweener], you'll rarely deal with this directly.
+/// Unless you choose to use a Tween directly, rather than through a [FixedTweenDriver]
+/// or [FixedTweenDriver], you'll rarely deal with this directly.
 pub trait Tween<Value, Time>: std::fmt::Debug
 where
     Value: TweenValue,

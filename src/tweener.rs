@@ -17,14 +17,14 @@ pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 /// (ie, you loop as fast as you can), since you can now just provide a delta
 /// time as a fixed time.
 ///
-/// If, on the other hand, you use a *fixed* time loop, see [FixedTweener],
+/// If, on the other hand, you use a *fixed* time loop, see [FixedTweenDriver],
 /// which provides a simpler interface, and implements Iterator.
 ///
 /// ```
-/// # use tween::{Tweener, Linear};
+/// # use tween::{TweenDriver, Linear};
 ///
 /// // a tween which takes 10 ticks, and moves a value from 0 to 10.
-/// let mut delta_tweener = Tweener::new(Linear::new(0, 10, 10));
+/// let mut delta_tweener = TweenDriver::new(Linear::new(0, 10, 10));
 ///
 /// assert_eq!(delta_tweener.update(1), Some(1)); // one tick
 /// assert_eq!(delta_tweener.update(2), Some(3)); // two ticks
@@ -45,7 +45,7 @@ where
     Time: TweenTime,
     Value: TweenValue,
 {
-    /// Creates a new [Tweener] out of an existing tween.
+    /// Creates a new [TweenDriver] out of an existing tween.
     pub fn new(tween: T) -> Self {
         Self {
             tween,
@@ -55,7 +55,7 @@ where
         }
     }
 
-    /// Drives the [Tweener] forward X steps in time.
+    /// Drives the [TweenDriver] forward X steps in time.
     ///
     /// If an input higher than the tween's `duration` is given, you will
     /// receive the max value of the tween.
@@ -84,20 +84,20 @@ where
     }
 }
 
-/// A FixedTweener "drives" a tween for you, allowing you provide *deltas*
-/// instead of concrete values, per call. Moreover, a FixedTweener always works on
+/// A FixedTweenDriver "drives" a tween for you, allowing you provide *deltas*
+/// instead of concrete values, per call. Moreover, a FixedTweenDriver always works on
 /// the same delta per `update`, rather than allowing for a variable delta. If you need a variable
-/// delta use [Tweener].
+/// delta use [TweenDriver].
 ///
 /// Because fixed tweener works on a fixed delta, it can provide a simple interface, which should be
 /// especially useful for games which used a fixed delta update loop.
 ///
 /// ```
-/// # use tween::{FixedTweener, Linear};
+/// # use tween::{FixedTweenDriver, Linear};
 ///
 /// // we provide a tweener which goes from 0 up to 4, in 4 ticks,
 /// // and we progress it by 1 each time we call it.
-/// let mut fixed_tweener = FixedTweener::new(Linear::new(0, 4, 4), 1);
+/// let mut fixed_tweener = FixedTweenDriver::new(Linear::new(0, 4, 4), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 2);
 /// assert_eq!(fixed_tweener.next().unwrap(), 3);
@@ -113,7 +113,7 @@ where
     Time: TweenTime,
     Value: TweenValue,
 {
-    /// Creates a new [FixedTweener], and takes in the delta time
+    /// Creates a new [FixedTweenDriver], and takes in the delta time
     /// it will use per tick.
     pub fn new(tween: T, delta: Time) -> Self {
         Self(TweenDriver::new(tween), delta)
