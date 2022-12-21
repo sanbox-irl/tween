@@ -1,6 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
-
 const MAGIC: f64 = 7.5625;
 const STAGE_ZERO: f64 = 1.0 / 2.75;
 const STAGE_ONE: f64 = 2.0 / 2.75;
@@ -31,7 +28,7 @@ declare_tween!(
             self.value_delta.scale(multip)
         };
 
-        TweenValue::calculate_delta(self.value_delta, v).add(*self.range.start())
+        crate::TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value)
     }
 );
 
@@ -56,7 +53,7 @@ declare_tween!(
             MAGIC * t * t + 0.984375
         };
 
-        self.value_delta.scale(multip).add(*self.range.start())
+        self.value_delta.scale(multip).add(self.initial_value)
     }
 );
 
@@ -88,9 +85,9 @@ declare_tween!(
                 self.value_delta.scale(multip)
             };
 
-            TweenValue::calculate_delta(self.value_delta, v)
+            crate::TweenValue::calculate_delta(self.value_delta, v)
                 .scale(0.5)
-                .add(*self.range.start())
+                .add(self.initial_value)
         } else {
             let t = T::percent(self.duration, new_time.scale(2.0).sub(self.duration));
 
@@ -112,56 +109,9 @@ declare_tween!(
                 .scale(multip)
                 .scale(0.5)
                 .add(self.value_delta.scale(0.5))
-                .add(*self.range.start())
+                .add(self.initial_value)
         }
     }
 );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use approx::assert_ulps_eq;
-    use easer::functions::{Bounce, Easing};
-
-    #[test]
-    fn tween_in() {
-        let mut tweener = BounceIn::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Bounce::ease_in(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_out() {
-        let mut tweener = BounceOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Bounce::ease_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_in_out() {
-        let mut tweener = BounceInOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let our_value = tweener.run(time);
-            let easer = Bounce::ease_in_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(our_value, easer);
-        }
-    }
-}
+test_tween!(Bounce);

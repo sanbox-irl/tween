@@ -113,51 +113,64 @@ macro_rules! declare_tween {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
-            range: RangeInclusive<TValue>,
+            initial_value: TValue,
+            final_value: TValue,
             value_delta: TValue,
             duration: TTime,
         }
 
         impl<TValue, TTime> $name<TValue, TTime>
         where
-            TValue: TweenValue,
-            TTime: TweenTime,
+            TValue: $crate::TweenValue,
+            TTime: $crate::TweenTime,
         {
             /// Creates a new tween out of a range with a duration.
-            pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
-                let delta = TValue::calculate_delta(*range.end(), *range.start());
-                Self {
-                    range,
-                    value_delta: delta,
-                    duration,
-                }
+            pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
+                <Self as $crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
             }
 
             /// Run the given Tween with a new time.
-            pub fn run(&mut self, new_time: <Self as Tween>::Time) -> <Self as Tween>::Value {
+            pub fn run(&mut self, new_time: TTime) -> TValue {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as Tween>::run(self, new_time)
+                <Self as $crate::Tween<TValue, TTime>>::run(self, new_time)
             }
-
         }
 
-        impl<V, T> Tween for $name<V, T>
+        impl<V, T> $crate::Tween<V, T> for $name<V, T>
         where
-            V: TweenValue,
-            T: TweenTime,
+            V: $crate::TweenValue,
+            T: $crate::TweenTime,
         {
-            type Value = V;
-            type Time = T;
-
             $update
-
-            fn range(&self) -> &RangeInclusive<V> {
-                &self.range
-            }
 
             fn duration(&self) -> T {
                 self.duration
+            }
+
+            fn initial_value(&self) -> V {
+                self.initial_value
+            }
+
+            fn final_value(&self) -> V {
+                self.final_value
+            }
+        }
+
+        impl<V, T> $crate::SizedTween<V, T> for $name<V, T>
+        where
+            V: $crate::TweenValue,
+            T: $crate::TweenTime,
+        {
+            /// Creates a new Tween
+            fn new(initial_value: V, final_value: V, duration: T) -> Self {
+                let delta = V::calculate_delta(final_value, initial_value);
+                Self {
+                    initial_value,
+                    final_value,
+                    value_delta: delta,
+                    duration,
+                }
             }
         }
     };
@@ -175,44 +188,164 @@ macro_rules! declare_in_out_tween {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
         pub struct $name<TValue, TTime> {
-            range: RangeInclusive<TValue>,
+            initial_value: TValue,
+            final_value: TValue,
             half_delta: TValue,
             duration: TTime,
         }
 
         impl<TValue, TTime> $name<TValue, TTime>
         where
-            TValue: TweenValue,
-            TTime: TweenTime,
+            TValue: $crate::TweenValue,
+            TTime: $crate::TweenTime,
         {
             /// Creates a new tween out of a range with a duration.
-            pub fn new(range: RangeInclusive<TValue>, duration: TTime) -> Self {
-                let value_delta = TValue::calculate_delta(*range.end(), *range.start());
-                let half_delta = TValue::scale(value_delta, 0.5);
+            pub fn new(initial_value: TValue, final_value: TValue, duration: TTime) -> Self {
+                <Self as $crate::SizedTween<TValue, TTime>>::new(initial_value, final_value, duration)
+            }
+
+            /// Run the given Tween with a new time.
+            pub fn run(&mut self, new_time: TTime) -> TValue {
+                // we pass this through so that we don't require users to (annoyingly) import
+                // a trait. Inherent methods in traits pls!
+                <Self as $crate::Tween<TValue, TTime>>::run(self, new_time)
+            }
+        }
+
+        impl<V, T> $crate::Tween<V, T> for $name<V, T>
+        where
+            V: $crate::TweenValue,
+            T: $crate::TweenTime,
+        {
+
+            $update
+
+            fn duration(&self) -> T {
+                self.duration
+            }
+
+            fn initial_value(&self) -> V {
+                self.initial_value
+            }
+
+            fn final_value(&self) -> V {
+                self.final_value
+            }
+        }
+
+        impl<V, T> $crate::SizedTween<V, T> for $name<V, T>
+        where
+            V: $crate::TweenValue,
+            T: $crate::TweenTime,
+        {
+            /// Creates a new Tween
+            fn new(initial_value: V, final_value: V, duration: T) -> Self {
+                let value_delta = V::calculate_delta(final_value, initial_value);
+                let half_delta = V::scale(value_delta, 0.5);
                 Self {
-                    range,
+                    initial_value,
+                    final_value,
                     half_delta,
                     duration,
                 }
             }
         }
+    };
+}
 
-        impl<V, T> Tween for $name<V, T>
-        where
-            V: TweenValue,
-            T: TweenTime,
-        {
-            type Value = V;
-            type Time = T;
+macro_rules! test_tween {
+    ($name:ident) => {
+        #[cfg(test)]
+        mod test {
+            paste::paste! {
+                use super::*;
+                use approx::assert_relative_eq;
+                use easer::functions::{$name as [<Ease $name>], Easing};
 
-            $update
+                #[test]
+                fn t_in() {
+                    let mut tweener = [<$name In>]::new(0.0, 100.0, 10.0);
 
-            fn range(&self) -> &RangeInclusive<V> {
-                &self.range
-            }
+                    for time in 0..=10 {
+                        let time = time as f64;
 
-            fn duration(&self) -> T {
-                self.duration
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_rev() {
+                    let mut tweener = [<$name In>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out() {
+                    let mut tweener = [<$name Out>]::new(0.0, 100.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out_rev() {
+                    let mut tweener = [<$name Out>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_out() {
+                    let mut tweener = [<$name InOut>]::new(0.0, 100.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let our_value = tweener.run(time);
+                        let easer = [<Ease $name>]::ease_in_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(our_value, easer, max_relative = 0.000001);
+                    }
+                }
+
+
+                #[test]
+                fn t_in_out_rev() {
+                    let mut tweener = [<$name InOut>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
             }
         }
     };

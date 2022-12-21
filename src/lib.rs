@@ -1,7 +1,8 @@
 #![doc = include_str!("../README.md")]
+#![deny(unsafe_code)]
 #![deny(rust_2018_idioms)]
 #![deny(missing_docs)]
-#![deny(rustdoc::all)]
+#![deny(rustdoc::broken_intra_doc_links)]
 #![no_std]
 
 #[cfg(any(feature = "std"))]
@@ -25,35 +26,41 @@ mod glam;
 pub use tweener::*;
 pub use tweens::*;
 
-use core::ops::RangeInclusive;
-
 /// This is the core trait of the Library, which all `tweens` implement.
 ///
-/// If you choose to use a Tween directly, rather than through a [DeltaTweener]
-/// or [FixedDeltaTweener], you'll rarely deal with this directly.
-pub trait Tween: Sized {
-    /// This is the value which we tween over time.
-    type Value: TweenValue;
-    /// This is the kind of Time we use. For most users, it will be an `f32` or
-    /// similar simple number.
-    type Time: TweenTime;
-
+/// Unless you choose to use a Tween directly, rather than through a [FixedTweenDriver]
+/// or [FixedTweenDriver], you'll rarely deal with this directly.
+pub trait Tween<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
     /// Run the given Tween with a new time.
-    fn run(&mut self, new_time: Self::Time) -> Self::Value;
+    fn run(&mut self, new_time: Time) -> Value;
 
-    /// Get a reference to the Tween's range.
-    fn range(&self) -> &RangeInclusive<Self::Value>;
+    /// The initial value a tween was set to start at.
+    fn initial_value(&self) -> Value;
+
+    /// The final value the tween should end at.
+    fn final_value(&self) -> Value;
 
     /// Get a reference to the Tween's total duration.
-    fn duration(&self) -> Self::Time;
-
-    // fn to_fixed_tweener(
-    //     self,
-    //     delta: Self::TTime,
-    // ) -> FixedDeltaTweener<Self, Self::TValue, Self::TTime> {
-    //     FixedDeltaTweener::new(self, delta)
-    // }
+    fn duration(&self) -> Time;
 }
+
+/// This is a helper trait, which all the tweens in this library support, which gives access
+/// to non-object-safe methods.
+pub trait SizedTween<Value, Time>: Tween<Value, Time> + Sized
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    /// Creates a new `SizedTween`
+    fn new(initial_value: Value, final_value: Value, duration: Time) -> Self;
+}
+
+#[cfg(test)]
+static_assertions::assert_obj_safe!(Tween<i32, f32>);
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs
 /// `TweenValue` eventually.
@@ -63,7 +70,7 @@ pub trait Tween: Sized {
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenValue: Copy {
+pub trait TweenValue: Copy + PartialEq {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
 

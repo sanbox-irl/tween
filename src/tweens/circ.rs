@@ -1,6 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
-
 declare_tween!(
     /// A circular tween in. Go [here](https://easings.net/#easeInCirc) for a visual demonstration.
     pub struct CircIn;
@@ -14,7 +11,7 @@ declare_tween!(
         let scalar = 1.0 - (1.0 - t * t).sqrt();
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -33,7 +30,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -65,55 +62,8 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use approx::assert_ulps_eq;
-    use easer::functions::{Circ, Easing};
-
-    #[test]
-    fn tween_in() {
-        let mut tweener = CircIn::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Circ::ease_in(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_out() {
-        let mut tweener = CircOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Circ::ease_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_in_out() {
-        let mut tweener = CircInOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let our_value = tweener.run(time);
-            let easer = Circ::ease_in_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(our_value, easer);
-        }
-    }
-}
+test_tween!(Circ);

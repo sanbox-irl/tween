@@ -1,13 +1,10 @@
-use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
-
 declare_tween!(
     /// An exponenential tween in. See [here](https://easings.net/#easeInExpo)
     pub struct ExpoIn;
 
     fn run(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
-            *self.range.start()
+            self.initial_value
         } else {
             let percent_time = 10.0 * (T::percent(self.duration, new_time) - 1.0);
             #[cfg(feature = "libm")]
@@ -18,7 +15,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(scalar);
 
-            new_value.add(*self.range.start())
+            new_value.add(self.initial_value)
         }
     }
 );
@@ -29,7 +26,7 @@ declare_tween!(
 
     fn run(&mut self, new_time: T) -> V {
         if new_time == self.duration {
-            *self.range.end()
+            self.final_value
         } else {
             #[cfg(feature = "libm")]
             let powf = libm::pow(2.0, -10.0 * T::percent(self.duration, new_time));
@@ -39,7 +36,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(1.0 - powf);
 
-            new_value.add(*self.range.start())
+            new_value.add(self.initial_value)
         }
     }
 );
@@ -50,11 +47,11 @@ declare_tween!(
 
     fn run(&mut self, new_time: T) -> V {
         if new_time == T::ZERO {
-            return *self.range.start();
+            return self.initial_value;
         }
 
         if new_time == self.duration {
-            return *self.range.end();
+            return self.final_value;
         }
 
         let t = T::percent(self.duration, new_time) * 2.0;
@@ -81,55 +78,8 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(powf);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use approx::assert_ulps_eq;
-    use easer::functions::{Easing, Expo};
-
-    #[test]
-    fn tween_in() {
-        let mut tweener = ExpoIn::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f32;
-
-            let v = tweener.run(time);
-            let o = Expo::ease_in(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_out() {
-        let mut tweener = ExpoOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f32;
-
-            let v = tweener.run(time);
-            let o = Expo::ease_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_in_out() {
-        let mut tweener = ExpoInOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f32;
-
-            let our_value = tweener.run(time);
-            let easer = Expo::ease_in_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(our_value, easer);
-        }
-    }
-}
+test_tween!(Expo);

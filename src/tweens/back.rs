@@ -1,6 +1,3 @@
-use crate::{Tween, TweenTime, TweenValue};
-use core::ops::RangeInclusive;
-
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
 const BACK_CONST: f64 = 1.70158;
@@ -19,7 +16,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -33,7 +30,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
@@ -53,55 +50,8 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(*self.range.start())
+        new_value.add(self.initial_value)
     }
 );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use approx::assert_ulps_eq;
-    use easer::functions::{Back, Easing};
-
-    #[test]
-    fn tween_in() {
-        let mut tweener = BackIn::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Back::ease_in(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_out() {
-        let mut tweener = BackOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let v = tweener.run(time);
-            let o = Back::ease_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(v, o);
-        }
-    }
-
-    #[test]
-    fn tween_in_out() {
-        let mut tweener = BackInOut::new(0.0..=100.0, 10.0);
-
-        for time in 0..=10 {
-            let time = time as f64;
-
-            let our_value = tweener.run(time);
-            let easer = Back::ease_in_out(time, 0.0, 100.0, 10.0);
-
-            assert_ulps_eq!(our_value, easer);
-        }
-    }
-}
+test_tween!(Back);

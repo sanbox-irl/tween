@@ -19,31 +19,29 @@ First, tweens are simple to create:
 ```rust
 use tween::SineIn;
 
-let range = 0.0..=200.0;
+let (start, end) = (0.0, 200.0);
 let duration = 60;
 
-let mut sine_in = SineIn::new(range, duration);
+let mut sine_in = SineIn::new(start, end, duration);
 let _value0 = sine_in.run(0);
 let _value1 = sine_in.run(1);
 let _value2 = sine_in.run(2);
 let _value3 = sine_in.run(3);
 ```
 
-Notice how we work over a `RangeInclusive` to provide values.
-
 However, as the above example shows, it's more typical that you'll want to simply drive a tween over time, rather than giving arbitrary times within a duration.
 
-For that, we use tweeners, which come in two kinds: `Tweener` and `FixedTweener`. For both, users provide *deltas*, rather than arbitrary times. A `FixedTweener` uses just *one* delta (appropriate in a game engine with a Fixed Update pipeline), whereas a `Tweener` can take a fixed delta.
+For that, we use tweeners, which come in two kinds: `Tweener` and `FixedTweenDriver`. For both, users provide *deltas*, rather than arbitrary times. A `FixedTweenDriver` uses just *one* delta (appropriate in a game engine with a Fixed Update pipeline), whereas a `Tweener` can take a fixed delta.
 
 ```rust
-use tween::{SineIn, FixedTweener};
+use tween::{SineIn, FixedTweenDriver};
 
-let range = 0.0..=200.0;
+let (start, end) = (0.0, 200.0);
 let duration = 60;
 
-let sine_in = SineIn::new(range, duration);
+let sine_in = SineIn::new(start, end, duration);
 let delta = 1;
-let mut sine_in_tweener = FixedTweener::new(sine_in, delta);
+let mut sine_in_tweener = FixedTweenDriver::new(sine_in, delta);
 
 let _value0: Option<f32> = sine_in_tweener.next();
 let _value1: Option<f32> = sine_in_tweener.next();
@@ -54,7 +52,7 @@ let _value3: Option<f32> = sine_in_tweener.next();
 // we only use `&mut` here to demonstrate the `None` after this loop, you can just
 // take it by value like normal.
 for value in &mut sine_in_tweener {
-    // FixedTweener provides an iterator interface
+    // FixedTweenDriver provides an iterator interface
 }
 
 assert!(sine_in_tweener.next().is_none());
