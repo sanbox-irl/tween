@@ -1,6 +1,4 @@
-use core::marker::PhantomData;
-
-use crate::{Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenTime};
 
 // mod chain;
 mod looper;
@@ -32,26 +30,19 @@ pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 /// assert_eq!(delta_tweener.update(100), None); // tween is done forever now.
 /// ```
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub struct TweenDriver<T, Value, Time> {
+pub struct TweenDriver<T: Tween> {
     tween: T,
-    last_time: Time,
+    last_time: T::Time,
     fused: bool,
-    _phantom: PhantomData<Value>,
 }
 
-impl<T, Time, Value> TweenDriver<T, Value, Time>
-where
-    T: Tween<Value, Time>,
-    Time: TweenTime,
-    Value: TweenValue,
-{
+impl<T: Tween> TweenDriver<T> {
     /// Creates a new [TweenDriver] out of an existing tween.
     pub fn new(tween: T) -> Self {
         Self {
             tween,
-            last_time: Time::ZERO,
+            last_time: T::Time::ZERO,
             fused: false,
-            _phantom: PhantomData,
         }
     }
 
@@ -59,7 +50,7 @@ where
     ///
     /// If an input higher than the tween's `duration` is given, you will
     /// receive the max value of the tween.
-    pub fn update(&mut self, delta: Time) -> Option<Value> {
+    pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
         if !self.fused {
             self.last_time = self.last_time.add(delta);
 
@@ -79,7 +70,7 @@ where
     }
 
     /// Converts this tweener to a [Looper].
-    pub fn looper(self) -> Looper<T, Value, Time> {
+    pub fn looper(self) -> Looper<T> {
         Looper::new(self)
     }
 }
@@ -104,18 +95,16 @@ where
 /// assert_eq!(fixed_tweener.next().unwrap(), 4);
 /// assert_eq!(fixed_tweener.next(), None);
 /// ```
-#[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
-pub struct FixedTweenDriver<T, Value, Time>(TweenDriver<T, Value, Time>, Time);
+#[derive(Debug, PartialEq, PartialOrd, Hash, Clone, Copy)]
+pub struct FixedTweenDriver<T: Tween>(TweenDriver<T>, T::Time);
 
-impl<T, Value, Time> FixedTweenDriver<T, Value, Time>
+impl<T> FixedTweenDriver<T>
 where
-    T: Tween<Value, Time>,
-    Time: TweenTime,
-    Value: TweenValue,
+    T: Tween,
 {
     /// Creates a new [FixedTweenDriver], and takes in the delta time
     /// it will use per tick.
-    pub fn new(tween: T, delta: Time) -> Self {
+    pub fn new(tween: T, delta: T::Time) -> Self {
         Self(TweenDriver::new(tween), delta)
     }
 
@@ -125,55 +114,53 @@ where
     }
 
     /// The current time of the tween.
-    pub fn current_time(&self) -> Time {
+    pub fn current_time(&self) -> T::Time {
         self.0.last_time
     }
 
     /// Converts this tweener to a [FixedLooper].
-    pub fn looper(self) -> FixedLooper<T, Value, Time> {
+    pub fn looper(self) -> FixedLooper<T> {
         FixedLooper::new(self)
     }
 
-    /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween. If
-    /// either tweener is complete, then they will be reset.
-    ///
-    /// Use `oscillator` to automatically generate an inverse `falling` tween.
-    ///
-    /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    pub fn oscillator_with<Falling>(
-        self,
-        other: FixedTweenDriver<Falling, Value, Time>,
-    ) -> FixedOscillator<T, Falling, Value, Time>
-    where
-        Falling: Tween<Value, Time>,
-    {
-        FixedOscillator::with_falling(self, other)
-    }
+    // /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween. If
+    // /// either tweener is complete, then they will be reset.
+    // ///
+    // /// Use `oscillator` to automatically generate an inverse `falling` tween.
+    // ///
+    // /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
+    // pub fn oscillator_with<Falling>(
+    //     self,
+    //     other: FixedTweenDriver<Falling, Value, Time>,
+    // ) -> FixedOscillator<T, Falling, Value, Time>
+    // where
+    //     Falling: Tween<Value, Time>,
+    // {
+    //     FixedOscillator::with_falling(self, other)
+    // }
 }
 
-impl<Rising, Value, Time> FixedTweenDriver<Rising, Value, Time>
-where
-    Rising: crate::SizedTween<Value, Time>,
-    Value: TweenValue,
-    Time: TweenTime,
-{
-    /// Creates a new FixedOscillator. If the tweener is already complete, then it will
-    /// reset it, and creates a backwards copy of the tween.
-    ///
-    /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
-    /// be the `falling` tween.
-    pub fn oscillator(self) -> FixedOscillator<Rising, Rising, Value, Time> {
-        FixedOscillator::new(self)
-    }
-}
+// impl<Rising, Value, Time> FixedTweenDriver<Rising, Value, Time>
+// where
+//     Rising: crate::SizedTween<Value, Time>,
+//     Value: TweenValue,
+//     Time: TweenTime,
+// {
+//     /// Creates a new FixedOscillator. If the tweener is already complete, then it will
+//     /// reset it, and creates a backwards copy of the tween.
+//     ///
+//     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse
+// will     /// be the `falling` tween.
+//     pub fn oscillator(self) -> FixedOscillator<Rising, Rising, Value, Time> {
+//         FixedOscillator::new(self)
+//     }
+// }
 
-impl<T, Value, Time> Iterator for FixedTweenDriver<T, Value, Time>
+impl<T> Iterator for FixedTweenDriver<T>
 where
-    T: Tween<Value, Time>,
-    Value: TweenValue,
-    Time: TweenTime,
+    T: Tween,
 {
-    type Item = Value;
+    type Item = T::Value;
 
     fn next(&mut self) -> Option<Self::Item> {
         if !self.0.fused {
