@@ -30,7 +30,7 @@ pub use tweens::*;
 ///
 /// Unless you choose to use a Tween directly, rather than through a [FixedTweenDriver]
 /// or [FixedTweenDriver], you'll rarely deal with this directly.
-pub trait Tween<Value, Time>: std::fmt::Debug
+pub trait Tween<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
@@ -70,7 +70,7 @@ static_assertions::assert_obj_safe!(Tween<i32, f32>);
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenValue: Copy + PartialEq + std::fmt::Debug {
+pub trait TweenValue: Copy + PartialEq {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
 
@@ -95,7 +95,7 @@ pub trait TweenValue: Copy + PartialEq + std::fmt::Debug {
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenTime: Copy + PartialEq + std::fmt::Debug {
+pub trait TweenTime: Copy + PartialEq {
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
     /// This should be implemented as a simple division. For f32, for example,
