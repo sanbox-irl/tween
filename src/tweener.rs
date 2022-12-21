@@ -123,38 +123,30 @@ where
         FixedLooper::new(self)
     }
 
-    // /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween. If
-    // /// either tweener is complete, then they will be reset.
-    // ///
-    // /// Use `oscillator` to automatically generate an inverse `falling` tween.
-    // ///
-    // /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    // pub fn oscillator_with<Falling>(
-    //     self,
-    //     other: FixedTweenDriver<Falling, Value, Time>,
-    // ) -> FixedOscillator<T, Falling, Value, Time>
-    // where
-    //     Falling: Tween<Value, Time>,
-    // {
-    //     FixedOscillator::with_falling(self, other)
-    // }
+    /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween. If
+    /// either tweener is complete, then they will be reset.
+    ///
+    /// Use `oscillator` to automatically generate an inverse `falling` tween.
+    ///
+    /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
+    pub fn oscillator_with<Falling: Tween>(self, other: FixedTweenDriver<Falling>) -> FixedOscillator<T, Falling> {
+        FixedOscillator::with_falling(self, other)
+    }
 }
 
-// impl<Rising, Value, Time> FixedTweenDriver<Rising, Value, Time>
-// where
-//     Rising: crate::SizedTween<Value, Time>,
-//     Value: TweenValue,
-//     Time: TweenTime,
-// {
-//     /// Creates a new FixedOscillator. If the tweener is already complete, then it will
-//     /// reset it, and creates a backwards copy of the tween.
-//     ///
-//     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse
-// will     /// be the `falling` tween.
-//     pub fn oscillator(self) -> FixedOscillator<Rising, Rising, Value, Time> {
-//         FixedOscillator::new(self)
-//     }
-// }
+impl<Rising> FixedTweenDriver<Rising>
+where
+    Rising: crate::SizedTween,
+{
+    /// Creates a new FixedOscillator. If the tweener is already complete, then it will
+    /// reset it, and creates a backwards copy of the tween.
+    ///
+    /// The tween given will be assigned as the `rising` tween, whereas the generated inverse
+    /// will be the `falling` tween.
+    pub fn oscillator(self) -> FixedOscillator<Rising> {
+        FixedOscillator::new(self)
+    }
+}
 
 impl<T> Iterator for FixedTweenDriver<T>
 where

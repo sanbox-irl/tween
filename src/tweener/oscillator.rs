@@ -121,7 +121,7 @@ where
 ///
 /// You will always get an end edge on both ends for a tick.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct FixedOscillator<Rising: Tween, Falling: Tween> {
+pub struct FixedOscillator<Rising: Tween, Falling: Tween = Rising> {
     rising: FixedTweenDriver<Rising>,
     falling: FixedTweenDriver<Falling>,
     direction: OscillationDirection,
