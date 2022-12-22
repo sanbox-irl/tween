@@ -50,6 +50,32 @@ pub trait Tween {
     fn duration(&self) -> Self::Time;
 }
 
+#[cfg(feature = "std")]
+impl<V, T> Tween for std::boxed::Box<dyn Tween<Value = V, Time = T>>
+where
+    V: TweenValue,
+    T: TweenTime,
+{
+    type Value = V;
+    type Time = T;
+
+    fn run(&mut self, new_time: Self::Time) -> Self::Value {
+        (**self).run(new_time)
+    }
+
+    fn initial_value(&self) -> Self::Value {
+        (**self).initial_value()
+    }
+
+    fn final_value(&self) -> Self::Value {
+        (**self).final_value()
+    }
+
+    fn duration(&self) -> Self::Time {
+        (**self).duration()
+    }
+}
+
 /// This is a helper trait, which all the tweens in this library support, which gives access
 /// to non-object-safe methods.
 pub trait SizedTween: Tween + Sized {
