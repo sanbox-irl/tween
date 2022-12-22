@@ -1,14 +1,12 @@
 use super::{FixedTweenDriver, TweenDriver};
-use crate::{Tween, TweenTime};
+use crate::{Tween, TweenData, TweenTime};
 
 /// A [Looper] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would* fuse (end), it loops from the start.
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Looper<T: Tween> {
-    tween: T,
-    position: T::Time,
-    duration: T::Time,
-}
+#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+pub struct Looper<T>(TweenData<T>)
+where
+    T: Tween;
 
 impl<T: Tween> Looper<T> {
     /// Creates a new Looper around a [Tweener].
@@ -16,11 +14,7 @@ impl<T: Tween> Looper<T> {
     /// If the [Tweener] is *already* fused, this will reset it to starting
     /// values.
     pub fn new(delta_tweener: TweenDriver<T>) -> Self {
-        Self {
-            tween: delta_tweener.tween,
-            position: delta_tweener.position,
-            duration: delta_tweener.duration,
-        }
+        Self(delta_tweener.tween_data)
     }
 
     /// Drives the inner [Tweener] forward X steps in time, looping if required.
@@ -28,12 +22,12 @@ impl<T: Tween> Looper<T> {
     /// If the delta given is great enough, you may loop around several times.
     pub fn update(&mut self, delta: T::Time) -> T::Value {
         // add in that time...
-        self.position = self.position.add(delta).modulo(self.duration);
+        self.0.position = self.0.position.add(delta).modulo(self.0.duration);
 
-        if self.position.is_zero() {
-            self.tween.final_value()
+        if self.0.position.is_zero() {
+            self.0.tween.final_value()
         } else {
-            self.tween.run(self.position)
+            self.0.tween.run(self.0.position)
         }
     }
 }
@@ -41,12 +35,9 @@ impl<T: Tween> Looper<T> {
 /// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
 /// every time the tweener *would* fuse (end), it instead loops.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct FixedLooper<T: Tween> {
-    tween: T,
-    position: T::Time,
-    duration: T::Time,
-    delta: T::Time,
-}
+pub struct FixedLooper<T>(TweenData<T>, T::Time)
+where
+    T: Tween;
 
 impl<T> FixedLooper<T>
 where
@@ -55,12 +46,7 @@ where
     /// Creates a new FixedLooper. If the tweener is already complete, then it will
     /// reset it.
     pub fn new(tweener: FixedTweenDriver<T>) -> Self {
-        Self {
-            position: tweener.0.position,
-            duration: tweener.0.duration,
-            delta: tweener.1,
-            tween: tweener.0.tween,
-        }
+        Self(tweener.tween_data, tweener.delta)
     }
 }
 
@@ -72,11 +58,11 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         // add in that time...
-        self.position = self.position.add(self.delta).modulo(self.duration);
-        let o = if self.position.is_zero() {
-            self.tween.final_value()
+        self.0.position = self.0.position.add(self.1).modulo(self.0.duration);
+        let o = if self.0.position.is_zero() {
+            self.0.tween.final_value()
         } else {
-            self.tween.run(self.position)
+            self.0.tween.run(self.0.position)
         };
 
         Some(o)

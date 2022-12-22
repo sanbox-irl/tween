@@ -129,7 +129,7 @@ pub trait TweenTime: Copy + PartialEq + PartialOrd + core::fmt::Debug {
     fn percent(duration: Self, current_time: Self) -> f64;
     /// This should be implemented as a simple `%` operation.
     fn modulo(self, other: Self) -> Self;
-    /// Converts the self to an `f64`.
+    /// Converts the self to an `f64`. This is only used in `Elastic` in this library.
     fn as_f64(self) -> f64;
     /// Adds `self` to `other`. This should be implemented as simple addition.
     fn add(self, other: Self) -> Self;
@@ -141,7 +141,7 @@ pub trait TweenTime: Copy + PartialEq + PartialOrd + core::fmt::Debug {
     /// This checks if a given time is greater than another time. For f32, for example,
     /// it's implemented as `self >= duration`.
     fn is_complete(self, duration: Self) -> bool;
-    /// Checks if it's zero
+    /// Checks if it's zero. This is a shorthand.
     fn is_zero(self) -> bool {
         self.eq(&Self::ZERO)
     }

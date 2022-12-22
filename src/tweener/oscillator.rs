@@ -1,5 +1,5 @@
 use super::{FixedTweenDriver, TweenDriver};
-use crate::{Tween, TweenTime};
+use crate::{Tween, TweenData, TweenTime};
 
 /// An [Oscillator] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would* fuse (end), it instead starts reversing back to the start.
@@ -11,8 +11,10 @@ where
     Rising: Tween<Value = Falling::Value, Time = Falling::Time>,
     Falling: Tween,
 {
-    rising: TweenDriver<Rising>,
-    falling: TweenDriver<Falling>,
+    rising: TweenData<Rising>,
+    falling: TweenData<Falling>,
+    position: Rising::Time,
+    total_duration: Rising::Time,
     direction: OscillationDirection,
 }
 
@@ -25,22 +27,21 @@ where
     ///
     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
     /// be the `falling` tween.
-    pub fn new(mut rising: TweenDriver<Rising>) -> Self {
-        // unfuse it...
-        if rising.fused {
-            rising.position = Rising::Time::ZERO;
-            rising.fused = false;
-        }
-
-        let falling = TweenDriver::new(Rising::new(
-            rising.tween.final_value(),
-            rising.tween.initial_value(),
-            rising.tween.duration(),
+    pub fn new(rising: TweenDriver<Rising>) -> Self {
+        let falling = TweenData::new(Rising::new(
+            rising.tween_data.tween.final_value(),
+            rising.tween_data.tween.initial_value(),
+            rising.tween_data.tween.duration(),
         ));
 
+        let position = rising.tween_data.position;
+        let duration = rising.tween_data.duration.add(falling.duration);
+
         Self {
-            rising,
+            rising: rising.tween_data,
             falling,
+            position,
+            total_duration: duration,
             direction: OscillationDirection::Rising,
         }
     }
@@ -55,22 +56,15 @@ where
     /// complete, then they will be reset.
     ///
     /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    pub fn with_falling(mut rising: TweenDriver<Rising>, mut falling: TweenDriver<Falling>) -> Self {
-        // unfuse it...
-        if rising.fused {
-            rising.position = Rising::Time::ZERO;
-            rising.fused = false;
-        }
-
-        // unfuse it...
-        if falling.fused {
-            falling.position = Rising::Time::ZERO;
-            falling.fused = false;
-        }
+    pub fn with_falling(rising: TweenDriver<Rising>, falling: TweenDriver<Falling>) -> Self {
+        let position = rising.tween_data.position;
+        let duration = rising.tween_data.duration.add(falling.tween_data.duration);
 
         Self {
-            rising,
-            falling,
+            rising: rising.tween_data,
+            falling: falling.tween_data,
+            position,
+            total_duration: duration,
             direction: OscillationDirection::Rising,
         }
     }
@@ -78,36 +72,22 @@ where
     /// Drives the inner [Tweener] forward X steps in time, oscillating if required.
     ///
     /// If the delta given is great enough, you may oscillate around several times.
-    pub fn update(&mut self, delta: Rising::Time) -> Option<Rising::Value> {
-        fn _update<T: Tween>(
-            driver: &mut TweenDriver<T>,
-            delta: T::Time,
-            direction: &mut OscillationDirection,
-        ) -> T::Value {
-            // we make sure this ALWAYS returns `some`.
-            let output = driver.update(delta).unwrap();
+    pub fn update(&mut self, delta: Rising::Time) -> Rising::Value {
+        self.position = self.position.add(delta).modulo(self.total_duration);
 
-            // catch the fused here...
-            if driver.fused {
-                driver.fused = false;
-                driver.position = T::Time::ZERO;
-
-                // and flip our direction...
-                *direction = match *direction {
-                    OscillationDirection::Rising => OscillationDirection::Falling,
-                    OscillationDirection::Falling => OscillationDirection::Rising,
-                }
-            }
-
-            output
+        if self.position.is_zero() {
+            self.direction = OscillationDirection::Falling;
+            self.falling.tween.final_value()
+        } else if self.position.eq(&self.rising.duration) {
+            self.direction = OscillationDirection::Rising;
+            self.rising.tween.final_value()
+        } else if self.position.is_complete(self.rising.duration) {
+            self.direction = OscillationDirection::Falling;
+            self.falling.tween.run(self.position.sub(self.rising.duration))
+        } else {
+            self.direction = OscillationDirection::Rising;
+            self.rising.tween.run(self.position)
         }
-
-        let o = match self.direction {
-            OscillationDirection::Rising => _update(&mut self.rising, delta, &mut self.direction),
-            OscillationDirection::Falling => _update(&mut self.falling, delta, &mut self.direction),
-        };
-
-        Some(o)
     }
 
     /// Gets the current direction of oscillation.
@@ -122,8 +102,12 @@ where
 /// You will always get an end edge on both ends for a tick.
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct FixedOscillator<Rising: Tween, Falling: Tween = Rising> {
-    rising: FixedTweenDriver<Rising>,
-    falling: FixedTweenDriver<Falling>,
+    rising: TweenData<Rising>,
+    rising_delta: Rising::Time,
+    falling: TweenData<Falling>,
+    falling_delta: Rising::Time,
+    position: Rising::Time,
+    total_duration: Rising::Time,
     direction: OscillationDirection,
 }
 
@@ -136,25 +120,48 @@ where
     ///
     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse will
     /// be the `falling` tween.
-    pub fn new(mut rising: FixedTweenDriver<Rising>) -> Self {
-        // unfuse it...
-        if rising.0.fused {
-            rising.0.position = Rising::Time::ZERO;
-            rising.0.fused = false;
-        }
+    pub fn new(rising: FixedTweenDriver<Rising>) -> Self {
+        let falling = TweenData::new(Rising::new(
+            rising.tween_data.tween.final_value(),
+            rising.tween_data.tween.initial_value(),
+            rising.tween_data.tween.duration(),
+        ));
 
-        let falling = FixedTweenDriver::new(
-            Rising::new(
-                rising.0.tween.final_value(),
-                rising.0.tween.initial_value(),
-                rising.0.tween.duration(),
-            ),
-            rising.1,
-        );
+        let position = rising.tween_data.position;
+        let total_duration = rising.tween_data.duration.add(falling.duration);
 
         Self {
-            rising,
+            rising: rising.tween_data,
             falling,
+            position,
+            rising_delta: rising.delta,
+            falling_delta: rising.delta,
+            total_duration,
+            direction: OscillationDirection::Rising,
+        }
+    }
+}
+
+impl<Rising, Falling> FixedOscillator<Rising, Falling>
+where
+    Rising: Tween<Value = Falling::Value, Time = Falling::Time>,
+    Falling: Tween,
+{
+    /// Creates a new FixedOscillator out of a `falling` and `rising` tween. If either tweener is
+    /// complete, then they will be reset.
+    ///
+    /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
+    pub fn with_falling(rising: FixedTweenDriver<Rising>, falling: FixedTweenDriver<Falling>) -> Self {
+        let position = rising.tween_data.position;
+        let total_duration = rising.tween_data.duration.add(falling.tween_data.duration);
+
+        Self {
+            rising: rising.tween_data,
+            falling: falling.tween_data,
+            position,
+            rising_delta: rising.delta,
+            falling_delta: falling.delta,
+            total_duration,
             direction: OscillationDirection::Rising,
         }
     }
@@ -162,36 +169,6 @@ where
     /// Gets the current direction of oscillation.
     pub fn direction(&self) -> OscillationDirection {
         self.direction
-    }
-}
-
-impl<Rising, Falling> FixedOscillator<Rising, Falling>
-where
-    Rising: Tween,
-    Falling: Tween,
-{
-    /// Creates a new FixedOscillator out of a `falling` and `rising` tween. If either tweener is
-    /// complete, then they will be reset.
-    ///
-    /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    pub fn with_falling(mut rising: FixedTweenDriver<Rising>, mut falling: FixedTweenDriver<Falling>) -> Self {
-        // unfuse it...
-        if rising.0.fused {
-            rising.0.position = Rising::Time::ZERO;
-            rising.0.fused = false;
-        }
-
-        // unfuse it...
-        if falling.0.fused {
-            falling.0.position = Falling::Time::ZERO;
-            falling.0.fused = false;
-        }
-
-        Self {
-            rising,
-            falling,
-            direction: OscillationDirection::Rising,
-        }
     }
 }
 
@@ -203,31 +180,25 @@ where
     type Item = Rising::Value;
 
     fn next(&mut self) -> Option<Self::Item> {
-        fn _update<T>(driver: &mut FixedTweenDriver<T>, direction: &mut OscillationDirection) -> T::Value
-        where
-            T: Tween,
-        {
-            // we make sure this ALWAYS returns `some`.
-            let output = driver.next().unwrap();
+        let delta = match self.direction() {
+            OscillationDirection::Rising => self.rising_delta,
+            OscillationDirection::Falling => self.falling_delta,
+        };
 
-            // catch the fused here...
-            if driver.0.fused {
-                driver.0.fused = false;
-                driver.0.position = T::Time::ZERO;
+        self.position = self.position.add(delta).modulo(self.total_duration);
 
-                // and flip our direction...
-                *direction = match *direction {
-                    OscillationDirection::Rising => OscillationDirection::Falling,
-                    OscillationDirection::Falling => OscillationDirection::Rising,
-                }
-            }
-
-            output
-        }
-
-        let o = match self.direction {
-            OscillationDirection::Rising => _update(&mut self.rising, &mut self.direction),
-            OscillationDirection::Falling => _update(&mut self.falling, &mut self.direction),
+        let o = if self.position.is_zero() {
+            self.direction = OscillationDirection::Falling;
+            self.falling.tween.final_value()
+        } else if self.position.eq(&self.rising.duration) {
+            self.direction = OscillationDirection::Rising;
+            self.rising.tween.final_value()
+        } else if self.position.is_complete(self.rising.duration) {
+            self.direction = OscillationDirection::Falling;
+            self.falling.tween.run(self.position.sub(self.rising.duration))
+        } else {
+            self.direction = OscillationDirection::Rising;
+            self.rising.tween.run(self.position)
         };
 
         Some(o)
@@ -258,18 +229,27 @@ mod tests {
         let mut oscillator = Oscillator::new(TweenDriver::new(Linear::new(0, 2, 2)));
 
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
+        assert_eq!(oscillator.update(1), 1);
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
-        assert_eq!(oscillator.update(1).unwrap(), 0);
+        assert_eq!(oscillator.update(1), 2);
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 1);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
-        assert_eq!(oscillator.update(1).unwrap(), 2);
+        assert_eq!(oscillator.update(1), 1);
         assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.update(1), 0);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.update(1), 1);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.update(1), 2);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+    }
+
+    #[test]
+    fn tweener_oscillator_big_loop() {
+        let mut oscillator = Oscillator::new(TweenDriver::new(Linear::new(0, 2, 2)));
+
+        assert_eq!(oscillator.update(2), 2);
+        assert_eq!(oscillator.update(1), 1);
+        assert_eq!(oscillator.update(2), 1);
     }
 
     #[test]
@@ -280,15 +260,15 @@ mod tests {
         assert_eq!(oscillator.next().unwrap(), 1);
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.next().unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.next().unwrap(), 1);
         assert_eq!(oscillator.direction(), OscillationDirection::Falling);
         assert_eq!(oscillator.next().unwrap(), 0);
-        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
+        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
         assert_eq!(oscillator.next().unwrap(), 1);
         assert_eq!(oscillator.direction(), OscillationDirection::Rising);
         assert_eq!(oscillator.next().unwrap(), 2);
-        assert_eq!(oscillator.direction(), OscillationDirection::Falling);
+        assert_eq!(oscillator.direction(), OscillationDirection::Rising);
     }
 
     #[test]
