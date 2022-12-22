@@ -32,7 +32,8 @@ pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 #[derive(Debug, PartialEq, Eq, Ord, PartialOrd, Hash, Clone, Copy)]
 pub struct TweenDriver<T: Tween> {
     tween: T,
-    last_time: T::Time,
+    position: T::Time,
+    duration: T::Time,
     fused: bool,
 }
 
@@ -40,9 +41,10 @@ impl<T: Tween> TweenDriver<T> {
     /// Creates a new [TweenDriver] out of an existing tween.
     pub fn new(tween: T) -> Self {
         Self {
-            tween,
-            last_time: T::Time::ZERO,
+            position: T::Time::ZERO,
+            duration: tween.duration(),
             fused: false,
+            tween,
         }
     }
 
@@ -52,15 +54,15 @@ impl<T: Tween> TweenDriver<T> {
     /// receive the max value of the tween.
     pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
         if !self.fused {
-            self.last_time = self.last_time.add(delta);
+            self.position = self.position.add(delta);
 
-            let output = if self.last_time.is_complete(self.tween.duration()) {
+            let output = if self.position.is_complete(self.duration) {
                 self.fused = true;
-                self.last_time = self.tween.duration();
+                self.position = self.duration;
 
                 self.tween.final_value()
             } else {
-                self.tween.run(self.last_time)
+                self.tween.run(self.position)
             };
 
             Some(output)
@@ -115,7 +117,7 @@ where
 
     /// The current time of the tween.
     pub fn current_time(&self) -> T::Time {
-        self.0.last_time
+        self.0.position
     }
 
     /// Converts this tweener to a [FixedLooper].
@@ -156,13 +158,13 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         if !self.0.fused {
-            self.0.last_time = self.0.last_time.add(self.1);
+            self.0.position = self.0.position.add(self.1);
 
-            if self.0.last_time.is_complete(self.0.tween.duration()) {
+            if self.0.position.is_complete(self.0.tween.duration()) {
                 self.0.fused = true;
                 Some(self.0.tween.final_value())
             } else {
-                Some(self.0.tween.run(self.0.last_time))
+                Some(self.0.tween.run(self.0.position))
             }
         } else {
             None

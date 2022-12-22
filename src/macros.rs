@@ -4,9 +4,14 @@ macro_rules! declare_time {
     ($t:ty) => {
         impl TweenTime for $t {
             const ZERO: Self = 0;
+            const ONE: Self = 1;
 
             fn percent(duration: Self, current_time: Self) -> f64 {
                 current_time as f64 / duration as f64
+            }
+
+            fn modulo(self, other: Self) -> Self {
+                self % other
             }
 
             fn add(self, other: Self) -> Self {
@@ -33,9 +38,14 @@ macro_rules! declare_time {
     (float $t:ty) => {
         impl TweenTime for $t {
             const ZERO: Self = 0.0;
+            const ONE: Self = 1.0;
 
             fn percent(duration: Self, current_time: Self) -> f64 {
                 current_time as f64 / duration as f64
+            }
+
+            fn modulo(self, other: Self) -> Self {
+                self % other
             }
 
             fn add(self, other: Self) -> Self {

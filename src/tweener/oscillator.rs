@@ -28,7 +28,7 @@ where
     pub fn new(mut rising: TweenDriver<Rising>) -> Self {
         // unfuse it...
         if rising.fused {
-            rising.last_time = Rising::Time::ZERO;
+            rising.position = Rising::Time::ZERO;
             rising.fused = false;
         }
 
@@ -58,13 +58,13 @@ where
     pub fn with_falling(mut rising: TweenDriver<Rising>, mut falling: TweenDriver<Falling>) -> Self {
         // unfuse it...
         if rising.fused {
-            rising.last_time = Rising::Time::ZERO;
+            rising.position = Rising::Time::ZERO;
             rising.fused = false;
         }
 
         // unfuse it...
         if falling.fused {
-            falling.last_time = Rising::Time::ZERO;
+            falling.position = Rising::Time::ZERO;
             falling.fused = false;
         }
 
@@ -90,7 +90,7 @@ where
             // catch the fused here...
             if driver.fused {
                 driver.fused = false;
-                driver.last_time = T::Time::ZERO;
+                driver.position = T::Time::ZERO;
 
                 // and flip our direction...
                 *direction = match *direction {
@@ -139,7 +139,7 @@ where
     pub fn new(mut rising: FixedTweenDriver<Rising>) -> Self {
         // unfuse it...
         if rising.0.fused {
-            rising.0.last_time = Rising::Time::ZERO;
+            rising.0.position = Rising::Time::ZERO;
             rising.0.fused = false;
         }
 
@@ -177,13 +177,13 @@ where
     pub fn with_falling(mut rising: FixedTweenDriver<Rising>, mut falling: FixedTweenDriver<Falling>) -> Self {
         // unfuse it...
         if rising.0.fused {
-            rising.0.last_time = Rising::Time::ZERO;
+            rising.0.position = Rising::Time::ZERO;
             rising.0.fused = false;
         }
 
         // unfuse it...
         if falling.0.fused {
-            falling.0.last_time = Falling::Time::ZERO;
+            falling.0.position = Falling::Time::ZERO;
             falling.0.fused = false;
         }
 
@@ -213,7 +213,7 @@ where
             // catch the fused here...
             if driver.0.fused {
                 driver.0.fused = false;
-                driver.0.last_time = T::Time::ZERO;
+                driver.0.position = T::Time::ZERO;
 
                 // and flip our direction...
                 *direction = match *direction {

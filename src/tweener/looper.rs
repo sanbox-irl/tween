@@ -4,43 +4,49 @@ use crate::{Tween, TweenTime};
 /// A [Looper] is a wrapper around a [Tweener], which makes it so that
 /// every time the tweener *would* fuse (end), it loops from the start.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Looper<T: Tween>(TweenDriver<T>);
+pub struct Looper<T: Tween> {
+    tween: T,
+    position: T::Time,
+    duration: T::Time,
+}
 
 impl<T: Tween> Looper<T> {
     /// Creates a new Looper around a [Tweener].
     ///
     /// If the [Tweener] is *already* fused, this will reset it to starting
     /// values.
-    pub fn new(mut delta_tweener: TweenDriver<T>) -> Self {
-        // unfuse it...
-        if delta_tweener.fused {
-            delta_tweener.last_time = T::Time::ZERO;
-            delta_tweener.fused = false;
+    pub fn new(delta_tweener: TweenDriver<T>) -> Self {
+        Self {
+            tween: delta_tweener.tween,
+            position: delta_tweener.position,
+            duration: delta_tweener.duration,
         }
-
-        Self(delta_tweener)
     }
 
     /// Drives the inner [Tweener] forward X steps in time, looping if required.
     ///
     /// If the delta given is great enough, you may loop around several times.
-    pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
-        let output = self.0.update(delta).unwrap(); // we make sure this ALWAYS returns `some`.
+    pub fn update(&mut self, delta: T::Time) -> T::Value {
+        // add in that time...
+        self.position = self.position.add(delta).modulo(self.duration);
 
-        // catch the fused here...
-        if self.0.fused {
-            self.0.last_time = T::Time::ZERO;
-            self.0.fused = false;
+        if self.position.is_zero() {
+            self.tween.final_value()
+        } else {
+            self.tween.run(self.position)
         }
-
-        Some(output)
     }
 }
 
 /// A [FixedLooper] is a wrapper around a [FixedTweener], which makes it so that
 /// every time the tweener *would* fuse (end), it instead loops.
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct FixedLooper<T: Tween>(FixedTweenDriver<T>);
+pub struct FixedLooper<T: Tween> {
+    tween: T,
+    position: T::Time,
+    duration: T::Time,
+    delta: T::Time,
+}
 
 impl<T> FixedLooper<T>
 where
@@ -48,14 +54,13 @@ where
 {
     /// Creates a new FixedLooper. If the tweener is already complete, then it will
     /// reset it.
-    pub fn new(mut tweener: FixedTweenDriver<T>) -> Self {
-        // unfuse it...
-        if tweener.0.fused {
-            tweener.0.last_time = T::Time::ZERO;
-            tweener.0.fused = false;
+    pub fn new(tweener: FixedTweenDriver<T>) -> Self {
+        Self {
+            position: tweener.0.position,
+            duration: tweener.0.duration,
+            delta: tweener.1,
+            tween: tweener.0.tween,
         }
-
-        Self(tweener)
     }
 }
 
@@ -66,15 +71,19 @@ where
     type Item = T::Value;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let output = self.0.next().unwrap(); // we make sure this ALWAYS returns `some`.
+        // add in that time...
+        self.position = self.position.add(self.delta).modulo(self.duration);
+        let o = if self.position.is_zero() {
+            self.tween.final_value()
+        } else {
+            self.tween.run(self.position)
+        };
 
-        // catch the fused here...
-        if self.0.0.fused {
-            self.0.0.last_time = T::Time::ZERO;
-            self.0.0.fused = false;
-        }
+        Some(o)
+    }
 
-        Some(output)
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (usize::MAX, None)
     }
 }
 
@@ -98,10 +107,32 @@ mod tests {
     fn tweener_loop() {
         let mut looper = TweenDriver::new(Linear::new(0, 2, 2)).looper();
 
-        assert_eq!(looper.update(1).unwrap(), 1);
-        assert_eq!(looper.update(1).unwrap(), 2);
-        assert_eq!(looper.update(1).unwrap(), 1);
-        assert_eq!(looper.update(1).unwrap(), 2);
+        assert_eq!(looper.update(1), 1);
+        assert_eq!(looper.update(1), 2);
+        assert_eq!(looper.update(1), 1);
+        assert_eq!(looper.update(1), 2);
+        assert_eq!(looper.update(1), 1);
+    }
+
+    #[test]
+    fn tweener_loop_frac() {
+        let mut looper = TweenDriver::new(Linear::new(0, 2, 0.5)).looper();
+
+        assert_eq!(looper.update(0.25), 1);
+        assert_eq!(looper.update(0.25), 2);
+        assert_eq!(looper.update(0.25), 1);
+        assert_eq!(looper.update(0.25), 2);
+        assert_eq!(looper.update(0.25), 1);
+    }
+
+    #[test]
+    fn tweener_big_loop() {
+        let mut looper = TweenDriver::new(Linear::new(0, 2, 2)).looper();
+
+        assert_eq!(looper.update(3), 1);
+        assert_eq!(looper.update(4), 1);
+        assert_eq!(looper.update(4), 1);
+        assert_eq!(looper.update(5), 2);
     }
 
     #[test]

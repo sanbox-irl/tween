@@ -120,11 +120,15 @@ pub trait TweenValue: Copy + PartialEq + core::fmt::Debug {
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
 pub trait TweenTime: Copy + PartialEq + PartialOrd + core::fmt::Debug {
-    /// The ZERO value. Generally, this is 0 or 0.0.
+    /// The ZERO value. This is 0 or 0.0.
     const ZERO: Self;
+    /// The ONE value. This is 1 or 1.0.
+    const ONE: Self;
     /// This should be implemented as a simple division. For f32, for example,
     /// it's implemented as `(current_time / duration) as f64`.
     fn percent(duration: Self, current_time: Self) -> f64;
+    /// This should be implemented as a simple `%` operation.
+    fn modulo(self, other: Self) -> Self;
     /// Converts the self to an `f64`.
     fn as_f64(self) -> f64;
     /// Adds `self` to `other`. This should be implemented as simple addition.
@@ -137,6 +141,10 @@ pub trait TweenTime: Copy + PartialEq + PartialOrd + core::fmt::Debug {
     /// This checks if a given time is greater than another time. For f32, for example,
     /// it's implemented as `self >= duration`.
     fn is_complete(self, duration: Self) -> bool;
+    /// Checks if it's zero
+    fn is_zero(self) -> bool {
+        self.eq(&Self::ZERO)
+    }
 }
 
 declare_time!(u8);
@@ -150,8 +158,6 @@ declare_time!(isize);
 declare_time!(float f32);
 declare_time!(float f64);
 
-declare_value!(float f32);
-declare_value!(float f64);
 declare_value!(u8);
 declare_value!(i8);
 declare_value!(i32);
@@ -160,3 +166,5 @@ declare_value!(u32);
 declare_value!(u64);
 declare_value!(usize);
 declare_value!(isize);
+declare_value!(float f32);
+declare_value!(float f64);
