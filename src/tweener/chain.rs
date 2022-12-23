@@ -151,7 +151,7 @@ mod tests {
     fn absurd_loop() {
         let mut chain = Looper::new(TweenDriver::new(Chain::new(
             Chain::new(Linear::new(2, 4, 2), Linear::new(5, 6, 2)),
-            Chain::new(Linear::new(2, 4, 2), Linear::new(5, 8, 2)),
+            Chain::new(Linear::new(2, 4, 2), Linear::new(5, 8, 3)),
         )));
 
         // assert_eq!(chain.update(0), 2);
@@ -161,8 +161,9 @@ mod tests {
         assert_eq!(chain.update(1), 6);
         assert_eq!(chain.update(1), 3);
         assert_eq!(chain.update(1), 4);
-        assert_eq!(chain.update(1), 5);
         assert_eq!(chain.update(1), 6);
+        assert_eq!(chain.update(1), 7);
+        assert_eq!(chain.update(1), 8);
 
         // assert_eq!(chain.update(0), 2);
         assert_eq!(chain.update(1), 3);
@@ -171,8 +172,9 @@ mod tests {
         assert_eq!(chain.update(1), 6);
         assert_eq!(chain.update(1), 3);
         assert_eq!(chain.update(1), 4);
-        assert_eq!(chain.update(1), 5);
         assert_eq!(chain.update(1), 6);
+        assert_eq!(chain.update(1), 7);
+        assert_eq!(chain.update(1), 8);
     }
 
     // #[test]
