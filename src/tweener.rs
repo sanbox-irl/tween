@@ -1,11 +1,10 @@
 use crate::{Tween, TweenTime};
 
-// mod chain;
+mod chain;
 mod looper;
 mod oscillator;
-mod chain;
 
-// pub use chain::Chain;
+pub use chain::Chain;
 pub use looper::{FixedLooper, Looper};
 pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 
