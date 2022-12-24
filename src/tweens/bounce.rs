@@ -29,7 +29,7 @@ declare_tween!(
         value_delta - v
     }
 
-    fn percent(&mut self, current_time: Self::Time, duration: Self::Time) -> f64 {
+    fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
         (duration - current_time).to_f64() / duration.to_f64()
     }
 );
@@ -99,7 +99,7 @@ declare_tween!(
         }
     }
 
-    fn percent(&mut self, current_time: Self::Time, duration: Self::Time) -> f64 {
+    fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
         let current_time = current_time.to_f64();
         let duration = duration.to_f64();
 

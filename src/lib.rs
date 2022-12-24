@@ -32,11 +32,7 @@ use core::{
 pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.
-pub trait Tween<Value> {
-    /// The Time parameter over which this tween operates. You can use a float
-    /// to mean "seconds", or, in many games, an integer to mean "frames".
-    type Time: TweenTime;
-
+pub trait Tween<Value, Time: TweenTime> {
     /// Returns a new value based on the value_delta and the percent.
     ///
     /// [Linear], for example, is implemented simply as:
@@ -48,7 +44,7 @@ pub trait Tween<Value> {
 
     /// Returns a percent, which is used in Tweeners as the `percent` argument in [Tween::tween].
     /// All Tweens in this library *expect* [Bounce] use this default implementation.
-    fn percent(&mut self, current_time: Self::Time, duration: Self::Time) -> f64 {
+    fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
         current_time.to_f64() / duration.to_f64()
     }
 }
@@ -72,13 +68,13 @@ impl<Value, Time, T> Tweener<Value, Time, T>
 where
     Value: TweenValue,
     Time: TweenTime,
-    T: Tween<Value, Time = Time>,
+    T: Tween<Value, Time>,
 {
     /// Creates a new [SizedTween] generically. All tweens in this library except [ElasticIn],
     /// [ElasticOut], and [ElasticInOut] implement [SizedTween].
     pub fn new(start: Value, end: Value, duration: Time) -> Self
     where
-        T: SizedTween<Value>,
+        T: SizedTween<Value, Time>,
     {
         Self::with_tween(start, end, duration, T::new())
     }
@@ -119,11 +115,10 @@ where
     }
 }
 
-impl<Value, Time> Tweener<Value, Time, SineIn<Value, Time>>
+impl<Value, Time> Tweener<Value, Time, SineIn>
 where
     Value: TweenValue,
     Time: TweenTime,
-    SineIn<Value, Time>: Tween<Value, Time = Time>,
 {
     /// Creates a new [SineIn] tween.
     pub fn sine_in(start: Value, end: Value, duration: Time) -> Self {
@@ -132,13 +127,11 @@ where
 }
 
 #[cfg(feature = "std")]
-impl<Value, Time> Tween<Value> for std::boxed::Box<dyn Tween<Value, Time = Time>>
+impl<Value, Time> Tween<Value, Time> for std::boxed::Box<dyn Tween<Value, Time>>
 where
     Value: TweenValue,
     Time: TweenTime,
 {
-    type Time = Time;
-
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         (**self).tween(value_delta, percent)
     }
@@ -146,13 +139,13 @@ where
 
 /// This is a helper trait, which all the tweens in this library support, which gives access
 /// to non-object-safe methods.
-pub trait SizedTween<Value>: Tween<Value> + Sized {
+pub trait SizedTween<Value, Time: TweenTime>: Tween<Value, Time> + Sized {
     /// Creates a new `SizedTween`
     fn new() -> Self;
 }
 
 #[cfg(test)]
-static_assertions::assert_obj_safe!(Tween<i32, Time = i32>);
+static_assertions::assert_obj_safe!(Tween<i32, i32>);
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs
 /// `TweenValue` eventually.

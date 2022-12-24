@@ -27,13 +27,11 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value> for ElasticIn<Value, Time>
+impl<Value, Time> Tween<Value, Time> for ElasticIn<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
 {
-    type Time = Time;
-
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {
             return Value::ZERO;
@@ -90,13 +88,11 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value> for ElasticOut<Value, Time>
+impl<Value, Time> Tween<Value, Time> for ElasticOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
 {
-    type Time = Time;
-
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         if percent == 0.0 {
             return Value::ZERO;
@@ -145,13 +141,11 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value> for ElasticInOut<Value, Time>
+impl<Value, Time> Tween<Value, Time> for ElasticInOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
 {
-    type Time = Time;
-
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {
             return Value::ZERO;

@@ -80,60 +80,62 @@ macro_rules! declare_tween {
     ) => {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
-        pub struct $name<Value, Time>(core::marker::PhantomData<(Value, Time)>);
+        pub struct $name;
 
-        impl<Value, Time> $name<Value, Time>
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
+        impl $name {
             /// Creates a new tween out of a range with a duration.
-            pub fn new() -> Self {
-                <Self as $crate::SizedTween<Value>>::new()
+            pub fn new<Value, Time>() -> Self
+            where
+                Value: $crate::TweenValue,
+                Time: $crate::TweenTime,
+            {
+                <Self as $crate::SizedTween<Value, Time>>::new()
             }
 
-            /// Calculate what a percent into the Tween based on time. For almost all Tweens,
+             /// Calculate what a percent into the Tween based on time. For almost all Tweens,
             /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
-            pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
-                <Self as $crate::Tween<Value>>::percent(self, current_time, duration)
+            pub fn percent<Value, Time>(&mut self, current_time: Time, duration: Time) -> f64
+            where
+                Value: $crate::TweenValue,
+                Time: $crate::TweenTime,
+            {
+                <Self as $crate::Tween<Value, Time>>::percent(self, current_time, duration)
             }
 
             /// Run the given Tween with a new time.
-            pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+            pub fn tween<Value, Time>(&mut self, value_delta: Value, percent: f64) -> Value
+            where
+                Value: $crate::TweenValue,
+                Time: $crate::TweenTime,
+            {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween<Value>>::tween(self, value_delta, percent)
+                <Self as $crate::Tween<Value, Time>>::tween(self, value_delta, percent)
             }
         }
 
-        impl<Value, Time> Default for $name<Value, Time>
+        // impl Default for $name {
+        //     fn default() -> Self {
+        //         Self::
+        //     }
+        // }
+
+        impl<Value, Time> $crate::Tween<Value, Time> for $name
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
         {
-            fn default() -> Self {
-                <Self as $crate::SizedTween<Value>>::new()
-            }
-        }
-
-        impl<Value, Time> $crate::Tween<Value> for $name<Value, Time>
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            type Time = Time;
-
             $tween
         }
 
-        impl<Value, Time> $crate::SizedTween<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::SizedTween<Value, Time> for $name
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
         {
             /// Creates a new Tween
             fn new() -> Self {
-                Self(core::marker::PhantomData)
+                Self
             }
         }
     };
@@ -148,62 +150,60 @@ macro_rules! declare_tween {
     ) => {
         $(#[$struct_meta])*
         #[derive(Debug, PartialEq, Eq, Clone)]
-        pub struct $name<Value, Time>(core::marker::PhantomData<(Value, Time)>);
+        pub struct $name;
 
-        impl<Value, Time> $name<Value, Time>
+        // impl<Value, Time> $name
+        // where
+        //     Value: $crate::TweenValue,
+        //     Time: $crate::TweenTime,
+        // {
+        //     /// Creates a new tween out of a range with a duration.
+        //     pub fn new() -> Self {
+        //         <Self as $crate::SizedTween<Value, Time>>::new()
+        //     }
+
+        //     /// Calculate what a percent into the Tween based on time. For almost all Tweens,
+        //     /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
+        //     pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
+        //         <Self as $crate::Tween<Value, Time>>::percent(self, current_time, duration)
+        //     }
+
+        //     /// Run the given Tween with a new time.
+        //     pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        //         // we pass this through so that we don't require users to (annoyingly) import
+        //         // a trait. Inherent methods in traits pls!
+        //         <Self as $crate::Tween<Value, Time>>::tween(self, value_delta, percent)
+        //     }
+        // }
+
+        // impl<Value, Time> Default for $name<Value, Time>
+        // where
+        //     Value: $crate::TweenValue,
+        //     Time: $crate::TweenTime,
+        // {
+        //     fn default() -> Self {
+        //         <Self as $crate::SizedTween<Value, Time>>::new()
+        //     }
+        // }
+
+        impl<Value, Time> $crate::Tween<Value, Time> for $name
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
         {
-            /// Creates a new tween out of a range with a duration.
-            pub fn new() -> Self {
-                <Self as $crate::SizedTween<Value>>::new()
-            }
-
-            /// Calculate what a percent into the Tween based on time. For almost all Tweens,
-            /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
-            pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
-                <Self as $crate::Tween<Value>>::percent(self, current_time, duration)
-            }
-
-            /// Run the given Tween with a new time.
-            pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
-                // we pass this through so that we don't require users to (annoyingly) import
-                // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween<Value>>::tween(self, value_delta, percent)
-            }
-        }
-
-        impl<Value, Time> Default for $name<Value, Time>
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            fn default() -> Self {
-                <Self as $crate::SizedTween<Value>>::new()
-            }
-        }
-
-        impl<Value, Time> $crate::Tween<Value> for $name<Value, Time>
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            type Time = Time;
-
             $tween
 
             $percent
         }
 
-        impl<Value, Time> $crate::SizedTween<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::SizedTween<Value, Time> for $name
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
         {
             /// Creates a new Tween
             fn new() -> Self {
-                Self(core::marker::PhantomData)
+                Self
             }
         }
     };
@@ -220,7 +220,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name In>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -234,7 +234,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name In>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -248,7 +248,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_out() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name Out>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -262,7 +262,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_out_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name Out>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -276,7 +276,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_out() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name InOut>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -291,7 +291,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_out_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name InOut>]::new());
+                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
