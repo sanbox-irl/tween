@@ -67,25 +67,21 @@ declare_tween!(
         if t < 0.5 {
             let t = T::percent(self.duration, self.duration - new_time.scale(2.0));
 
-            let v = {
-                let multip = if t < STAGE_ZERO {
-                    MAGIC * t * t
-                } else if t < STAGE_ONE {
-                    let t = t - 1.5 / 2.75;
-                    MAGIC * t * t + 0.75
-                } else if t < STAGE_TWO {
-                    let t = t - 2.25 / 2.75;
-                    MAGIC * t * t + 0.9375
-                } else {
-                    let t = t - 2.625 / 2.75;
+            let multip = if t < STAGE_ZERO {
+                MAGIC * t * t
+            } else if t < STAGE_ONE {
+                let t = t - 1.5 / 2.75;
+                MAGIC * t * t + 0.75
+            } else if t < STAGE_TWO {
+                let t = t - 2.25 / 2.75;
+                MAGIC * t * t + 0.9375
+            } else {
+                let t = t - 2.625 / 2.75;
 
-                    MAGIC * t * t + 0.984375
-                };
-
-                self.value_delta.scale(multip)
+                MAGIC * t * t + 0.984375
             };
 
-            (self.value_delta - v).scale(0.5) + self.initial_value
+            (self.value_delta - self.value_delta.scale(multip)).scale(0.5) + self.initial_value
         } else {
             let t = T::percent(self.duration, new_time.scale(2.0) - self.duration);
 
