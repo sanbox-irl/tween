@@ -4,68 +4,42 @@ macro_rules! declare_time {
     ($t:ty) => {
         impl TweenTime for $t {
             const ZERO: Self = 0;
-            const ONE: Self = 1;
 
             fn percent(duration: Self, current_time: Self) -> f64 {
                 current_time as f64 / duration as f64
             }
 
-            fn modulo(self, other: Self) -> Self {
-                self % other
+            fn to_f32(self) -> f32 {
+                self as f32
             }
 
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn sub(self, other: Self) -> Self {
-                self - other
-            }
-
-            fn as_f64(self) -> f64 {
+            fn to_f64(self) -> f64 {
                 self as f64
             }
 
             fn scale(self, other: f64) -> Self {
                 (self as f64 * other) as Self
-            }
-
-            fn is_complete(self, duration: Self) -> bool {
-                self >= duration
             }
         }
     };
     (float $t:ty) => {
         impl TweenTime for $t {
             const ZERO: Self = 0.0;
-            const ONE: Self = 1.0;
 
             fn percent(duration: Self, current_time: Self) -> f64 {
                 current_time as f64 / duration as f64
             }
 
-            fn modulo(self, other: Self) -> Self {
-                self % other
+            fn to_f32(self) -> f32 {
+                self as f32
             }
 
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn sub(self, other: Self) -> Self {
-                self - other
+            fn to_f64(self) -> f64 {
+                self as f64
             }
 
             fn scale(self, other: f64) -> Self {
                 (self as f64 * other) as Self
-            }
-
-            fn as_f64(self) -> f64 {
-                self as f64
-            }
-
-            fn is_complete(self, duration: Self) -> bool {
-                self >= duration
             }
         }
     };
@@ -78,14 +52,6 @@ macro_rules! declare_value {
         impl TweenValue for $t {
             const ZERO: Self = 0;
 
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn calculate_delta(destination: Self, start: Self) -> Self {
-                destination - start
-            }
-
             fn scale(self, scale: f64) -> Self {
                 (self as f64 * scale) as $t
             }
@@ -95,14 +61,6 @@ macro_rules! declare_value {
     (float $t:ty) => {
         impl TweenValue for $t {
             const ZERO: Self = 0.0;
-
-            fn add(self, other: Self) -> Self {
-                self + other
-            }
-
-            fn calculate_delta(destination: Self, start: Self) -> Self {
-                destination - start
-            }
 
             fn scale(self, scale: f64) -> Self {
                 (self as f64 * scale) as $t
@@ -177,7 +135,7 @@ macro_rules! declare_tween {
         {
             /// Creates a new Tween
             fn new(initial_value: V, final_value: V, duration: T) -> Self {
-                let delta = V::calculate_delta(final_value, initial_value);
+                let delta = final_value - initial_value;
                 Self {
                     initial_value,
                     final_value,
@@ -255,7 +213,7 @@ macro_rules! declare_in_out_tween {
         {
             /// Creates a new Tween
             fn new(initial_value: V, final_value: V, duration: T) -> Self {
-                let value_delta = V::calculate_delta(final_value, initial_value);
+                let value_delta = final_value - initial_value;
                 let half_delta = V::scale(value_delta, 0.5);
                 Self {
                     initial_value,

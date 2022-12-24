@@ -45,12 +45,12 @@ where
         }
 
         // add in that time...
-        self.position = self.position.add(delta);
+        self.position += delta;
 
         if First::Time::percent(self.durations[0], self.position) > 1.0 {
-            let chunked_pos = self.position.sub(self.durations[0]);
+            let chunked_pos = self.position - self.durations[0];
 
-            if chunked_pos.is_complete(self.durations[1]) {
+            if chunked_pos >= self.durations[1] {
                 self.fused = true;
 
                 Some(self.second.final_value())
@@ -75,9 +75,9 @@ where
         self.position = new_time;
 
         if First::Time::percent(self.durations[0], self.position) > 1.0 {
-            let chunked_pos = self.position.sub(self.durations[0]);
+            let chunked_pos = self.position - self.durations[0];
 
-            if chunked_pos.is_complete(self.durations[1]) {
+            if chunked_pos >= self.durations[1] {
                 self.second.final_value()
             } else {
                 self.second.run(chunked_pos)
@@ -96,7 +96,7 @@ where
     }
 
     fn duration(&self) -> Self::Time {
-        self.durations[0].add(self.durations[1])
+        self.durations[0] + self.durations[1]
     }
 }
 
@@ -151,9 +151,9 @@ where
         self.position = new_time;
 
         if First::Time::percent(self.durations[0], self.position) > 1.0 {
-            let chunked_pos = self.position.sub(self.durations[0]);
+            let chunked_pos = self.position - self.durations[0];
 
-            if chunked_pos.is_complete(self.durations[1]) {
+            if chunked_pos >= self.durations[1] {
                 self.second.final_value()
             } else {
                 self.second.run(chunked_pos)
@@ -172,7 +172,7 @@ where
     }
 
     fn duration(&self) -> Self::Time {
-        self.durations[0].add(self.durations[1])
+        self.durations[0] + self.durations[1]
     }
 }
 
@@ -195,12 +195,12 @@ where
         };
 
         // add in that time...
-        self.position = self.position.add(delta);
+        self.position += delta;
 
         if First::Time::percent(self.durations[0], self.position) > 1.0 {
-            let chunked_pos = self.position.sub(self.durations[0]);
+            let chunked_pos = self.position - self.durations[0];
 
-            if chunked_pos.is_complete(self.durations[1]) {
+            if chunked_pos >= self.durations[1] {
                 self.fused = true;
 
                 Some(self.second.final_value())

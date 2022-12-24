@@ -15,7 +15,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(scalar);
 
-            new_value.add(self.initial_value)
+            new_value + self.initial_value
         }
     }
 );
@@ -36,7 +36,7 @@ declare_tween!(
 
             let new_value = self.value_delta.scale(1.0 - powf);
 
-            new_value.add(self.initial_value)
+            new_value + self.initial_value
         }
     }
 );
@@ -78,7 +78,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(powf);
 
-        new_value.add(self.initial_value)
+        new_value + self.initial_value
     }
 );
 

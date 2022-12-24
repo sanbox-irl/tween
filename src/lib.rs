@@ -23,6 +23,11 @@ mod tweens;
 #[cfg(feature = "glam")]
 mod glam;
 
+use core::{
+    fmt::Debug,
+    ops::{Add, AddAssign, Rem, RemAssign, Sub, SubAssign},
+};
+
 pub use tweener::*;
 pub use tweens::*;
 
@@ -94,17 +99,11 @@ static_assertions::assert_obj_safe!(Tween<Value = i32, Time = i32>);
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenValue: Copy + PartialEq + core::fmt::Debug {
+pub trait TweenValue:
+    Copy + PartialEq + Debug + Add<Output = Self> + AddAssign + Sub<Output = Self> + SubAssign
+{
     /// The ZERO value. Generally, this is 0 or 0.0.
     const ZERO: Self;
-
-    /// This should be implemented as a simple subtraction. For f32, for example,
-    /// it's implemented as just `destination - start`.
-    fn calculate_delta(destination: Self, start: Self) -> Self;
-
-    /// This should be implemented as a simple addition. For f32, for example,
-    /// it's implemented as `self + other`.
-    fn add(self, other: Self) -> Self;
 
     /// This should be implemented as a simple multiplication. For f32, for example,
     /// it's implemented as `(self as f64 * scale) as f32`.
@@ -119,32 +118,33 @@ pub trait TweenValue: Copy + PartialEq + core::fmt::Debug {
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenTime: Copy + PartialEq + PartialOrd + core::fmt::Debug {
+pub trait TweenTime:
+    Copy
+    + PartialEq
+    + PartialOrd
+    + Debug
+    + Add<Output = Self>
+    + AddAssign
+    + Rem<Output = Self>
+    + RemAssign
+    + Sub<Output = Self>
+    + SubAssign
+{
     /// The ZERO value. This is 0 or 0.0.
     const ZERO: Self;
-    /// The ONE value. This is 1 or 1.0.
-    const ONE: Self;
+
     /// This should be implemented as a simple division. For f32, for example,
     /// it's implemented as `(current_time / duration) as f64`.
     fn percent(duration: Self, current_time: Self) -> f64;
-    /// This should be implemented as a simple `%` operation.
-    fn modulo(self, other: Self) -> Self;
+
+    /// Converts the given number to an `f32`.
+    fn to_f32(self) -> f32;
+
     /// Converts the self to an `f64`. This is only used in `Elastic` in this library.
-    fn as_f64(self) -> f64;
-    /// Adds `self` to `other`. This should be implemented as simple addition.
-    fn add(self, other: Self) -> Self;
-    /// Subtracts `self` from `other`. This should be implemented as a simple
-    /// subtraction, such as `self - other`. Notice the order.
-    fn sub(self, other: Self) -> Self;
+    fn to_f64(self) -> f64;
+
     /// This is implemented as a simple multipler, such as `self * multiplier`.
     fn scale(self, multiplier: f64) -> Self;
-    /// This checks if a given time is greater than another time. For f32, for example,
-    /// it's implemented as `self >= duration`.
-    fn is_complete(self, duration: Self) -> bool;
-    /// Checks if it's zero. This is a shorthand.
-    fn is_zero(self) -> bool {
-        self.eq(&Self::ZERO)
-    }
 }
 
 declare_time!(u8);

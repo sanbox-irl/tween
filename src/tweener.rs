@@ -76,9 +76,9 @@ impl<T: Tween> TweenDriver<T> {
     /// receive the max value of the tween.
     pub fn update(&mut self, delta: T::Time) -> Option<T::Value> {
         if !self.fused {
-            self.tween_data.position = self.tween_data.position.add(delta);
+            self.tween_data.position += delta;
 
-            let output = if self.tween_data.position.is_complete(self.tween_data.duration) {
+            let output = if self.tween_data.position >= self.tween_data.duration {
                 self.fused = true;
                 self.tween_data.position = self.tween_data.duration;
 
@@ -191,9 +191,9 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         if !self.fused {
-            self.tween_data.position = self.tween_data.position.add(self.delta);
+            self.tween_data.position += self.delta;
 
-            if self.tween_data.position.is_complete(self.tween_data.tween.duration()) {
+            if self.tween_data.position >= self.tween_data.tween.duration() {
                 self.fused = true;
                 Some(self.tween_data.tween.final_value())
             } else {

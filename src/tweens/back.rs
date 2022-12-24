@@ -16,7 +16,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(self.initial_value)
+        new_value + self.initial_value
     }
 );
 
@@ -30,7 +30,7 @@ declare_tween!(
 
         let new_value = self.value_delta.scale(scalar);
 
-        new_value.add(self.initial_value)
+        new_value + self.initial_value
     }
 );
 
@@ -50,7 +50,7 @@ declare_in_out_tween!(
         };
         let new_value = self.half_delta.scale(scalar);
 
-        new_value.add(self.initial_value)
+        new_value + self.initial_value
     }
 );
 

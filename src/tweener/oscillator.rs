@@ -35,7 +35,7 @@ where
         ));
 
         let position = rising.tween_data.position;
-        let duration = rising.tween_data.duration.add(falling.duration);
+        let duration = rising.tween_data.duration + falling.duration;
 
         Self {
             rising: rising.tween_data,
@@ -58,7 +58,7 @@ where
     /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
     pub fn with_falling(rising: TweenDriver<Rising>, falling: TweenDriver<Falling>) -> Self {
         let position = rising.tween_data.position;
-        let duration = rising.tween_data.duration.add(falling.tween_data.duration);
+        let duration = rising.tween_data.duration + falling.tween_data.duration;
 
         Self {
             rising: rising.tween_data,
@@ -73,17 +73,17 @@ where
     ///
     /// If the delta given is great enough, you may oscillate around several times.
     pub fn update(&mut self, delta: Rising::Time) -> Rising::Value {
-        self.position = self.position.add(delta).modulo(self.total_duration);
+        self.position = (self.position + delta) % self.total_duration;
 
-        if self.position.is_zero() {
+        if self.position == Rising::Time::ZERO {
             self.direction = OscillationDirection::Falling;
             self.falling.tween.final_value()
         } else if self.position.eq(&self.rising.duration) {
             self.direction = OscillationDirection::Rising;
             self.rising.tween.final_value()
-        } else if self.position.is_complete(self.rising.duration) {
+        } else if self.position >= self.rising.duration {
             self.direction = OscillationDirection::Falling;
-            self.falling.tween.run(self.position.sub(self.rising.duration))
+            self.falling.tween.run(self.position - self.rising.duration)
         } else {
             self.direction = OscillationDirection::Rising;
             self.rising.tween.run(self.position)
@@ -128,7 +128,7 @@ where
         ));
 
         let position = rising.tween_data.position;
-        let total_duration = rising.tween_data.duration.add(falling.duration);
+        let total_duration = rising.tween_data.duration + falling.duration;
 
         Self {
             rising: rising.tween_data,
@@ -153,7 +153,7 @@ where
     /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
     pub fn with_falling(rising: FixedTweenDriver<Rising>, falling: FixedTweenDriver<Falling>) -> Self {
         let position = rising.tween_data.position;
-        let total_duration = rising.tween_data.duration.add(falling.tween_data.duration);
+        let total_duration = rising.tween_data.duration + falling.tween_data.duration;
 
         Self {
             rising: rising.tween_data,
@@ -185,17 +185,17 @@ where
             OscillationDirection::Falling => self.falling_delta,
         };
 
-        self.position = self.position.add(delta).modulo(self.total_duration);
+        self.position = (self.position + delta) % self.total_duration;
 
-        let o = if self.position.is_zero() {
+        let o = if self.position == Rising::Time::ZERO {
             self.direction = OscillationDirection::Falling;
             self.falling.tween.final_value()
         } else if self.position.eq(&self.rising.duration) {
             self.direction = OscillationDirection::Rising;
             self.rising.tween.final_value()
-        } else if self.position.is_complete(self.rising.duration) {
+        } else if self.position >= self.rising.duration {
             self.direction = OscillationDirection::Falling;
-            self.falling.tween.run(self.position.sub(self.rising.duration))
+            self.falling.tween.run(self.position - self.rising.duration)
         } else {
             self.direction = OscillationDirection::Rising;
             self.rising.tween.run(self.position)

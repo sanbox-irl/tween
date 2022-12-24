@@ -9,7 +9,7 @@ declare_tween!(
 
     fn run(&mut self, new_time: T) -> V {
         let v = {
-            let t = T::percent(self.duration, self.duration.sub(new_time));
+            let t = T::percent(self.duration, self.duration - new_time);
 
             let multip = if t < STAGE_ZERO {
                 MAGIC * t * t
@@ -28,7 +28,7 @@ declare_tween!(
             self.value_delta.scale(multip)
         };
 
-        crate::TweenValue::calculate_delta(self.value_delta, v).add(self.initial_value)
+        self.value_delta - v + self.initial_value
     }
 );
 
@@ -53,7 +53,7 @@ declare_tween!(
             MAGIC * t * t + 0.984375
         };
 
-        self.value_delta.scale(multip).add(self.initial_value)
+        self.value_delta.scale(multip) + self.initial_value
     }
 );
 
@@ -65,7 +65,7 @@ declare_tween!(
         let t = T::percent(self.duration, new_time);
 
         if t < 0.5 {
-            let t = T::percent(self.duration, self.duration.sub(new_time.scale(2.0)));
+            let t = T::percent(self.duration, self.duration - new_time.scale(2.0));
 
             let v = {
                 let multip = if t < STAGE_ZERO {
@@ -85,11 +85,9 @@ declare_tween!(
                 self.value_delta.scale(multip)
             };
 
-            crate::TweenValue::calculate_delta(self.value_delta, v)
-                .scale(0.5)
-                .add(self.initial_value)
+            (self.value_delta - v).scale(0.5) + self.initial_value
         } else {
-            let t = T::percent(self.duration, new_time.scale(2.0).sub(self.duration));
+            let t = T::percent(self.duration, new_time.scale(2.0) - self.duration);
 
             let multip = if t < STAGE_ZERO {
                 MAGIC * t * t
@@ -105,11 +103,7 @@ declare_tween!(
                 MAGIC * t * t + 0.984375
             };
 
-            self.value_delta
-                .scale(multip)
-                .scale(0.5)
-                .add(self.value_delta.scale(0.5))
-                .add(self.initial_value)
+            self.value_delta.scale(multip).scale(0.5) + self.value_delta.scale(0.5) + self.initial_value
         }
     }
 );

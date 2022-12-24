@@ -51,7 +51,7 @@ where
         let scalar = 2f64.powf(t * 10.0);
 
         let post_fix = self.value_delta.scale(scalar);
-        let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.three_tenths;
+        let temp = (self.duration.to_f64() * t - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
         let scalar = -libm::sin(temp);
@@ -59,7 +59,7 @@ where
         #[cfg(feature = "std")]
         let scalar = -temp.sin();
 
-        post_fix.scale(scalar).add(self.initial_value)
+        post_fix.scale(scalar) + self.initial_value
     }
 
     fn duration(&self) -> T {
@@ -81,8 +81,8 @@ where
     T: TweenTime,
 {
     fn new(initial_value: V, final_value: V, duration: T) -> Self {
-        let delta = V::calculate_delta(final_value, initial_value);
-        let three_tenths = duration.as_f64() * 0.3;
+        let delta = final_value - initial_value;
+        let three_tenths = duration.to_f64() * 0.3;
         Self {
             value_delta: delta,
             duration,
@@ -135,7 +135,7 @@ where
             return self.final_value;
         }
 
-        let temp = (t * self.duration.as_f64() - self.s) * (2.0 * PI) / self.three_tenths;
+        let temp = (t * self.duration.to_f64() - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
         let scalar = libm::pow(2.0, -10.0 * t) * libm::sin(temp);
@@ -143,10 +143,7 @@ where
         #[cfg(feature = "std")]
         let scalar = 2f64.powf(-10.0 * t) * temp.sin();
 
-        self.value_delta
-            .scale(scalar)
-            .add(self.value_delta)
-            .add(self.initial_value)
+        self.value_delta.scale(scalar) + self.value_delta + self.initial_value
     }
 
     fn duration(&self) -> T {
@@ -168,8 +165,8 @@ where
     T: TweenTime,
 {
     fn new(initial_value: V, final_value: V, duration: T) -> Self {
-        let delta = V::calculate_delta(final_value, initial_value);
-        let three_tenths = duration.as_f64() * 0.3;
+        let delta = final_value - initial_value;
+        let three_tenths = duration.to_f64() * 0.3;
         Self {
             value_delta: delta,
             duration,
@@ -231,7 +228,7 @@ where
             let scalar = 2f64.powf(t * 10.0);
 
             let post_fix = self.value_delta.scale(scalar);
-            let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.p;
+            let temp = (self.duration.to_f64() * t - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
             let temp_sin = libm::sin(temp);
@@ -239,7 +236,7 @@ where
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();
 
-            post_fix.scale(-0.5 * temp_sin).add(self.initial_value)
+            post_fix.scale(-0.5 * temp_sin) + self.initial_value
         } else {
             #[cfg(feature = "libm")]
             let scalar = libm::pow(2.0, t * -10.0);
@@ -248,7 +245,7 @@ where
             let scalar = 2f64.powf(-10.0 * t);
 
             let post_fix = self.value_delta.scale(scalar);
-            let temp = (self.duration.as_f64() * t - self.s) * (2.0 * PI) / self.p;
+            let temp = (self.duration.to_f64() * t - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
             let temp_sin = libm::sin(temp);
@@ -256,7 +253,7 @@ where
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();
 
-            post_fix.scale(temp_sin * 0.5).add(self.final_value)
+            post_fix.scale(temp_sin * 0.5) + self.final_value
         }
     }
 
@@ -279,8 +276,8 @@ where
     T: TweenTime,
 {
     fn new(initial_value: V, final_value: V, duration: T) -> Self {
-        let delta = V::calculate_delta(final_value, initial_value);
-        let p = duration.as_f64() * 0.45;
+        let delta = final_value - initial_value;
+        let p = duration.to_f64() * 0.45;
         Self {
             value_delta: delta,
             duration,

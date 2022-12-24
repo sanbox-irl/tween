@@ -22,9 +22,9 @@ impl<T: Tween> Looper<T> {
     /// If the delta given is great enough, you may loop around several times.
     pub fn update(&mut self, delta: T::Time) -> T::Value {
         // add in that time...
-        self.0.position = self.0.position.add(delta).modulo(self.0.duration);
+        self.0.position = (self.0.position + delta) % self.0.duration;
 
-        if self.0.position.is_zero() {
+        if self.0.position == T::Time::ZERO {
             self.0.tween.final_value()
         } else {
             self.0.tween.run(self.0.position)
@@ -58,8 +58,8 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         // add in that time...
-        self.0.position = self.0.position.add(self.1).modulo(self.0.duration);
-        let o = if self.0.position.is_zero() {
+        self.0.position = (self.0.position + self.1) % self.0.duration;
+        let o = if self.0.position == T::Time::ZERO {
             self.0.tween.final_value()
         } else {
             self.0.tween.run(self.0.position)

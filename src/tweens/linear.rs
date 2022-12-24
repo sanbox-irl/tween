@@ -3,10 +3,10 @@ declare_tween!(
     pub struct Linear;
 
     fn run(&mut self, new_time: T) -> V {
-        let percent_time = T::percent(self.duration, new_time);
+        let percent_time = new_time.to_f64() / self.duration().to_f64();
         let new_value = self.value_delta.scale(percent_time);
 
-        new_value.add(self.initial_value)
+        new_value + self.initial_value
     }
 );
 
