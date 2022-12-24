@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 #![deny(unsafe_code)]
 #![deny(rust_2018_idioms)]
-#![deny(missing_docs)]
+// #![deny(missing_docs)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![no_std]
 
@@ -30,6 +30,68 @@ use core::{
 
 pub use tweener::*;
 pub use tweens::*;
+
+/// This is the core trait of the Library, which all tweens implement.
+pub trait Tween2<Value> {
+    type Time: TweenTime;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
+
+    fn percent(&mut self, current_time: Self::Time, duration: Self::Time) -> f64 {
+        current_time.to_f64() / duration.to_f64()
+    }
+}
+
+pub struct Tweener<Value, Time, Tween>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+    Tween: Tween2<Value>,
+{
+    initial_value: Value,
+    final_value: Value,
+    value_delta: Value,
+    duration: Time,
+    tween: Tween,
+}
+
+impl<Value, Time, Tween> Tweener<Value, Time, Tween>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+    Tween: Tween2<Value, Time = Time>,
+{
+    pub fn new(start: Value, end: Value, duration: Time, tween: Tween) -> Self {
+        Self {
+            initial_value: start,
+            final_value: end,
+            value_delta: end - start,
+            duration,
+            tween,
+        }
+    }
+
+    pub fn run(&mut self, current_time: Time) -> Value {
+        let pct = self.tween.percent(current_time, self.duration);
+
+        self.tween.tween(self.value_delta, pct) + self.initial_value
+    }
+
+    /// The initial value a tween was set to start at.
+    pub fn initial_value(&self) -> Value {
+        self.initial_value
+    }
+
+    /// The final value the tween should end at.
+    pub fn final_value(&self) -> Value {
+        self.final_value
+    }
+
+    /// Get a reference to the Tween's total duration.
+    pub fn duration(&self) -> Time {
+        self.duration
+    }
+}
 
 /// This is the core trait of the Library, which all `tweens` implement.
 ///

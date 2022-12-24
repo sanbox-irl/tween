@@ -1,3 +1,7 @@
+use core::marker::PhantomData;
+
+use crate::{Tween2, TweenTime, TweenValue};
+
 declare_tween!(
     /// A cubic tween in. Go [here](https://easings.net/#easeInCubic) for a visual demonstration.
     pub struct CubicIn;
@@ -40,5 +44,54 @@ declare_in_out_tween!(
         new_value + self.initial_value
     }
 );
+
+pub struct CubicIn2<Value, Time>(PhantomData<(Value, Time)>);
+impl<Value, Time> Tween2<Value> for CubicIn2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        value_delta.scale(percent * percent * percent)
+    }
+}
+
+pub struct CubicOut2<Value, Time>(PhantomData<(Value, Time)>);
+impl<Value, Time> Tween2<Value> for CubicOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent -= 1.0;
+
+        value_delta.scale(percent * percent * percent + 1.0)
+    }
+}
+
+pub struct CubicInOut2<Value, Time>(PhantomData<Time>, Value);
+impl<Value, Time> Tween2<Value> for CubicInOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent *= 2.0;
+
+        let scalar = if percent < 1.0 {
+            percent * percent * percent
+        } else {
+            let p = percent - 2.0;
+            p * p * p + 2.0
+        };
+        self.1.scale(scalar)
+    }
+}
 
 test_tween!(Cubic);

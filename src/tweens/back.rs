@@ -1,3 +1,7 @@
+use core::marker::PhantomData;
+
+use crate::{Tween2, TweenTime, TweenValue};
+
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
 const BACK_CONST: f64 = 1.70158;
@@ -53,5 +57,79 @@ declare_in_out_tween!(
         new_value + self.initial_value
     }
 );
+
+pub struct BackIn2<Value, Time>(PhantomData<(Value, Time)>);
+
+impl<Value, Time> BackIn2<Value, Time> {
+    pub fn new() -> Self {
+        Self(PhantomData)
+    }
+}
+
+impl<Value, Time> Tween2<Value> for BackIn2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        let scalar = percent * percent * ((BACK_CONST + 1.0) * percent - BACK_CONST);
+
+        value_delta.scale(scalar)
+    }
+}
+
+pub struct BackOut2<Value, Time>(PhantomData<(Value, Time)>);
+
+impl<Value, Time> BackOut2<Value, Time> {
+    pub fn new() -> Self {
+        Self(PhantomData)
+    }
+}
+
+impl<Value, Time> Tween2<Value> for BackOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        let t = percent - 1.0;
+        let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
+
+        value_delta.scale(scalar)
+    }
+}
+
+pub struct BackInOut2<Value, Time>(PhantomData<(Value, Time)>);
+impl<Value, Time> BackInOut2<Value, Time> {
+    pub fn new() -> Self {
+        Self(PhantomData)
+    }
+}
+
+impl<Value, Time> Tween2<Value> for BackInOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent *= 2.0;
+
+        let scalar = if percent < 1.0 {
+            percent * percent * ((BACK_IN_OUT_CONST + 1.0) * percent - BACK_IN_OUT_CONST)
+        } else {
+            let t = percent - 2.0;
+
+            t * t * ((BACK_IN_OUT_CONST + 1.0) * t + BACK_IN_OUT_CONST) + 2.0
+        };
+
+        value_delta.scale(scalar / 2.0)
+    }
+}
 
 test_tween!(Back);

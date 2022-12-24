@@ -1,3 +1,7 @@
+use core::marker::PhantomData;
+
+use crate::{Tween2, TweenTime, TweenValue};
+
 declare_tween!(
     /// An quintic tween in. Go [here](https://easings.net/#easeInQuint) for a visual demonstration.
     pub struct QuintIn;
@@ -44,5 +48,53 @@ declare_in_out_tween!(
         new_value + self.initial_value
     }
 );
+
+pub struct QuintIn2<Value, Time>(PhantomData<(Value, Time)>);
+impl<Value, Time> Tween2<Value> for QuintIn2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        value_delta.scale(percent * percent * percent * percent * percent)
+    }
+}
+
+pub struct QuintOut2<Value, Time>(PhantomData<(Value, Time)>);
+impl<Value, Time> Tween2<Value> for QuintOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent -= 1.0;
+        value_delta.scale(percent * percent * percent * percent * percent + 1.0)
+    }
+}
+
+pub struct QuintInOut2<Value, Time>(PhantomData<Time>, Value);
+impl<Value, Time> Tween2<Value> for QuintInOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent *= 2.0;
+
+        let scalar = if percent < 1.0 {
+            percent * percent * percent * percent * percent
+        } else {
+            let p = percent - 2.0;
+            p * p * p * p * p + 2.0
+        };
+        self.1.scale(scalar)
+    }
+}
 
 test_tween!(Quint);

@@ -1,5 +1,5 @@
-use crate::{Tween, TweenTime, TweenValue};
-use core::f64::consts::PI;
+use crate::{Tween, Tween2, TweenTime, TweenValue};
+use core::{f64::consts::PI, marker::PhantomData};
 
 /// An elastic tween in. Go [here](https://easings.net/#easeInElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
@@ -285,6 +285,147 @@ where
             s: p * 0.25,
             initial_value,
             final_value,
+        }
+    }
+}
+
+pub struct ElasticIn2<Value, Time> {
+    duration: Time,
+    three_tenths: f64,
+    s: f64,
+    _value: Value,
+}
+impl<Value, Time> Tween2<Value> for ElasticIn2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        if percent == 0.0 {
+            return Value::ZERO;
+        }
+
+        if percent == 1.0 {
+            return value_delta;
+        }
+
+        percent -= 1.0;
+
+        #[cfg(feature = "libm")]
+        let scalar = libm::pow(2.0, percent * 10.0);
+
+        #[cfg(feature = "std")]
+        let scalar = 2f64.powf(percent * 10.0);
+
+        let post_fix = value_delta.scale(scalar);
+        let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.three_tenths;
+
+        #[cfg(feature = "libm")]
+        let scalar = -libm::sin(temp);
+
+        #[cfg(feature = "std")]
+        let scalar = -temp.sin();
+
+        post_fix.scale(scalar)
+    }
+}
+
+pub struct ElasticOut2<Value, Time> {
+    duration: Time,
+    three_tenths: f64,
+    s: f64,
+    _value: Value,
+}
+impl<Value, Time> Tween2<Value> for ElasticOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        if percent == 0.0 {
+            return Value::ZERO;
+        }
+
+        if percent == 1.0 {
+            return value_delta;
+        }
+
+        let temp = (percent * self.duration.to_f64() - self.s) * (2.0 * PI) / self.three_tenths;
+
+        #[cfg(feature = "libm")]
+        let scalar = libm::pow(2.0, -10.0 * percent) * libm::sin(temp);
+
+        #[cfg(feature = "std")]
+        let scalar = 2f64.powf(-10.0 * percent) * temp.sin();
+
+        value_delta.scale(scalar) + value_delta
+    }
+}
+
+pub struct ElasticInOut2<Value, Time> {
+    duration: Time,
+    p: f64,
+    s: f64,
+    _value: Value,
+}
+impl<Value, Time> Tween2<Value> for ElasticInOut2<Value, Time>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    type Time = Time;
+
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        percent *= 2.0;
+
+        if percent == 0.0 {
+            return Value::ZERO;
+        }
+
+        if percent == 2.0 {
+            return value_delta;
+        }
+
+        percent -= 1.0;
+
+        if percent < 0.0 {
+            #[cfg(feature = "libm")]
+            let scalar = libm::pow(2.0, percent * 10.0);
+
+            #[cfg(feature = "std")]
+            let scalar = 2f64.powf(percent * 10.0);
+
+            let post_fix = value_delta.scale(scalar);
+            let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.p;
+
+            #[cfg(feature = "libm")]
+            let temp_sin = libm::sin(temp);
+
+            #[cfg(feature = "std")]
+            let temp_sin = temp.sin();
+
+            post_fix.scale(-0.5 * temp_sin)
+        } else {
+            #[cfg(feature = "libm")]
+            let scalar = libm::pow(2.0, percent * -10.0);
+
+            #[cfg(feature = "std")]
+            let scalar = 2f64.powf(-10.0 * percent);
+
+            let post_fix = value_delta.scale(scalar);
+            let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.p;
+
+            #[cfg(feature = "libm")]
+            let temp_sin = libm::sin(temp);
+
+            #[cfg(feature = "std")]
+            let temp_sin = temp.sin();
+
+            post_fix.scale(temp_sin * 0.5) + value_delta
         }
     }
 }
