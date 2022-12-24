@@ -134,12 +134,11 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(duration: Time) -> Self {
-        let three_tenths = duration.to_f64() * 0.3;
         let p = duration.to_f64() * 0.45;
 
         Self {
             duration,
-            s: three_tenths * 0.25,
+            s: p * 0.25,
             p,
             _value: PhantomData,
         }
@@ -154,17 +153,15 @@ where
     type Time = Time;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
-        percent *= 2.0;
-
         if percent == 0.0 {
             return Value::ZERO;
         }
 
-        if percent == 2.0 {
+        if percent == 1.0 {
             return value_delta;
         }
 
-        percent -= 1.0;
+        percent = (percent * 2.0) - 1.0;
 
         if percent < 0.0 {
             #[cfg(feature = "libm")]
