@@ -38,6 +38,10 @@ use crate::{Tween, TweenTime, TweenValue, Tweener};
 /// (ie, you loop as fast as you can), since you can now just provide a delta
 /// time as a fixed time.
 ///
+/// **NB: [DeltaTweener] will always return at least one value, once. If you provide
+/// a delta greater than the duration of the tween, we will return `final_value`, and then
+/// will return nothing else afterwards.**
+///
 /// If, on the other hand, you use a *fixed* time loop, see [FixedTweenDriver],
 /// which provides a simpler interface, and implements Iterator.
 ///
