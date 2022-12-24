@@ -274,7 +274,7 @@ mod tests {
     #[test]
     fn type_test() {
         let _one_type: Oscillator<Linear<i32, i32>>;
-        let _two_type: Oscillator<Linear<i32, i32>, crate::QuadIn<i32, i32>>;
+        // let _two_type: Oscillator<Linear<i32, i32>, crate::QuadIn<i32, i32>>;
 
         // let conflict: Oscillator<Linear<i32, i32>, crate::QuadIn<u32, i32>>;
     }

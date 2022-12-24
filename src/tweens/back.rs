@@ -6,9 +6,9 @@ const BACK_CONST: f64 = 1.70158;
 /// Where it comes from, I do not know!
 const BACK_IN_OUT_CONST: f64 = BACK_CONST * 1.525;
 
-declare_tween2! {
+declare_tween! {
     /// A tween that goes out and then back in a bit. Go [here](https://easings.net/#easeInBack) for a visual demonstration.
-    pub struct BackIn2;
+    pub struct BackIn;
 
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let scalar = percent * percent * ((BACK_CONST + 1.0) * percent - BACK_CONST);
@@ -17,9 +17,9 @@ declare_tween2! {
     }
 }
 
-declare_tween2! {
+declare_tween! {
     /// A tween that goes in and then back out a bit. Go [here](https://easings.net/#easeOutBack) for a visual demonstration.
-    pub struct BackOut2;
+    pub struct BackOut;
 
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let t = percent - 1.0;
@@ -29,9 +29,9 @@ declare_tween2! {
     }
 }
 
-declare_tween2! {
+declare_tween! {
     /// A tween that goes out, in, and then back in and out a bit. Go [here](https://easings.net/#easeInOutBack) for a visual demonstration.
-    pub struct BackInOut2;
+    pub struct BackInOut;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent *= 2.0;
@@ -48,4 +48,4 @@ declare_tween2! {
     }
 }
 
-test_tween2!(Back);
+test_tween!(Back);

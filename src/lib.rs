@@ -17,7 +17,7 @@ compile_error!(
 #[macro_use]
 mod macros;
 
-mod tweener;
+// mod tweener;
 mod tweens;
 
 #[cfg(feature = "glam")]
@@ -28,7 +28,7 @@ use core::{
     ops::{Add, AddAssign, Rem, RemAssign, Sub, SubAssign},
 };
 
-pub use tweener::*;
+// pub use tweener::*;
 pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.

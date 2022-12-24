@@ -23,10 +23,10 @@ mod circ;
 pub use circ::{CircIn, CircInOut, CircOut};
 
 mod back;
-pub use back::{BackIn2, BackInOut2, BackOut2};
+pub use back::{BackIn, BackInOut, BackOut};
 
 mod elastic;
 pub use elastic::{ElasticIn, ElasticInOut, ElasticOut};
 
 mod bounce;
-pub use bounce::{BounceIn2, BounceInOut2, BounceOut2};
+pub use bounce::{BounceIn, BounceInOut, BounceOut};
