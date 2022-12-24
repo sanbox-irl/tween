@@ -1,4 +1,4 @@
-use crate::{Tween2, TweenTime, TweenValue};
+use crate::{Tween, TweenTime, TweenValue};
 use core::{f64::consts::PI, marker::PhantomData};
 
 /// An elastic tween in. Go [here](https://easings.net/#easeInElastic) for a visual demonstration.
@@ -27,7 +27,7 @@ where
     }
 }
 
-impl<Value, Time> Tween2<Value> for ElasticIn<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticIn<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
@@ -90,7 +90,7 @@ where
     }
 }
 
-impl<Value, Time> Tween2<Value> for ElasticOut<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
@@ -145,7 +145,7 @@ where
     }
 }
 
-impl<Value, Time> Tween2<Value> for ElasticInOut<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticInOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,

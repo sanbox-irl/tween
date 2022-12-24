@@ -32,7 +32,7 @@ use core::{
 pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.
-pub trait Tween2<Value> {
+pub trait Tween<Value> {
     type Time: TweenTime;
 
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
@@ -42,26 +42,26 @@ pub trait Tween2<Value> {
     }
 }
 
-pub struct Tweener<Value, Time, Tween>
+pub struct Tweener<Value, Time, T>
 where
     Value: TweenValue,
     Time: TweenTime,
-    Tween: Tween2<Value>,
+    T: Tween<Value>,
 {
     initial_value: Value,
     final_value: Value,
     value_delta: Value,
     duration: Time,
-    tween: Tween,
+    tween: T,
 }
 
-impl<Value, Time, Tween> Tweener<Value, Time, Tween>
+impl<Value, Time, T> Tweener<Value, Time, T>
 where
     Value: TweenValue,
     Time: TweenTime,
-    Tween: Tween2<Value, Time = Time>,
+    T: Tween<Value, Time = Time>,
 {
-    pub fn new(start: Value, end: Value, duration: Time, tween: Tween) -> Self {
+    pub fn new(start: Value, end: Value, duration: Time, tween: T) -> Self {
         Self {
             initial_value: start,
             final_value: end,
@@ -93,72 +93,28 @@ where
     }
 }
 
-/// This is the core trait of the Library, which all `tweens` implement.
-///
-/// Unless you choose to use a Tween directly, rather than through a [FixedTweenDriver]
-/// or [FixedTweenDriver], you'll rarely deal with this directly.
-pub trait Tween {
-    /// The type of value we Tween over.
-    type Value: TweenValue;
-
-    /// The type of time we Tween over.
-    type Time: TweenTime;
-
-    /// Run the given Tween with a new time.
-    fn run(&mut self, new_time: Self::Time) -> Self::Value;
-
-    /// The initial value a tween was set to start at.
-    fn initial_value(&self) -> Self::Value;
-
-    /// The final value the tween should end at.
-    fn final_value(&self) -> Self::Value;
-
-    /// Get a reference to the Tween's total duration.
-    fn duration(&self) -> Self::Time;
-}
-
 #[cfg(feature = "std")]
-impl<V, T> Tween for std::boxed::Box<dyn Tween<Value = V, Time = T>>
+impl<Value, Time> Tween<Value> for std::boxed::Box<dyn Tween<Value, Time = Time>>
 where
-    V: TweenValue,
-    T: TweenTime,
+    Value: TweenValue,
+    Time: TweenTime,
 {
-    type Value = V;
-    type Time = T;
+    type Time = Time;
 
-    fn run(&mut self, new_time: Self::Time) -> Self::Value {
-        (**self).run(new_time)
-    }
-
-    fn initial_value(&self) -> Self::Value {
-        (**self).initial_value()
-    }
-
-    fn final_value(&self) -> Self::Value {
-        (**self).final_value()
-    }
-
-    fn duration(&self) -> Self::Time {
-        (**self).duration()
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        (**self).tween(value_delta, percent)
     }
 }
 
 /// This is a helper trait, which all the tweens in this library support, which gives access
 /// to non-object-safe methods.
-pub trait SizedTween: Tween + Sized {
-    /// Creates a new `SizedTween`
-    fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self;
-}
-
-/// This is a helper trait, which all the tweens in this library support, which gives access
-/// to non-object-safe methods.
-pub trait SizedTween2<Value>: Tween2<Value> + Sized {
+pub trait SizedTween<Value>: Tween<Value> + Sized {
     /// Creates a new `SizedTween`
     fn new() -> Self;
 }
 
 #[cfg(test)]
-static_assertions::assert_obj_safe!(Tween<Value = i32, Time = i32>);
+static_assertions::assert_obj_safe!(Tween<i32, Time = i32>);
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs
 /// `TweenValue` eventually.

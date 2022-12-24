@@ -89,20 +89,20 @@ macro_rules! declare_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new() -> Self {
-                <Self as $crate::SizedTween2<Value>>::new()
+                <Self as $crate::SizedTween<Value>>::new()
             }
 
             /// Calculate what a percent into the Tween based on time. For almost all Tweens,
             /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
             pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
-                <Self as $crate::Tween2<Value>>::percent(self, current_time, duration)
+                <Self as $crate::Tween<Value>>::percent(self, current_time, duration)
             }
 
             /// Run the given Tween with a new time.
             pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween2<Value>>::tween(self, value_delta, percent)
+                <Self as $crate::Tween<Value>>::tween(self, value_delta, percent)
             }
         }
 
@@ -112,11 +112,11 @@ macro_rules! declare_tween {
             Time: $crate::TweenTime,
         {
             fn default() -> Self {
-                <Self as $crate::SizedTween2<Value>>::new()
+                <Self as $crate::SizedTween<Value>>::new()
             }
         }
 
-        impl<Value, Time> $crate::Tween2<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::Tween<Value> for $name<Value, Time>
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
@@ -126,7 +126,7 @@ macro_rules! declare_tween {
             $tween
         }
 
-        impl<Value, Time> $crate::SizedTween2<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::SizedTween<Value> for $name<Value, Time>
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
@@ -157,20 +157,20 @@ macro_rules! declare_tween {
         {
             /// Creates a new tween out of a range with a duration.
             pub fn new() -> Self {
-                <Self as $crate::SizedTween2<Value>>::new()
+                <Self as $crate::SizedTween<Value>>::new()
             }
 
             /// Calculate what a percent into the Tween based on time. For almost all Tweens,
             /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
             pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
-                <Self as $crate::Tween2<Value>>::percent(self, current_time, duration)
+                <Self as $crate::Tween<Value>>::percent(self, current_time, duration)
             }
 
             /// Run the given Tween with a new time.
             pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
                 // we pass this through so that we don't require users to (annoyingly) import
                 // a trait. Inherent methods in traits pls!
-                <Self as $crate::Tween2<Value>>::tween(self, value_delta, percent)
+                <Self as $crate::Tween<Value>>::tween(self, value_delta, percent)
             }
         }
 
@@ -180,11 +180,11 @@ macro_rules! declare_tween {
             Time: $crate::TweenTime,
         {
             fn default() -> Self {
-                <Self as $crate::SizedTween2<Value>>::new()
+                <Self as $crate::SizedTween<Value>>::new()
             }
         }
 
-        impl<Value, Time> $crate::Tween2<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::Tween<Value> for $name<Value, Time>
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
@@ -196,7 +196,7 @@ macro_rules! declare_tween {
             $percent
         }
 
-        impl<Value, Time> $crate::SizedTween2<Value> for $name<Value, Time>
+        impl<Value, Time> $crate::SizedTween<Value> for $name<Value, Time>
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
