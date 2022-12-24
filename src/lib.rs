@@ -17,7 +17,7 @@ compile_error!(
 #[macro_use]
 mod macros;
 
-// mod tweener;
+mod tweener;
 mod tweens;
 
 #[cfg(feature = "glam")]
@@ -28,7 +28,7 @@ use core::{
     ops::{Add, AddAssign, Rem, RemAssign, Sub, SubAssign},
 };
 
-// pub use tweener::*;
+pub use tweener::*;
 pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.
@@ -56,6 +56,7 @@ pub trait Tween<Value, Time: TweenTime> {
 /// In situations where instead of knowing relative absolute time, you instead more easily know
 /// delta times, or even fixed delta times, such as in most game engines, you'll want to look at
 /// [DeltaTweener] and [FixedTweener].
+#[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
 pub struct Tweener<Value, Time, T> {
     initial_value: Value,
     final_value: Value,
