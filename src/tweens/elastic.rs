@@ -293,7 +293,7 @@ pub struct ElasticIn2<Value, Time> {
     duration: Time,
     three_tenths: f64,
     s: f64,
-    _value: Value,
+    _value: PhantomData<Value>,
 }
 impl<Value, Time> Tween2<Value> for ElasticIn2<Value, Time>
 where
@@ -336,7 +336,7 @@ pub struct ElasticOut2<Value, Time> {
     duration: Time,
     three_tenths: f64,
     s: f64,
-    _value: Value,
+    _value: PhantomData<Value>,
 }
 impl<Value, Time> Tween2<Value> for ElasticOut2<Value, Time>
 where
@@ -370,7 +370,7 @@ pub struct ElasticInOut2<Value, Time> {
     duration: Time,
     p: f64,
     s: f64,
-    _value: Value,
+    _value: PhantomData<Value>,
 }
 impl<Value, Time> Tween2<Value> for ElasticInOut2<Value, Time>
 where

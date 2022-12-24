@@ -76,7 +76,7 @@ where
     }
 }
 
-pub struct QuartInOut2<Value, Time>(PhantomData<Time>, Value);
+pub struct QuartInOut2<Value, Time>(PhantomData<(Value, Time)>);
 impl<Value, Time> Tween2<Value> for QuartInOut2<Value, Time>
 where
     Value: TweenValue,
@@ -93,7 +93,7 @@ where
             let p = percent - 2.0;
             -(p * p * p * p - 2.0)
         };
-        self.1.scale(scalar)
+        value_delta.scale(scalar / 2.0)
     }
 }
 

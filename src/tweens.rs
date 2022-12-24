@@ -29,4 +29,4 @@ mod elastic;
 pub use elastic::{ElasticIn, ElasticInOut, ElasticOut};
 
 mod bounce;
-pub use bounce::{BounceIn, BounceInOut, BounceOut};
+pub use bounce::{BounceIn2, BounceInOut2, BounceOut2};

@@ -72,7 +72,7 @@ where
     }
 }
 
-pub struct QuadInOut2<Value, Time>(PhantomData<Time>, Value);
+pub struct QuadInOut2<Value, Time>(PhantomData<(Value, Time)>);
 impl<Value, Time> Tween2<Value> for QuadInOut2<Value, Time>
 where
     Value: TweenValue,
@@ -90,7 +90,7 @@ where
 
             (p * (p - 2.0) - 1.0) * -1.0
         };
-        self.1.scale(scalar)
+        value_delta.scale(scalar / 2.0)
     }
 }
 

@@ -150,6 +150,13 @@ pub trait SizedTween: Tween + Sized {
     fn new(initial_value: Self::Value, final_value: Self::Value, duration: Self::Time) -> Self;
 }
 
+/// This is a helper trait, which all the tweens in this library support, which gives access
+/// to non-object-safe methods.
+pub trait SizedTween2<Value>: Tween2<Value> + Sized {
+    /// Creates a new `SizedTween`
+    fn new() -> Self;
+}
+
 #[cfg(test)]
 static_assertions::assert_obj_safe!(Tween<Value = i32, Time = i32>);
 

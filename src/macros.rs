@@ -149,6 +149,146 @@ macro_rules! declare_tween {
 
 /// This is internal to the library, but allows for creating simple ease-style
 /// tweens.
+macro_rules! declare_tween2 {
+    (
+        $(#[$struct_meta:meta])*
+        pub struct $name:ident;
+
+        $tween:item
+    ) => {
+        $(#[$struct_meta])*
+        #[derive(Debug, PartialEq, Eq, Clone)]
+        pub struct $name<Value, Time>(core::marker::PhantomData<(Value, Time)>);
+
+        impl<Value, Time> $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            /// Creates a new tween out of a range with a duration.
+            pub fn new() -> Self {
+                <Self as $crate::SizedTween2<Value>>::new()
+            }
+
+            /// Calculate what a percent into the Tween based on time. For almost all Tweens,
+            /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
+            pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
+                <Self as $crate::Tween2<Value>>::percent(self, current_time, duration)
+            }
+
+            /// Run the given Tween with a new time.
+            pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+                // we pass this through so that we don't require users to (annoyingly) import
+                // a trait. Inherent methods in traits pls!
+                <Self as $crate::Tween2<Value>>::tween(self, value_delta, percent)
+            }
+        }
+
+        impl<Value, Time> Default for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            fn default() -> Self {
+                <Self as $crate::SizedTween2<Value>>::new()
+            }
+        }
+
+        impl<Value, Time> $crate::Tween2<Value> for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            type Time = Time;
+
+            $tween
+        }
+
+        impl<Value, Time> $crate::SizedTween2<Value> for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            /// Creates a new Tween
+            fn new() -> Self {
+                Self(core::marker::PhantomData)
+            }
+        }
+    };
+
+    (
+        $(#[$struct_meta:meta])*
+        pub struct $name:ident;
+
+        $tween:item
+
+        $percent:item
+    ) => {
+        $(#[$struct_meta])*
+        #[derive(Debug, PartialEq, Eq, Clone)]
+        pub struct $name<Value, Time>(core::marker::PhantomData<(Value, Time)>);
+
+        impl<Value, Time> $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            /// Creates a new tween out of a range with a duration.
+            pub fn new() -> Self {
+                <Self as $crate::SizedTween2<Value>>::new()
+            }
+
+            /// Calculate what a percent into the Tween based on time. For almost all Tweens,
+            /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
+            pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
+                <Self as $crate::Tween2<Value>>::percent(self, current_time, duration)
+            }
+
+            /// Run the given Tween with a new time.
+            pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+                // we pass this through so that we don't require users to (annoyingly) import
+                // a trait. Inherent methods in traits pls!
+                <Self as $crate::Tween2<Value>>::tween(self, value_delta, percent)
+            }
+        }
+
+        impl<Value, Time> Default for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            fn default() -> Self {
+                <Self as $crate::SizedTween2<Value>>::new()
+            }
+        }
+
+        impl<Value, Time> $crate::Tween2<Value> for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            type Time = Time;
+
+            $tween
+
+            $percent
+        }
+
+        impl<Value, Time> $crate::SizedTween2<Value> for $name<Value, Time>
+        where
+            Value: $crate::TweenValue,
+            Time: $crate::TweenTime,
+        {
+            /// Creates a new Tween
+            fn new() -> Self {
+                Self(core::marker::PhantomData)
+            }
+        }
+    };
+}
+
+/// This is internal to the library, but allows for creating simple ease-style
+/// tweens.
 macro_rules! declare_in_out_tween {
     (
         $(#[$struct_meta:meta])*
@@ -309,6 +449,104 @@ macro_rules! test_tween {
                 #[test]
                 fn t_in_out_rev() {
                     let mut tweener = [<$name InOut>]::new(100.0, 0.0, 10.0);
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+            }
+        }
+    };
+}
+
+macro_rules! test_tween2 {
+    ($name:ident) => {
+        #[cfg(test)]
+        mod test {
+            paste::paste! {
+                use super::*;
+                use approx::assert_relative_eq;
+                use easer::functions::{$name as [<Ease $name>], Easing};
+
+                #[test]
+                fn t_in() {
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name In2>]::new());
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_rev() {
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name In2>]::new());
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out() {
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name Out2>]::new());
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_out_rev() {
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name Out2>]::new());
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let v = tweener.run(time);
+                        let o = [<Ease $name>]::ease_out(time, 100.0, -100.0, 10.0);
+
+                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                    }
+                }
+
+                #[test]
+                fn t_in_out() {
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name InOut2>]::new());
+
+                    for time in 0..=10 {
+                        let time = time as f64;
+
+                        let our_value = tweener.run(time);
+                        let easer = [<Ease $name>]::ease_in_out(time, 0.0, 100.0, 10.0);
+
+                        assert_relative_eq!(our_value, easer, max_relative = 0.000001);
+                    }
+                }
+
+
+                #[test]
+                fn t_in_out_rev() {
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name InOut2>]::new());
 
                     for time in 0..=10 {
                         let time = time as f64;

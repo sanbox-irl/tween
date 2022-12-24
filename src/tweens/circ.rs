@@ -110,7 +110,7 @@ where
     }
 }
 
-pub struct CircInOut2<Value, Time>(PhantomData<Time>, Value);
+pub struct CircInOut2<Value, Time>(PhantomData<(Value, Time)>);
 impl<Value, Time> Tween2<Value> for CircInOut2<Value, Time>
 where
     Value: TweenValue,
@@ -141,7 +141,7 @@ where
             o
         };
 
-        self.1.scale(scalar)
+        value_delta.scale(scalar / 2.0)
     }
 }
 
