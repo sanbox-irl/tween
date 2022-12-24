@@ -1,7 +1,7 @@
 #![doc = include_str!("../README.md")]
 #![deny(unsafe_code)]
 #![deny(rust_2018_idioms)]
-// #![deny(missing_docs)]
+#![deny(missing_docs)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![no_std]
 
@@ -33,21 +33,34 @@ pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.
 pub trait Tween<Value> {
+    /// The Time parameter over which this tween operates. You can use a float
+    /// to mean "seconds", or, in many games, an integer to mean "frames".
     type Time: TweenTime;
 
+    /// Returns a new value based on the value_delta and the percent.
+    ///
+    /// [Linear], for example, is implemented simply as:
+    /// ```no_test
+    /// value_delta.scale(percent)
+    /// ```
+    /// which is just `value_delta * percent`.
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
 
+    /// Returns a percent, which is used in Tweeners as the `percent` argument in [Tween::tween].
+    /// All Tweens in this library *expect* [Bounce] use this default implementation.
     fn percent(&mut self, current_time: Self::Time, duration: Self::Time) -> f64 {
         current_time.to_f64() / duration.to_f64()
     }
 }
 
-pub struct Tweener<Value, Time, T>
-where
-    Value: TweenValue,
-    Time: TweenTime,
-    T: Tween<Value>,
-{
+/// A Tweener is a wrapper around a Tween. Although you can tween dynamically using just a raw
+/// Tween, this will manage all state, and allow you to work in *relative absolute time*, rather
+/// than *percentage* time.
+///
+/// In situations where instead of knowing relative absolute time, you instead more easily know
+/// delta times, or even fixed delta times, such as in most game engines, you'll want to look at
+/// [DeltaTweener] and [FixedTweener].
+pub struct Tweener<Value, Time, T> {
     initial_value: Value,
     final_value: Value,
     value_delta: Value,
@@ -61,7 +74,17 @@ where
     Time: TweenTime,
     T: Tween<Value, Time = Time>,
 {
-    pub fn new(start: Value, end: Value, duration: Time, tween: T) -> Self {
+    /// Creates a new [SizedTween] generically. All tweens in this library except [ElasticIn],
+    /// [ElasticOut], and [ElasticInOut] implement [SizedTween].
+    pub fn new(start: Value, end: Value, duration: Time) -> Self
+    where
+        T: SizedTween<Value>,
+    {
+        Self::with_tween(start, end, duration, T::new())
+    }
+
+    /// Creates a new [Tweener] out of a tween, end, and duration.
+    pub fn with_tween(start: Value, end: Value, duration: Time, tween: T) -> Self {
         Self {
             initial_value: start,
             final_value: end,
@@ -71,6 +94,9 @@ where
         }
     }
 
+    /// Runs the inner Tween, returning the result.
+    /// Nb: this does **not** clamp `current_time`, so if you provide a `current_time >
+    /// self.duration`, chaotic results may occur.
     pub fn run(&mut self, current_time: Time) -> Value {
         let pct = self.tween.percent(current_time, self.duration);
 
@@ -90,6 +116,18 @@ where
     /// Get a reference to the Tween's total duration.
     pub fn duration(&self) -> Time {
         self.duration
+    }
+}
+
+impl<Value, Time> Tweener<Value, Time, SineIn<Value, Time>>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+    SineIn<Value, Time>: Tween<Value, Time = Time>,
+{
+    /// Creates a new [SineIn] tween.
+    pub fn sine_in(start: Value, end: Value, duration: Time) -> Self {
+        Self::new(start, end, duration)
     }
 }
 

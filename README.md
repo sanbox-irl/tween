@@ -12,17 +12,14 @@ To install, add the following to your Cargo.toml:
 tween = "1.0.0"
 ```
 
-This trait exports a trait `Tween`, a variety of structs which implement common tweens (such as `Elastic`, `Quart`, etc), and two `Tweeners`, which wrap around tweens, allowing users to drive them trivially.
+<!-- This trait exports a trait `Tween`, a variety of structs which implement common tweens (such as `Elastic`, `Quart`, etc), and two `Tweeners`, which wrap around tweens, allowing users to drive them trivially.
 
 First, tweens are simple to create:
 
 ```rust
-use tween::SineIn;
+use tween::Tweener;
 
-let (start, end) = (0.0, 200.0);
-let duration = 60;
-
-let mut sine_in = SineIn::new(start, end, duration);
+let mut sine_in = Tweener::sine_in(0.0, 200.0, 60);
 let _value0 = sine_in.run(0);
 let _value1 = sine_in.run(1);
 let _value2 = sine_in.run(2);
@@ -64,4 +61,4 @@ This library uses `std` with the default feature `std`. Disable default features
 
 ## Generics
 
-This library uses generics heavily. There are two core generics used: `TweenValue` and `TweenTime`. All built-in numeric types implement both traits. For your own code, you can implement either trait. For example, you could easily implement `TweenValue` for your favorite math library.
+This library uses generics heavily. There are two core generics used: `TweenValue` and `TweenTime`. All built-in numeric types implement both traits. For your own code, you can implement either trait. For example, you could easily implement `TweenValue` for your favorite math library. -->

@@ -211,7 +211,7 @@ mod tests {
 
     #[test]
     fn t_in() {
-        let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticIn::new(10.0));
+        let mut tweener = Tweener::with_tween(0.0, 100.0, 10.0, ElasticIn::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
@@ -225,7 +225,7 @@ mod tests {
 
     #[test]
     fn t_in_rev() {
-        let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticIn::new(10.0));
+        let mut tweener = Tweener::with_tween(100.0, 0.0, 10.0, ElasticIn::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn t_out() {
-        let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticOut::new(10.0));
+        let mut tweener = Tweener::with_tween(0.0, 100.0, 10.0, ElasticOut::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
@@ -253,7 +253,7 @@ mod tests {
 
     #[test]
     fn t_out_rev() {
-        let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticOut::new(10.0));
+        let mut tweener = Tweener::with_tween(100.0, 0.0, 10.0, ElasticOut::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
@@ -267,7 +267,7 @@ mod tests {
 
     #[test]
     fn t_in_out() {
-        let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticInOut::new(10.0));
+        let mut tweener = Tweener::with_tween(0.0, 100.0, 10.0, ElasticInOut::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
@@ -281,7 +281,7 @@ mod tests {
 
     #[test]
     fn t_in_out_rev() {
-        let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticInOut::new(10.0));
+        let mut tweener = Tweener::with_tween(100.0, 0.0, 10.0, ElasticInOut::new(10.0));
 
         for time in 0..=10 {
             let time = time as f64;
