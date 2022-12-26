@@ -251,4 +251,16 @@ mod tests {
         assert_eq!(fixed_tweener.next().unwrap(), 4);
         assert_eq!(fixed_tweener.next(), None);
     }
+
+    #[test]
+    fn tweener_weird() {
+        let mut tweener = DeltaTweener::new(0, 2, 2, Linear);
+
+        assert_eq!(tweener.update_by(0), Some(0));
+        assert_eq!(tweener.update_by(1), Some(1));
+        assert_eq!(tweener.update_by(1), Some(2));
+        assert_eq!(tweener.update_by(0), Some(2));
+        assert_eq!(tweener.update_by(0), Some(2));
+        assert_eq!(tweener.update_by(0), Some(2));
+    }
 }
