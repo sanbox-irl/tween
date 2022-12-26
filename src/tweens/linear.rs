@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn linear_over_frames() {
         let mut value;
-        let mut tweener = crate::Tweener::with_tween(0.0, 100.0, 10, Linear);
+        let mut tweener = crate::Tweener::new(0.0, 100.0, 10, Linear);
 
         for val in 1..=10 {
             value = tweener.run(val);
@@ -26,7 +26,7 @@ mod tests {
     #[test]
     fn linear_over_frames_rev() {
         let mut value;
-        let mut tweener = crate::Tweener::with_tween(100.0, 0.0, 10, Linear);
+        let mut tweener = crate::Tweener::new(100.0, 0.0, 10, Linear);
 
         for val in 1..=10 {
             value = tweener.run(val);

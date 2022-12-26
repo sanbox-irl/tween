@@ -20,6 +20,10 @@ macro_rules! declare_time {
             fn scale(self, other: f64) -> Self {
                 (self as f64 * other) as Self
             }
+
+            fn div_euclid(self, other: Self) -> Self {
+                self.div_euclid(other)
+            }
         }
     };
     (float $t:ty) => {
@@ -40,6 +44,10 @@ macro_rules! declare_time {
 
             fn scale(self, other: f64) -> Self {
                 (self as f64 * other) as Self
+            }
+
+            fn div_euclid(self, other: Self) -> Self {
+                self.div_euclid(other)
             }
         }
     };
@@ -220,7 +228,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name In>]);
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -234,7 +242,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name In>]);
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -248,7 +256,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_out() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name Out>]);
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -262,7 +270,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_out_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name Out>]);
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -276,7 +284,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_out() {
-                    let mut tweener = $crate::Tweener::with_tween(0.0, 100.0, 10.0, [<$name InOut>]);
+                    let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
                         let time = time as f64;
@@ -291,7 +299,7 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_out_rev() {
-                    let mut tweener = $crate::Tweener::with_tween(100.0, 0.0, 10.0, [<$name InOut>]);
+                    let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
                         let time = time as f64;

@@ -71,26 +71,6 @@ where
     Time: TweenTime,
     T: Tween<Value, Time>,
 {
-    /// Creates a new [SizedTween] generically. All tweens in this library except [ElasticIn],
-    /// [ElasticOut], and [ElasticInOut] implement [SizedTween].
-    pub fn new(start: Value, end: Value, duration: Time) -> Self
-    where
-        T: SizedTween<Value, Time>,
-    {
-        Self::with_tween(start, end, duration, T::new())
-    }
-
-    /// Creates a new [Tweener] out of a tween, end, and duration.
-    pub fn with_tween(start: Value, end: Value, duration: Time, tween: T) -> Self {
-        Self {
-            initial_value: start,
-            final_value: end,
-            value_delta: end - start,
-            duration,
-            tween,
-        }
-    }
-
     /// Runs the inner Tween, returning the result.
     /// Nb: this does **not** clamp `current_time`, so if you provide a `current_time >
     /// self.duration`, chaotic results may occur.
@@ -116,6 +96,27 @@ where
     }
 }
 
+impl<Value, Time, T> Tweener<Value, Time, T>
+where
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], and [TweenTime]
+    /// duration.
+    pub fn new(start: Value, end: Value, duration: Time, tween: T) -> Self
+    where
+        T: Tween<Value, Time>,
+    {
+        Self {
+            initial_value: start,
+            final_value: end,
+            value_delta: end - start,
+            duration,
+            tween,
+        }
+    }
+}
+
 impl<Value, Time> Tweener<Value, Time, SineIn>
 where
     Value: TweenValue,
@@ -123,7 +124,7 @@ where
 {
     /// Creates a new [SineIn] tween.
     pub fn sine_in(start: Value, end: Value, duration: Time) -> Self {
-        Self::new(start, end, duration)
+        Self::new(start, end, duration, SineIn)
     }
 }
 
@@ -202,6 +203,9 @@ pub trait TweenTime:
 
     /// This is implemented as a simple multipler, such as `self * multiplier`.
     fn scale(self, multiplier: f64) -> Self;
+
+    /// Does the `div_euclid`. Most types simply have this method already!
+    fn div_euclid(self, other: Self) -> Self;
 }
 
 declare_time!(u8);
