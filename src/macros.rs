@@ -21,10 +21,6 @@ macro_rules! declare_time {
             fn scale(self, other: f64) -> Self {
                 (self as f64 * other) as Self
             }
-
-            fn div_euclid(self, other: Self) -> Self {
-                self.div_euclid(other)
-            }
         }
         )*
     };

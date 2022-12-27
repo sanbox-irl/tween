@@ -46,13 +46,13 @@ declare_tween!(
 
             o
         } else {
-            let t = percent - 2.0;
+            let percent = percent - 2.0;
 
             #[cfg(feature = "libm")]
             let o = libm::sqrt(1.0 - percent * percent) + 1.0;
 
             #[cfg(feature = "std")]
-            let o = (1.0 - t * t).sqrt() + 1.0;
+            let o = (1.0 - percent * percent).sqrt() + 1.0;
 
             o
         };

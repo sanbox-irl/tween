@@ -24,12 +24,16 @@ where
     T: Tween<Value, Time>,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
-        let which_tween = (percent % 2.0).div_euclid(1.0);
-        let percent = percent.fract();
+        let temp = percent % 2.0;
+
+        #[cfg(feature = "std")]
+        let (which_tween, percent) = { (temp.trunc(), percent.fract()) };
+
+        #[cfg(feature = "libm")]
+        let (which_tween, percent) = { (libm::trunc(temp), percent - libm::trunc(percent)) };
 
         // note: we don't have to worry about 0/1 difference here, since the tween
         // will get us to the same place
-
         let percent = if which_tween == 0.0 { percent } else { 1.0 - percent };
 
         self.0.tween(value_delta, percent)
@@ -62,6 +66,16 @@ mod tests {
         assert_eq!((3.0f32 % 2.0).div_euclid(1.0), 1.0);
         assert_eq!((3.5f32 % 2.0).div_euclid(1.0), 1.0);
         assert_eq!((4.0f32 % 2.0).div_euclid(1.0), 0.0);
+        assert_eq!((-0.5f32 % 2.0).div_euclid(1.0), -1.0);
+
+        assert_eq!((0.0f32 % 2.0).div_euclid(1.0), (0.0f32 % 2.0).trunc());
+        assert_eq!((0.5f32 % 2.0).div_euclid(1.0), (0.5f32 % 2.0).trunc());
+        assert_eq!((1.0f32 % 2.0).div_euclid(1.0), (1.0f32 % 2.0).trunc());
+        assert_eq!((1.5f32 % 2.0).div_euclid(1.0), (1.5f32 % 2.0).trunc());
+        assert_eq!((2.0f32 % 2.0).div_euclid(1.0), (2.0f32 % 2.0).trunc());
+        assert_eq!((3.0f32 % 2.0).div_euclid(1.0), (3.0f32 % 2.0).trunc());
+        assert_eq!((3.5f32 % 2.0).div_euclid(1.0), (3.5f32 % 2.0).trunc());
+        assert_eq!((4.0f32 % 2.0).div_euclid(1.0), (4.0f32 % 2.0).trunc());
     }
 
     #[test]

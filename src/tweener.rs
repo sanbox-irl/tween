@@ -240,7 +240,7 @@ where
     }
 }
 
-impl<Value, Time, T> std::ops::Deref for FixedTweener<Value, Time, T> {
+impl<Value, Time, T> core::ops::Deref for FixedTweener<Value, Time, T> {
     type Target = Tweener<Value, Time, T>;
 
     fn deref(&self) -> &Self::Target {
@@ -248,7 +248,7 @@ impl<Value, Time, T> std::ops::Deref for FixedTweener<Value, Time, T> {
     }
 }
 
-impl<Value, Time, T> std::ops::DerefMut for FixedTweener<Value, Time, T> {
+impl<Value, Time, T> core::ops::DerefMut for FixedTweener<Value, Time, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.tweener
     }

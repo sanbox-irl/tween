@@ -11,7 +11,7 @@ declare_tween!(
         let percent = 10.0 * (percent - 1.0);
 
         #[cfg(feature = "libm")]
-        let scalar = libm::pow(2.0, percent_time);
+        let scalar = libm::pow(2.0, percent);
 
         #[cfg(feature = "std")]
         let scalar = 2.0f64.powf(percent);
@@ -63,13 +63,13 @@ declare_tween!(
 
             scalar / 2.0
         } else {
-            let t = percent - 1.0;
+            let percent = percent - 1.0;
 
             #[cfg(feature = "libm")]
             let scalar = libm::pow(2.0, -10.0 * percent);
 
             #[cfg(feature = "std")]
-            let scalar = 2.0f64.powf(-10.0 * t);
+            let scalar = 2.0f64.powf(-10.0 * percent);
 
             (2.0 - scalar) / 2.0
         };

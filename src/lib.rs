@@ -163,9 +163,6 @@ pub trait TweenTime:
 
     /// This is implemented as a simple multipler, such as `self * multiplier`.
     fn scale(self, multiplier: f64) -> Self;
-
-    /// Does the `div_euclid`. Most types simply have this method already!
-    fn div_euclid(self, other: Self) -> Self;
 }
 
 declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
@@ -188,10 +185,6 @@ impl TweenTime for f32 {
     fn scale(self, other: f64) -> Self {
         (self as f64 * other) as Self
     }
-
-    fn div_euclid(self, other: Self) -> Self {
-        self.div_euclid(other)
-    }
 }
 impl TweenTime for f64 {
     const ZERO: Self = 0.0;
@@ -210,10 +203,6 @@ impl TweenTime for f64 {
 
     fn scale(self, other: f64) -> Self {
         self * other
-    }
-
-    fn div_euclid(self, other: Self) -> Self {
-        self.div_euclid(other)
     }
 }
 
