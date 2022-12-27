@@ -1,8 +1,10 @@
 use crate::{Tween, TweenTime, TweenValue};
 
+mod erased;
 mod looper;
 mod oscillator;
 
+pub use erased::{ErasedTweener, FixedErasedTweener};
 pub use looper::Looper;
 pub use oscillator::Oscillator;
 
@@ -14,7 +16,7 @@ pub use oscillator::Oscillator;
 /// ## Iterator
 ///
 /// In situations where the same delta time is alwayas used for (move_by)[Self::move_by], you can
-/// instead convert a [Tweener] into a [FixedTweener] by [Tweener::to_fixed]. See [FixedTweener] for
+/// instead convert a [Tweener] into a [FixedTweener] by [Tweener::into_fixed]. See [FixedTweener] for
 /// more information.
 #[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
 pub struct Tweener<Value, Time, T: ?Sized> {
@@ -122,10 +124,13 @@ where
     /// that, use [Self::is_started].
     pub fn is_finished(&self) -> bool {
         let pct = self.tween.percent(self.current_time, self.duration);
+        println!("pct = {}", pct);
 
         if let Some((_, upper)) = self.tween.percent_bounds() {
-            pct.partial_cmp(&upper).map(|v| v.is_le()).unwrap_or(false)
+            println!("and upper = {}", upper);
+            pct.partial_cmp(&upper).map(|v| v.is_ge()).unwrap_or(false)
         } else {
+            println!("no bounds!");
             false
         }
     }
@@ -151,8 +156,20 @@ where
     }
 
     /// Converts this [Tweener] to a [FixedTweener]. See its documentation for more information.
-    pub fn to_fixed(self, delta: Time) -> FixedTweener<Value, Time, T> {
+    pub fn into_fixed(self, delta: Time) -> FixedTweener<Value, Time, T> {
         FixedTweener::from_tweener(self, delta)
+    }
+
+    /// Converts the [Tweener] to a boxed [ErasedTweener]. This can be extremely convenient to
+    /// return different types of tweens.
+    #[cfg(feature = "std")]
+    pub fn into_erased(self) -> std::boxed::Box<dyn ErasedTweener<Value, Time>>
+    where
+        Value: 'static,
+        Time: 'static,
+        T: 'static,
+    {
+        std::boxed::Box::new(self) as std::boxed::Box<dyn ErasedTweener<Value, Time>>
     }
 }
 
@@ -212,9 +229,22 @@ where
         Self { tweener, delta }
     }
 
-    /// This is the exact same as called `next` via [Iterator] except **we clamp the output.**
+    /// This is the exact same as called `next` via [Iterator] except that it doesn't require a
+    /// useless `.unwrap()` because it *clamps* instead.
     pub fn move_next(&mut self) -> Value {
         self.tweener.move_by(self.delta)
+    }
+
+    /// Converts the [FixedTweener] to a boxed [FixedErasedTweener]. This can be extremely
+    /// convenient to return different types of tweens.
+    #[cfg(feature = "std")]
+    pub fn into_erased(self) -> std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
+    where
+        Value: 'static,
+        Time: 'static,
+        T: 'static,
+    {
+        std::boxed::Box::new(self) as std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
     }
 }
 
@@ -250,8 +280,6 @@ where
 #[cfg(feature = "std")]
 #[cfg(test)]
 mod tests {
-    use std::boxed::Box;
-
     use super::*;
     use crate::Linear;
 
@@ -265,12 +293,12 @@ mod tests {
 
     #[test]
     fn fixed_tweener() {
-        let mut tweener = Tweener::new(0, 100, 10, Linear).to_fixed(1);
+        let mut tweener = Tweener::new(0, 100, 10, Linear).into_fixed(1);
         let values: std::vec::Vec<_> = (0..10).map(|_| tweener.next().unwrap()).collect();
 
         assert_eq!(*values, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]);
 
-        let mut fixed_tweener = Tweener::new(0, 4, 4, Linear).to_fixed(1);
+        let mut fixed_tweener = Tweener::new(0, 4, 4, Linear).into_fixed(1);
         assert_eq!(fixed_tweener.next().unwrap(), 1);
         assert_eq!(fixed_tweener.next().unwrap(), 2);
         assert_eq!(fixed_tweener.next().unwrap(), 3);
@@ -288,11 +316,5 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
-    }
-
-    #[test]
-    fn erase() {
-        let tweener: Box<Tweener<i32, i32, Linear>> = std::boxed::Box::new(Tweener::new(0, 2, 2, Linear));
-        let tweener = tweener as Box<Tweener<i32, i32, dyn Tween<i32, i32>>>;
     }
 }
