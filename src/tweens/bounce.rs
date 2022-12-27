@@ -1,4 +1,4 @@
-use crate::{SizedTween, Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenTime, TweenValue};
 
 const MAGIC: f64 = 7.5625;
 const STAGE_ZERO: f64 = 1.0 / 2.75;
@@ -66,17 +66,6 @@ where
 
     fn percent(&self, current_time: Time, duration: Time) -> f64 {
         (duration - current_time).to_f64() / duration.to_f64()
-    }
-}
-
-impl<Value, Time> SizedTween<Value, Time> for BounceIn
-where
-    Value: TweenValue,
-    Time: TweenTime,
-{
-    /// Creates a new Tween
-    fn new() -> Self {
-        Self
     }
 }
 
@@ -197,17 +186,6 @@ where
     // because we do some demonic shit here to keep this a ZST, we allow for -1 to 1 ranges.
     fn percent_bounds(&self) -> Option<(f64, f64)> {
         Some((-1.0, 1.0))
-    }
-}
-
-impl<Value, Time> SizedTween<Value, Time> for BounceInOut
-where
-    Value: TweenValue,
-    Time: TweenTime,
-{
-    /// Creates a new Tween
-    fn new() -> Self {
-        Self
     }
 }
 

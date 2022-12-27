@@ -81,6 +81,9 @@ pub trait Tween<Value, Time: TweenTime> {
     }
 }
 
+#[cfg(test)]
+static_assertions::assert_obj_safe!(Tween<i32, i32>);
+
 #[cfg(feature = "std")]
 impl<Value, Time> Tween<Value, Time> for std::boxed::Box<dyn Tween<Value, Time>>
 where
@@ -92,11 +95,15 @@ where
     }
 }
 
-/// This is a helper trait, which all the tweens in this library support, which gives access
-/// to non-object-safe methods.
-pub trait SizedTween<Value, Time: TweenTime>: Tween<Value, Time> + Sized {
-    /// Creates a new `SizedTween`
-    fn new() -> Self;
+impl<Value, Time, F> Tween<Value, Time> for F
+where
+    F: FnMut(Value, f64) -> Value,
+    Value: TweenValue,
+    Time: TweenTime,
+{
+    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+        self(value_delta, percent)
+    }
 }
 
 #[cfg(test)]
@@ -161,24 +168,94 @@ pub trait TweenTime:
     fn div_euclid(self, other: Self) -> Self;
 }
 
-declare_time!(u8);
-declare_time!(i8);
-declare_time!(i32);
-declare_time!(i64);
-declare_time!(u32);
-declare_time!(u64);
-declare_time!(usize);
-declare_time!(isize);
-declare_time!(float f32);
-declare_time!(float f64);
+declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
 
-declare_value!(u8);
-declare_value!(i8);
-declare_value!(i32);
-declare_value!(i64);
-declare_value!(u32);
-declare_value!(u64);
-declare_value!(usize);
-declare_value!(isize);
-declare_value!(float f32);
-declare_value!(float f64);
+impl TweenTime for f32 {
+    const ZERO: Self = 0.0;
+
+    fn percent(duration: Self, current_time: Self) -> f64 {
+        current_time as f64 / duration as f64
+    }
+
+    fn to_f32(self) -> f32 {
+        self
+    }
+
+    fn to_f64(self) -> f64 {
+        self as f64
+    }
+
+    fn scale(self, other: f64) -> Self {
+        (self as f64 * other) as Self
+    }
+
+    fn div_euclid(self, other: Self) -> Self {
+        self.div_euclid(other)
+    }
+}
+impl TweenTime for f64 {
+    const ZERO: Self = 0.0;
+
+    fn percent(duration: Self, current_time: Self) -> f64 {
+        current_time / duration
+    }
+
+    fn to_f32(self) -> f32 {
+        self as f32
+    }
+
+    fn to_f64(self) -> f64 {
+        self
+    }
+
+    fn scale(self, other: f64) -> Self {
+        self * other
+    }
+
+    fn div_euclid(self, other: Self) -> Self {
+        self.div_euclid(other)
+    }
+}
+
+declare_value!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
+
+impl TweenValue for f32 {
+    const ZERO: Self = 0.0;
+
+    fn scale(self, scale: f64) -> Self {
+        (self as f64 * scale) as f32
+    }
+}
+
+impl TweenValue for f64 {
+    const ZERO: Self = 0.0;
+
+    fn scale(self, scale: f64) -> Self {
+        self * scale
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lambda_test() {
+        // this tweener will always return `100` for `4` frames!
+        let (start, end) = (0, 1); // this is basically ignored by the Lambda Tween
+        let length = 4;
+        let mut pct_50_or_over = false;
+        let mut tweener = Tweener::new(start, end, length, |_vd, pct| {
+            if pct >= 0.5 {
+                pct_50_or_over = true;
+            }
+            100
+        });
+        assert_eq!(tweener.move_by(1), 100);
+        assert_eq!(tweener.move_by(1), 100);
+        assert_eq!(tweener.move_by(1), 100);
+        assert_eq!(tweener.move_by(1), 100);
+        assert!(tweener.is_finished());
+        assert!(pct_50_or_over);
+    }
+}

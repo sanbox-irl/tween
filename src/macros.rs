@@ -1,7 +1,8 @@
 /// This is internal to the library, but allows for simple numeric
 /// types to be made into a time value.
 macro_rules! declare_time {
-    ($t:ty) => {
+    ($($t:ty),*) => {
+        $(
         impl TweenTime for $t {
             const ZERO: Self = 0;
 
@@ -25,55 +26,22 @@ macro_rules! declare_time {
                 self.div_euclid(other)
             }
         }
-    };
-    (float $t:ty) => {
-        impl TweenTime for $t {
-            const ZERO: Self = 0.0;
-
-            fn percent(duration: Self, current_time: Self) -> f64 {
-                current_time as f64 / duration as f64
-            }
-
-            fn to_f32(self) -> f32 {
-                self as f32
-            }
-
-            fn to_f64(self) -> f64 {
-                self as f64
-            }
-
-            fn scale(self, other: f64) -> Self {
-                (self as f64 * other) as Self
-            }
-
-            fn div_euclid(self, other: Self) -> Self {
-                self.div_euclid(other)
-            }
-        }
+        )*
     };
 }
 
 /// This is internal to the library, but allows for simple numeric
 /// types to be made into a tween_value.
 macro_rules! declare_value {
-    ($t:ty) => {
+    ($($t:ident),*) => {
+        $(
         impl TweenValue for $t {
             const ZERO: Self = 0;
 
             fn scale(self, scale: f64) -> Self {
                 (self as f64 * scale) as $t
             }
-        }
-    };
-
-    (float $t:ty) => {
-        impl TweenValue for $t {
-            const ZERO: Self = 0.0;
-
-            fn scale(self, scale: f64) -> Self {
-                (self as f64 * scale) as $t
-            }
-        }
+        })*
     };
 }
 
@@ -97,7 +65,7 @@ macro_rules! declare_tween {
                 Value: $crate::TweenValue,
                 Time: $crate::TweenTime,
             {
-                <Self as $crate::SizedTween<Value, Time>>::new()
+                Self
             }
 
              /// Calculate what a percent into the Tween based on time. For almost all Tweens,
@@ -134,17 +102,6 @@ macro_rules! declare_tween {
             Time: $crate::TweenTime,
         {
             $tween
-        }
-
-        impl<Value, Time> $crate::SizedTween<Value, Time> for $name
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            /// Creates a new Tween
-            fn new() -> Self {
-                Self
-            }
         }
     };
 }
