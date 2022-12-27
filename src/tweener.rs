@@ -165,17 +165,6 @@ where
     }
 }
 
-// impl<Value, Time> Tweener<Value, Time, crate::SineIn>
-// where
-//     Time: TweenTime,
-//     Value: TweenValue,
-// {
-//     /// Creates a new [SineIn] tween.
-//     pub fn sine_in(start: Value, end: Value, duration: Time) -> Tweener<Value, Time, crate::SineIn> {
-//         Tweener::new(start, end, duration, crate::SineIn)
-//     }
-// }
-
 /// A FixedTweener is a [Tweener] wrapper which implements [Iterator]. To do this,
 /// it takes a "fixed" delta on its constructor.
 ///
