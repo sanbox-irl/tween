@@ -7,7 +7,7 @@ use crate::{Tween, TweenTime, TweenValue};
 /// beginning, it restarts it at the end and travels backwards. For many Tweens in this library,
 /// this is the same
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Oscillator<T>(T);
+pub struct Oscillator<T>(pub T);
 
 impl<T> Oscillator<T> {
     /// Creates a new Oscillator around a [Tween].
@@ -33,12 +33,17 @@ where
 
         self.0.tween(value_delta, percent)
     }
+
+    fn percent_bounds(&self) -> Option<(f64, f64)> {
+        // to infinity!!
+        None
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{DeltaTweener, Linear, Tweener};
+    use crate::{FixedTweener, Linear, Tweener};
 
     #[test]
     fn div_euclid_fun() {
@@ -62,54 +67,51 @@ mod tests {
     fn tweener_oscillator() {
         let mut oscillator = Tweener::new(0, 2, 2, Oscillator::new(Linear));
 
-        assert_eq!(oscillator.run(0), 0);
-        assert_eq!(oscillator.run(1), 1);
-        assert_eq!(oscillator.run(2), 2);
-        assert_eq!(oscillator.run(3), 1);
-        assert_eq!(oscillator.run(4), 0);
-        assert_eq!(oscillator.run(5), 1);
-        assert_eq!(oscillator.run(6), 2);
+        assert_eq!(oscillator.move_to(0), 0);
+        assert_eq!(oscillator.move_to(1), 1);
+        assert_eq!(oscillator.move_to(2), 2);
+        assert_eq!(oscillator.move_to(3), 1);
+        assert_eq!(oscillator.move_to(4), 0);
+        assert_eq!(oscillator.move_to(5), 1);
+        assert_eq!(oscillator.move_to(6), 2);
     }
 
     #[test]
     fn delta_tweener_oscillator() {
-        let mut oscillator = DeltaTweener::new(0, 2, 2, Oscillator::new(Linear));
+        let mut oscillator = Tweener::new(0, 2, 2, Oscillator::new(Linear));
 
-        assert_eq!(oscillator.update_by(0), Some(0));
-        assert_eq!(oscillator.update_by(1), Some(1));
-        assert_eq!(oscillator.update_by(1), Some(2));
-        assert_eq!(oscillator.update_by(1), Some(1));
-        assert_eq!(oscillator.update_by(1), Some(0));
-        assert_eq!(oscillator.update_by(1), Some(1));
-        assert_eq!(oscillator.update_by(1), Some(2));
+        assert_eq!(oscillator.move_by(0), 0);
+        assert_eq!(oscillator.move_by(1), 1);
+        assert_eq!(oscillator.move_by(1), 2);
+        assert_eq!(oscillator.move_by(1), 1);
+        assert_eq!(oscillator.move_by(1), 0);
+        assert_eq!(oscillator.move_by(1), 1);
+        assert_eq!(oscillator.move_by(1), 2);
     }
 
-    // #[test]
-    // fn tweener_oscillator_big_loop() {
-    //     let mut oscillator = Oscillator::new(TweenDriver::new(Linear::new(0, 2, 2)));
+    #[test]
+    fn tweener_oscillator_big_loop() {
+        let mut oscillator = Tweener::new(0, 2, 2, Oscillator::new(Linear));
 
-    //     assert_eq!(oscillator.update(2), 2);
-    //     assert_eq!(oscillator.update(1), 1);
-    //     assert_eq!(oscillator.update(2), 1);
-    // }
+        assert_eq!(oscillator.move_by(2), 2);
+        assert_eq!(oscillator.move_by(1), 1);
+        assert_eq!(oscillator.move_by(2), 1);
+    }
 
-    // #[test]
-    // fn fixed_tweener_oscillator() {
-    //     let mut oscillator = FixedOscillator::new(FixedTweenDriver::new(Linear::new(0, 2, 2), 1));
+    #[test]
+    fn fixed_tweener_oscillator() {
+        let mut oscillator = FixedTweener::new(0, 2, 2, Oscillator::new(Linear), 1);
 
-    //     assert_eq!(oscillator.next().unwrap(), 1);
-    //     assert_eq!(oscillator.next().unwrap(), 2);
-    //     assert_eq!(oscillator.next().unwrap(), 1);
-    //     assert_eq!(oscillator.next().unwrap(), 0);
-    //     assert_eq!(oscillator.next().unwrap(), 1);
-    //     assert_eq!(oscillator.next().unwrap(), 2);
-    // }
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.next().unwrap(), 2);
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.next().unwrap(), 0);
+        assert_eq!(oscillator.next().unwrap(), 1);
+        assert_eq!(oscillator.next().unwrap(), 2);
+    }
 
     #[test]
     fn type_test() {
-        // let _one_type: Oscillator<Linear<i32, i32>>;
-        // let _two_type: Oscillator<Linear<i32, i32>, crate::QuadIn<i32, i32>>;
-
-        // let conflict: Oscillator<Linear<i32, i32>, crate::QuadIn<u32, i32>>;
+        let _one_type: Oscillator<Linear>;
     }
 }

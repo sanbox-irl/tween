@@ -2,11 +2,11 @@ use crate::{Tween, TweenTime, TweenValue};
 
 // mod chain;
 mod looper;
-// mod oscillator;
+mod oscillator;
 
 // pub use chain::Chain;
 pub use looper::Looper;
-// pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
+pub use oscillator::Oscillator;
 
 /// A Tweener is a wrapper around a Tween. Although you can tween dynamically using just a raw
 /// Tween, this struct will manage state and allow for more naturalistic handling.

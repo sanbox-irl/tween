@@ -63,6 +63,22 @@ pub trait Tween<Value, Time: TweenTime> {
     fn percent_bounds(&self) -> Option<(f64, f64)> {
         Some((0.0, 1.0))
     }
+
+    /// Convenience shortcut to turn a tween into a [Looper].
+    fn into_loop(self) -> Looper<Self>
+    where
+        Self: Sized,
+    {
+        Looper::new(self)
+    }
+
+    /// Convenience shortcut to turn a tween into an [Oscillator].
+    fn into_oscillator(self) -> Oscillator<Self>
+    where
+        Self: Sized,
+    {
+        Oscillator::new(self)
+    }
 }
 
 #[cfg(feature = "std")]
