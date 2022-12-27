@@ -39,7 +39,7 @@ impl<Value, Time, T> Tweener<Value, Time, T>
 where
     Time: TweenTime,
     Value: TweenValue,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], and [TweenTime]
     /// duration.
@@ -190,7 +190,7 @@ impl<Value, Time, T> FixedTweener<Value, Time, T>
 where
     Value: TweenValue,
     Time: TweenTime,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], [TweenTime]
     /// duration, and [TweenTime] delta.
@@ -241,7 +241,7 @@ impl<Value, Time, T> Iterator for FixedTweener<Value, Time, T>
 where
     Value: TweenValue,
     Time: TweenTime,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     type Item = Value;
 
@@ -297,14 +297,14 @@ mod tests {
     fn bounds_checker() {
         fn checker<T: 'static>(mut tweener: Tweener<i32, i32, T>)
         where
-            T: Tween<i32, i32>,
+            T: Tween<i32>,
         {
             fn move_and_return<T>(
                 tweener: &mut Tweener<i32, i32, T>,
                 f: impl FnOnce(&Tweener<i32, i32, T>) -> bool,
             ) -> bool
             where
-                T: Tween<i32, i32> + 'static,
+                T: Tween<i32> + 'static,
             {
                 tweener.move_by(1);
                 f(tweener)

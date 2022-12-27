@@ -71,10 +71,9 @@ macro_rules! declare_tween {
             $tween
         }
 
-        impl<Value, Time> $crate::Tween<Value, Time> for $name
+        impl<Value> $crate::Tween<Value> for $name
         where
             Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
         {
             fn tween(&mut self, value_delta: Value, percent_time: f64) -> Value {
                 self.tween(value_delta, percent_time)

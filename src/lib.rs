@@ -32,7 +32,7 @@ pub use tweener::*;
 pub use tweens::*;
 
 /// This is the core trait of the Library, which all tweens implement.
-pub trait Tween<Value, Time: TweenTime> {
+pub trait Tween<Value> {
     /// Returns a new value based on the value_delta and the percent.
     ///
     /// [Linear], for example, is implemented simply as:
@@ -75,32 +75,27 @@ pub trait Tween<Value, Time: TweenTime> {
 }
 
 #[cfg(test)]
-static_assertions::assert_obj_safe!(Tween<i32, i32>);
+static_assertions::assert_obj_safe!(Tween<i32>);
 
 #[cfg(feature = "std")]
-impl<Value, Time> Tween<Value, Time> for std::boxed::Box<dyn Tween<Value, Time>>
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value>>
 where
     Value: TweenValue,
-    Time: TweenTime,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         (**self).tween(value_delta, percent)
     }
 }
 
-impl<Value, Time, F> Tween<Value, Time> for F
+impl<Value, F> Tween<Value> for F
 where
     F: FnMut(Value, f64) -> Value,
     Value: TweenValue,
-    Time: TweenTime,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         self(value_delta, percent)
     }
 }
-
-#[cfg(test)]
-static_assertions::assert_obj_safe!(Tween<i32, i32>);
 
 /// A `TweenValue` is a value which *can* be Tweened. The library fundamentally outputs
 /// `TweenValue` eventually.

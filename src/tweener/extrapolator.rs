@@ -1,4 +1,4 @@
-use crate::{Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenValue};
 
 /// An [Extrapolator] is a wrapper around a [Tween], which allows a tween to go beyond the range of
 /// `0.0` to `1.0`. Note that for [Looper], [Oscillator], or any [Tween] whose [Tween::is_finite]
@@ -18,11 +18,10 @@ impl<T> Extrapolator<T> {
     }
 }
 
-impl<Value, Time, T> Tween<Value, Time> for Extrapolator<T>
+impl<Value, T> Tween<Value> for Extrapolator<T>
 where
     Value: TweenValue,
-    Time: TweenTime,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         // pass through to the underlying tween

@@ -44,10 +44,9 @@ impl BounceIn {
     }
 }
 
-impl<Value, Time> Tween<Value, Time> for BounceIn
+impl<Value> Tween<Value> for BounceIn
 where
     Value: TweenValue,
-    Time: TweenTime,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         self.tween(value_delta, percent)
@@ -147,10 +146,9 @@ impl BounceInOut {
     }
 }
 
-impl<Value, Time> Tween<Value, Time> for BounceInOut
+impl<Value> Tween<Value> for BounceInOut
 where
     Value: TweenValue,
-    Time: TweenTime,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         self.tween(value_delta, percent)

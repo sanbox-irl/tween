@@ -1,4 +1,4 @@
-use crate::{Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenValue};
 
 /// An [Oscillator] is a wrapper around a [Tween] which places the Tween into an infinite
 /// ping pong.
@@ -17,11 +17,10 @@ impl<T> Oscillator<T> {
     }
 }
 
-impl<Value, Time, T> Tween<Value, Time> for Oscillator<T>
+impl<Value, T> Tween<Value> for Oscillator<T>
 where
     Value: TweenValue,
-    Time: TweenTime,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let temp = percent % 2.0;

@@ -85,7 +85,7 @@ impl<Value, Time, T> ErasedTweener<Value, Time> for Tweener<Value, Time, T>
 where
     Value: TweenValue + 'static,
     Time: TweenTime + 'static,
-    T: Tween<Value, Time> + 'static,
+    T: Tween<Value> + 'static,
 {
     fn move_to(&mut self, position: Time) -> Value {
         self.move_to(position)
@@ -141,7 +141,7 @@ impl<Value, Time, T> ErasedTweener<Value, Time> for FixedTweener<Value, Time, T>
 where
     Value: TweenValue + 'static,
     Time: TweenTime + 'static,
-    T: Tween<Value, Time> + 'static,
+    T: Tween<Value> + 'static,
 {
     fn move_to(&mut self, position: Time) -> Value {
         self.tweener.move_to(position)
@@ -218,7 +218,7 @@ impl<Value, Time, T> FixedErasedTweener<Value, Time> for FixedTweener<Value, Tim
 where
     Value: TweenValue + 'static,
     Time: TweenTime + 'static,
-    T: Tween<Value, Time> + 'static,
+    T: Tween<Value> + 'static,
 {
     fn set_delta(&mut self, delta: Time) {
         self.delta = delta;

@@ -1,4 +1,4 @@
-use crate::{Tween, TweenTime, TweenValue};
+use crate::{Tween, TweenValue};
 
 /// A [Looper] is a wrapper around a [Tween], which makes it so that
 /// every time the tweener *would* fuse (end), it loops from the start.
@@ -13,11 +13,10 @@ impl<T> Looper<T> {
     }
 }
 
-impl<Value, Time, T> Tween<Value, Time> for Looper<T>
+impl<Value, T> Tween<Value> for Looper<T>
 where
     Value: TweenValue,
-    Time: TweenTime,
-    T: Tween<Value, Time>,
+    T: Tween<Value>,
 {
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {

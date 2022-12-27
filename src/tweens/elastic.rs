@@ -27,7 +27,7 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value, Time> for ElasticIn<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticIn<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
@@ -99,7 +99,7 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value, Time> for ElasticOut<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
@@ -167,7 +167,7 @@ where
     }
 }
 
-impl<Value, Time> Tween<Value, Time> for ElasticInOut<Value, Time>
+impl<Value, Time> Tween<Value> for ElasticInOut<Value, Time>
 where
     Value: TweenValue,
     Time: TweenTime,
