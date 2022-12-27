@@ -1,10 +1,12 @@
 use crate::{Tween, TweenTime, TweenValue};
 
 mod erased;
+mod extrapolator;
 mod looper;
 mod oscillator;
 
 pub use erased::{ErasedTweener, FixedErasedTweener};
+pub use extrapolator::Extrapolator;
 pub use looper::Looper;
 pub use oscillator::Oscillator;
 

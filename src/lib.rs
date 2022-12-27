@@ -50,6 +50,9 @@ pub trait Tween<Value, Time: TweenTime> {
     ///
     /// If you have a [Tween] which returns valid values at all percentage ranges at all times, you
     /// should return [false].
+    ///
+    /// If you would like to extrapolate a tween *beyond* its bounds, you can wrap it in
+    /// [Extrapolate].
     fn is_finite(&self) -> bool {
         true
     }
