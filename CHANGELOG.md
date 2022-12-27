@@ -9,6 +9,6 @@
 
 - Initial implementation of the library.
 
-[unreleased]: https://github.com/sanbox-irl/cosync/compare/v1.0.0...HEAD
-[1.0.1]: https://github.com/sanbox-irl/cosync/releases/tag/v1.0.1
-[1.0.0]: https://github.com/sanbox-irl/cosync/releases/tag/v1.0.0
+[unreleased]: https://github.com/sanbox-irl/tween/compare/v1.0.0...HEAD
+[1.0.1]: https://github.com/sanbox-irl/tween/releases/tag/v1.0.1
+[1.0.0]: https://github.com/sanbox-irl/tween/releases/tag/v1.0.0

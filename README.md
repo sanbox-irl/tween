@@ -9,7 +9,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = "1.0.0"
+tween = "2.0.0"
 ```
 
 <!-- This trait exports a trait `Tween`, a variety of structs which implement common tweens (such as `Elastic`, `Quart`, etc), and two `Tweeners`, which wrap around tweens, allowing users to drive them trivially.
