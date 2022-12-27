@@ -119,13 +119,10 @@ where
     /// that, use [Self::is_started].
     pub fn is_finished(&self) -> bool {
         let pct = self.tween.percent(self.current_time, self.duration);
-        println!("pct = {}", pct);
 
         if let Some((_, upper)) = self.tween.percent_bounds() {
-            println!("and upper = {}", upper);
             pct.partial_cmp(&upper).map(|v| v.is_ge()).unwrap_or(false)
         } else {
-            println!("no bounds!");
             false
         }
     }

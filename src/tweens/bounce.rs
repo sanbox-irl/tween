@@ -172,15 +172,13 @@ where
         let duration = duration.to_f64();
 
         let base_pct = current_time / duration;
-        let output = if base_pct < 0.5 {
+        if base_pct < 0.5 {
             // we pass in this negative as a hint to the `tween` function.
             // it's ugly, but bounce is *evil*
             -(duration - current_time * 2.0) / duration
         } else {
             (current_time * 2.0 - duration) / duration
-        };
-
-        dbg!(output)
+        }
     }
 
     // because we do some demonic shit here to keep this a ZST, we allow for -1 to 1 ranges.
