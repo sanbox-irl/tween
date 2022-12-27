@@ -1,11 +1,11 @@
 use crate::{Tween, TweenTime, TweenValue};
 
 // mod chain;
-// mod looper;
+mod looper;
 // mod oscillator;
 
 // pub use chain::Chain;
-// pub use looper::Looper;
+pub use looper::Looper;
 // pub use oscillator::{FixedOscillator, OscillationDirection, Oscillator};
 
 /// A Tweener is a wrapper around a Tween. Although you can tween dynamically using just a raw
@@ -153,7 +153,7 @@ where
 
     /// Converts this [Tweener] to a [FixedTweener]. See its documentation for more information.
     pub fn to_fixed(self, delta: Time) -> FixedTweener<Value, Time, T> {
-        FixedTweener::new(self, delta)
+        FixedTweener::from_tweener(self, delta)
     }
 }
 
@@ -179,7 +179,7 @@ where
 /// let (start, end) = (0, 4);
 /// let duration = 4;
 /// let delta = 1;
-/// let mut fixed_tweener = FixedTweener::new(Tweener::new(start, end, duration, Linear), delta);
+/// let mut fixed_tweener = FixedTweener::new(start, end, duration, Linear, delta);
 /// assert_eq!(fixed_tweener.next().unwrap(), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 2);
 /// assert_eq!(fixed_tweener.next().unwrap(), 3);
@@ -201,9 +201,15 @@ where
     Time: TweenTime,
     T: Tween<Value, Time>,
 {
+    /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], [TweenTime]
+    /// duration, and [TweenTime] delta.
+    pub fn new(start: Value, end: Value, duration: Time, tween: T, delta: Time) -> Self {
+        Self::from_tweener(Tweener::new(start, end, duration, tween), delta)
+    }
+
     /// Creates a new [FixedTweener], and takes in the delta time
     /// it will use per tick.
-    pub fn new(tweener: Tweener<Value, Time, T>, delta: Time) -> Self {
+    pub fn from_tweener(tweener: Tweener<Value, Time, T>, delta: Time) -> Self {
         Self { tweener, delta }
     }
 
