@@ -42,20 +42,16 @@ pub trait Tween<Value, Time: TweenTime> {
     /// which is just `value_delta * percent`.
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
 
-    /// This returns *inclusive percentage* bounds under which a tween is valid. A "percentage"
-    /// range is an f64 denoting the percentage of a tween, and it is inclusive so that top and
-    /// bottom numbers are both within the range.
+    /// All Tweens in this library use this default method, except [Looper] and [Oscillator], which
+    /// are both unbounded (because they never stop returning values).
     ///
-    /// This is used by [Tweener], [DeltaTweener], and [FixedTweener] to determine returning [Some]
-    /// or [None].
+    /// This is used by [Tweener], [DeltaTweener], and [FixedTweener] to determine when to clamp and
+    /// when a tween will return true for [Tweener::is_finished].
     ///
-    /// If you have a [Tween] which returns valid values at all percentage sranges at all times, you
-    /// should return [None].
-    ///
-    /// All normal Tweens in this library use the default method, which means that a Tweener,
-    /// whereas [Looper] and [Oscillator] both override it to return [None].
-    fn percent_bounds(&self) -> Option<(f64, f64)> {
-        Some((0.0, 1.0))
+    /// If you have a [Tween] which returns valid values at all percentage ranges at all times, you
+    /// should return [false].
+    fn is_finite(&self) -> bool {
+        true
     }
 
     /// Convenience shortcut to turn a tween into a [Looper].

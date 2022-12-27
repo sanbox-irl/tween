@@ -63,10 +63,10 @@ where
         self.current_time = position;
 
         let pct = position.to_f64() / self.duration.to_f64();
-        if let Some((lower, upper)) = self.tween.percent_bounds() {
-            if pct < lower {
+        if self.tween.is_finite() {
+            if pct < 0.0 {
                 return self.initial_value();
-            } else if pct > upper {
+            } else if pct > 1.0 {
                 return self.final_value();
             }
         }
@@ -104,11 +104,7 @@ where
     pub fn is_started(&self) -> bool {
         let pct = self.current_time.to_f64() / self.duration.to_f64();
 
-        if let Some((lower, _upper)) = self.tween.percent_bounds() {
-            pct.partial_cmp(&lower).map(|v| v.is_ge()).unwrap_or(false)
-        } else {
-            true
-        }
+        if self.tween.is_finite() { pct >= 0.0 } else { true }
     }
 
     /// Returns `true` is the Tweener's [Self::current_time] is less than or equal to the upper
@@ -121,11 +117,7 @@ where
     pub fn is_finished(&self) -> bool {
         let pct = self.current_time.to_f64() / self.duration.to_f64();
 
-        if let Some((_, upper)) = self.tween.percent_bounds() {
-            pct.partial_cmp(&upper).map(|v| v.is_gt()).unwrap_or(true)
-        } else {
-            false
-        }
+        if self.tween.is_finite() { pct > 1.0 } else { false }
     }
 
     /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower
@@ -140,13 +132,11 @@ where
     pub fn is_valid(&self) -> bool {
         let pct = self.current_time.to_f64() / self.duration.to_f64();
 
-        if let Some((lower, upper)) = self.tween.percent_bounds() {
-            if pct < lower || pct > upper {
-                return false;
-            }
+        if self.tween.is_finite() {
+            (0.0..=1.0).contains(&pct)
+        } else {
+            true
         }
-
-        true
     }
 
     /// Converts this [Tweener] to a [FixedTweener]. See its documentation for more information.

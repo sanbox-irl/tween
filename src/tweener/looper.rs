@@ -33,9 +33,8 @@ where
         self.0.tween(value_delta, percent)
     }
 
-    fn percent_bounds(&self) -> Option<(f64, f64)> {
-        // infinite tween!
-        None
+    fn is_finite(&self) -> bool {
+        false
     }
 }
 
