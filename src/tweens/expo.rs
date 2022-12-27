@@ -8,7 +8,7 @@ declare_tween!(
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         // weird edge in this tween?
         if percent == 0.0 {
-            return Value::ZERO;
+            return value_delta.scale(0.0);
         }
 
         let percent = 10.0 * (percent - 1.0);
@@ -54,7 +54,7 @@ declare_tween!(
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {
-            return Value::ZERO;
+            return value_delta.scale(0.0);
         }
 
         if percent == 1.0 {

@@ -34,7 +34,7 @@ where
 {
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {
-            return Value::ZERO;
+            return value_delta.scale(0.0);
         }
 
         if percent == 1.0 {
@@ -106,7 +106,7 @@ where
 {
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         if percent == 0.0 {
-            return Value::ZERO;
+            return value_delta.scale(0.0);
         }
 
         if percent == 1.0 {
@@ -174,7 +174,7 @@ where
 {
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {
-            return Value::ZERO;
+            return value_delta.scale(0.0);
         }
 
         if percent == 1.0 {

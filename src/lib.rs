@@ -108,9 +108,6 @@ where
 pub trait TweenValue:
     Copy + PartialEq + Debug + Add<Output = Self> + AddAssign + Sub<Output = Self> + SubAssign
 {
-    /// The ZERO value. Generally, this is 0 or 0.0.
-    const ZERO: Self;
-
     /// This should be implemented as a simple multiplication. For f32, for example,
     /// it's implemented as `(self as f64 * scale) as f32`.
     fn scale(self, scale: f64) -> Self;
@@ -197,16 +194,12 @@ impl TweenTime for f64 {
 declare_value!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
 
 impl TweenValue for f32 {
-    const ZERO: Self = 0.0;
-
     fn scale(self, scale: f64) -> Self {
         (self as f64 * scale) as f32
     }
 }
 
 impl TweenValue for f64 {
-    const ZERO: Self = 0.0;
-
     fn scale(self, scale: f64) -> Self {
         self * scale
     }

@@ -32,8 +32,6 @@ macro_rules! declare_value {
     ($($t:ident),*) => {
         $(
         impl TweenValue for $t {
-            const ZERO: Self = 0;
-
             fn scale(self, scale: f64) -> Self {
                 (self as f64 * scale) as $t
             }
