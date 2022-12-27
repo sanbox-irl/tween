@@ -17,17 +17,18 @@ pub use oscillator::Oscillator;
 /// instead convert a [Tweener] into a [FixedTweener] by [Tweener::to_fixed]. See [FixedTweener] for
 /// more information.
 #[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
-pub struct Tweener<Value, Time, T> {
+pub struct Tweener<Value, Time, T: ?Sized> {
     /// The current time of the Tweener. You can change this value at will without running the
     /// Tween, or change it with `move_by`.
     pub current_time: Time,
     /// The Tweener's total duration.
     pub duration: Time,
-    /// The actual underlying Tween.
-    pub tween: T,
 
     values: (Value, Value),
     value_delta: Value,
+
+    /// The actual underlying Tween.
+    pub tween: T,
 }
 
 impl<Value, Time, T> Tweener<Value, Time, T>
@@ -185,12 +186,12 @@ where
 /// assert_eq!(fixed_tweener.next(), None);
 /// ```
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
-pub struct FixedTweener<Value, Time, T> {
-    /// The internal tweener that we've fixed a Delta to.
-    pub tweener: Tweener<Value, Time, T>,
-
+pub struct FixedTweener<Value, Time, T: ?Sized> {
     /// The delta upon which we move.
     pub delta: Time,
+
+    /// The internal tweener that we've fixed a Delta to.
+    pub tweener: Tweener<Value, Time, T>,
 }
 
 impl<Value, Time, T> FixedTweener<Value, Time, T>
@@ -215,24 +216,6 @@ where
     pub fn move_next(&mut self) -> Value {
         self.tweener.move_by(self.delta)
     }
-
-    // /// Converts this tweener to a [FixedLooper].
-    // pub fn looper(self) -> FixedLooper<T> {
-    //     FixedLooper::new(self)
-    // }
-
-    // /// Creates a new FixedOscillator out of this tween as `rising` and a second `falling` tween.
-    // /// If either tweener is complete, then they will be reset.
-    // ///
-    // /// Use `oscillator` to automatically generate an inverse `falling` tween.
-    // ///
-    // /// Because an arbitrary rising and falling tween are given, you can create piece-wise tweens.
-    // pub fn oscillator_with<Falling: Tween<Time = T::Time, Value = T::Value>>(
-    //     self,
-    //     other: FixedTweener<Falling>,
-    // ) -> FixedOscillator<T, Falling> {
-    //     FixedOscillator::with_falling(self, other)
-    // }
 }
 
 impl<Value, Time, T> std::ops::Deref for FixedTweener<Value, Time, T> {
@@ -248,20 +231,6 @@ impl<Value, Time, T> std::ops::DerefMut for FixedTweener<Value, Time, T> {
         &mut self.tweener
     }
 }
-
-// impl<Rising> FixedTweener<Rising>
-// where
-//     Rising: crate::SizedTween,
-// {
-//     /// Creates a new FixedOscillator. If the tweener is already complete, then it will
-//     /// reset it, and creates a backwards copy of the tween.
-//     ///
-//     /// The tween given will be assigned as the `rising` tween, whereas the generated inverse
-//     /// will be the `falling` tween.
-//     pub fn oscillator(self) -> FixedOscillator<Rising> {
-//         FixedOscillator::new(self)
-//     }
-// }
 
 impl<Value, Time, T> Iterator for FixedTweener<Value, Time, T>
 where
@@ -281,6 +250,8 @@ where
 #[cfg(feature = "std")]
 #[cfg(test)]
 mod tests {
+    use std::boxed::Box;
+
     use super::*;
     use crate::Linear;
 
@@ -317,5 +288,11 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
+    }
+
+    #[test]
+    fn erase() {
+        let tweener: Box<Tweener<i32, i32, Linear>> = std::boxed::Box::new(Tweener::new(0, 2, 2, Linear));
+        let tweener = tweener as Box<Tweener<i32, i32, dyn Tween<i32, i32>>>;
     }
 }

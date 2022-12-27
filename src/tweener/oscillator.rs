@@ -7,7 +7,8 @@ use crate::{Tween, TweenTime, TweenValue};
 /// beginning, it restarts it at the end and travels backwards. For many Tweens in this library,
 /// this is the same
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct Oscillator<T>(pub T);
+#[repr(transparent)]
+pub struct Oscillator<T: ?Sized>(pub T);
 
 impl<T> Oscillator<T> {
     /// Creates a new Oscillator around a [Tween].
