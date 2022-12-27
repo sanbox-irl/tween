@@ -295,7 +295,7 @@ mod tests {
 
     #[test]
     fn bounds_checker() {
-        fn checker<T: 'static>(mut tweener: Tweener<i32, i32, T>)
+        fn checker<T>(mut tweener: Tweener<i32, i32, T>)
         where
             T: Tween<i32>,
         {
@@ -304,7 +304,7 @@ mod tests {
                 f: impl FnOnce(&Tweener<i32, i32, T>) -> bool,
             ) -> bool
             where
-                T: Tween<i32> + 'static,
+                T: Tween<i32>,
             {
                 tweener.move_by(1);
                 f(tweener)
