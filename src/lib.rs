@@ -23,11 +23,6 @@ mod tweens;
 #[cfg(feature = "glam")]
 mod glam;
 
-use core::{
-    fmt::Debug,
-    ops::{Add, AddAssign, Rem, RemAssign, Sub, SubAssign},
-};
-
 pub use tweener::*;
 pub use tweens::*;
 
@@ -106,7 +101,13 @@ where
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
 pub trait TweenValue:
-    Copy + PartialEq + Debug + Add<Output = Self> + AddAssign + Sub<Output = Self> + SubAssign
+    Copy
+    + PartialEq
+    + core::fmt::Debug
+    + core::ops::Add<Output = Self>
+    + core::ops::AddAssign
+    + core::ops::Sub<Output = Self>
+    + core::ops::SubAssign
 {
     /// This should be implemented as a simple multiplication. For f32, for example,
     /// it's implemented as `(self as f64 * scale) as f32`.
@@ -125,13 +126,13 @@ pub trait TweenTime:
     Copy
     + PartialEq
     + PartialOrd
-    + Debug
-    + Add<Output = Self>
-    + AddAssign
-    + Rem<Output = Self>
-    + RemAssign
-    + Sub<Output = Self>
-    + SubAssign
+    + core::fmt::Debug
+    + core::ops::Add<Output = Self>
+    + core::ops::AddAssign
+    + core::ops::Rem<Output = Self>
+    + core::ops::RemAssign
+    + core::ops::Sub<Output = Self>
+    + core::ops::SubAssign
 {
     /// The ZERO value. This is 0 or 0.0.
     const ZERO: Self;
