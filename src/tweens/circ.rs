@@ -2,6 +2,9 @@ declare_tween!(
     /// A circular tween in. Go [here](https://easings.net/#easeInCirc) for a visual demonstration.
     pub struct CircIn;
 
+    /// Creates a new [CircIn] Tweener.
+    pub fn circ_in;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         #[cfg(feature = "libm")]
         let scalar = 1.0 - libm::sqrt(1.0 - percent * percent);
@@ -16,6 +19,10 @@ declare_tween!(
 declare_tween!(
     /// A circular tween out. Go [here](https://easings.net/#easeOutCirc) for a visual demonstration.
     pub struct CircOut;
+
+    /// Creates a new [CircOut] Tweener.
+    pub fn circ_out;
+
 
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let t = percent - 1.0;
@@ -33,6 +40,9 @@ declare_tween!(
 declare_tween!(
     /// A circular tween in and out. Go [here](https://easings.net/#easeInOutCirc) for a visual demonstration.
     pub struct CircInOut;
+
+    /// Creates a new [CircInOut] Tweener.
+    pub fn circ_in_out;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent *= 2.0;

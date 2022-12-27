@@ -2,6 +2,9 @@ declare_tween!(
     /// An quintic tween in. Go [here](https://easings.net/#easeInQuint) for a visual demonstration.
     pub struct QuintIn;
 
+    /// Creates a new [QuintInOut] Tweener.
+    pub fn quint_in;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         value_delta.scale(percent * percent * percent * percent * percent)
     }
@@ -10,6 +13,9 @@ declare_tween!(
 declare_tween!(
     /// An quintic tween out. Go [here](https://easings.net/#easeOutQuint) for a visual demonstration.
     pub struct QuintOut;
+
+    /// Creates a new [QuintOut] Tweener.
+    pub fn quint_out;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent -= 1.0;
@@ -20,6 +26,9 @@ declare_tween!(
 declare_tween!(
     /// An quintic tween in out. Go [here](https://easings.net/#easeInOutQuint) for a visual demonstration.
     pub struct QuintInOut;
+
+    /// Creates a new [QuintInOut] Tweener.
+    pub fn quint_in_out;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent *= 2.0;

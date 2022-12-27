@@ -48,6 +48,9 @@ macro_rules! declare_tween {
         $(#[$struct_meta:meta])*
         pub struct $name:ident;
 
+        $(#[$method_meta:meta])*
+        pub fn $tweener_method_name:ident;
+
         $tween:item
     ) => {
         $(#[$struct_meta])*
@@ -86,18 +89,23 @@ macro_rules! declare_tween {
             }
         }
 
-        // impl Default for $name {
-        //     fn default() -> Self {
-        //         Self::
-        //     }
-        // }
-
         impl<Value, Time> $crate::Tween<Value, Time> for $name
         where
             Value: $crate::TweenValue,
             Time: $crate::TweenTime,
         {
             $tween
+        }
+
+        impl<Value, Time> $crate::Tweener<Value, Time, $crate::$name>
+        where
+            Time: $crate::TweenTime,
+            Value: $crate::TweenValue,
+        {
+            $(#[$method_meta])*
+            pub fn $tweener_method_name(start: Value, end: Value, duration: Time) -> $crate::Tweener<Value, Time, $crate::$name> {
+                $crate::Tweener::new(start, end, duration, $crate::$name)
+            }
         }
     };
 }

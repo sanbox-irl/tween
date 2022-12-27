@@ -2,6 +2,9 @@ declare_tween!(
     /// An exponenential tween in. See [here](https://easings.net/#easeInExpo)
     pub struct ExpoIn;
 
+    /// Creates a new [ExpoIn] Tweener.
+    pub fn expo_in;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         // weird edge in this tween?
         if percent == 0.0 {
@@ -24,6 +27,9 @@ declare_tween!(
     /// An exponenential tween out. See [here](https://easings.net/#easeOutExpo)
     pub struct ExpoOut;
 
+    /// Creates a new [ExpoOut] Tweener.
+    pub fn expo_out;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         if percent == 1.0 {
             value_delta
@@ -42,6 +48,9 @@ declare_tween!(
 declare_tween!(
     /// An exponenential tween in and out. See [here](https://easings.net/#easeInOutExpo)
     pub struct ExpoInOut;
+
+    /// Creates a new [ExpoInOut] Tweener.
+    pub fn expo_in_out;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         if percent == 0.0 {

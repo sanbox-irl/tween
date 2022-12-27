@@ -2,6 +2,9 @@ declare_tween!(
     /// A Linear tween is a simple lerp from one value to another.
     pub struct Linear;
 
+    /// Creates a new [Linear] Tweener.
+    pub fn linear;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         value_delta.scale(percent)
     }

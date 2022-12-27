@@ -10,6 +10,9 @@ declare_tween! {
     /// A tween that goes out and then back in a bit. Go [here](https://easings.net/#easeInBack) for a visual demonstration.
     pub struct BackIn;
 
+    /// Creates a new [BackIn] Tweener.
+    pub fn back_in;
+
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let scalar = percent * percent * ((BACK_CONST + 1.0) * percent - BACK_CONST);
 
@@ -20,6 +23,9 @@ declare_tween! {
 declare_tween! {
     /// A tween that goes in and then back out a bit. Go [here](https://easings.net/#easeOutBack) for a visual demonstration.
     pub struct BackOut;
+
+    /// Creates a new [BackOut] Tweener.
+    pub fn back_out;
 
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
         let t = percent - 1.0;
@@ -32,6 +38,9 @@ declare_tween! {
 declare_tween! {
     /// A tween that goes out, in, and then back in and out a bit. Go [here](https://easings.net/#easeInOutBack) for a visual demonstration.
     pub struct BackInOut;
+
+    /// Creates a new [BackInOut] Tweener.
+    pub fn back_in_out;
 
     fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent *= 2.0;

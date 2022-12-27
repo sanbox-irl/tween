@@ -62,6 +62,17 @@ where
     }
 }
 
+impl<Value, Time> crate::Tweener<Value, Time, ElasticIn<Value, Time>>
+where
+    Time: TweenTime,
+    Value: TweenValue,
+{
+    /// Creates a new [BounceInOut] tween.
+    pub fn elastic_in(start: Value, end: Value, duration: Time) -> crate::Tweener<Value, Time, ElasticIn<Value, Time>> {
+        crate::Tweener::new(start, end, duration, ElasticIn::new(duration))
+    }
+}
+
 /// An elastic tween out. Go [here](https://easings.net/#easeOutElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticOut<Value, Time> {
@@ -111,6 +122,21 @@ where
         let scalar = 2f64.powf(-10.0 * percent) * temp.sin();
 
         value_delta.scale(scalar) + value_delta
+    }
+}
+
+impl<Value, Time> crate::Tweener<Value, Time, ElasticOut<Value, Time>>
+where
+    Time: TweenTime,
+    Value: TweenValue,
+{
+    /// Creates a new [BounceInOut] tween.
+    pub fn elastic_out(
+        start: Value,
+        end: Value,
+        duration: Time,
+    ) -> crate::Tweener<Value, Time, ElasticOut<Value, Time>> {
+        crate::Tweener::new(start, end, duration, ElasticOut::new(duration))
     }
 }
 
@@ -192,6 +218,21 @@ where
 
             post_fix.scale(temp_sin * 0.5) + value_delta
         }
+    }
+}
+
+impl<Value, Time> crate::Tweener<Value, Time, ElasticInOut<Value, Time>>
+where
+    Time: TweenTime,
+    Value: TweenValue,
+{
+    /// Creates a new [BounceInOut] tween.
+    pub fn elastic_in_out(
+        start: Value,
+        end: Value,
+        duration: Time,
+    ) -> crate::Tweener<Value, Time, ElasticInOut<Value, Time>> {
+        crate::Tweener::new(start, end, duration, ElasticInOut::new(duration))
     }
 }
 
