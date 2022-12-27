@@ -16,8 +16,8 @@ pub use oscillator::Oscillator;
 /// ## Iterator
 ///
 /// In situations where the same delta time is alwayas used for (move_by)[Self::move_by], you can
-/// instead convert a [Tweener] into a [FixedTweener] by [Tweener::into_fixed]. See [FixedTweener] for
-/// more information.
+/// instead convert a [Tweener] into a [FixedTweener] by [Tweener::into_fixed]. See [FixedTweener]
+/// for more information.
 #[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
 pub struct Tweener<Value, Time, T: ?Sized> {
     /// The current time of the Tweener. You can change this value at will without running the
@@ -91,11 +91,6 @@ where
     /// The final value the tween should end at.
     pub fn final_value(&self) -> Value {
         self.values.1
-    }
-
-    /// The current time of the tween.
-    pub fn current_time(&self) -> Time {
-        self.current_time
     }
 
     /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower

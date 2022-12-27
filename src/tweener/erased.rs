@@ -2,7 +2,11 @@ use crate::{FixedTweener, Tween};
 
 use super::{TweenTime, TweenValue, Tweener};
 
-/// !!!
+/// A dynamically accessed trait for [Tweener] and [FixedTweener]. To get an owned, boxed struct,
+/// use [Tweener::into_erased] or [FixedTweener::into_erased].
+///
+/// The purpose of this trait is to allow users to create Boxed tweeners generic over only type and
+/// value, not the inner tween. This allows users to create complex tweens, but store them simply.
 pub trait ErasedTweener<Value, Time> {
     /// Moves the tween to a given Time. If this Tween previously was outside
     /// the allowed range given by [Tween::percent_bounds], this can move it back
@@ -28,6 +32,19 @@ pub trait ErasedTweener<Value, Time> {
 
     /// The current time of the tween.
     fn current_time(&self) -> Time;
+
+    /// This sets the current time *without* re-running the inner Tween.
+    /// The only reason to prefer this method over [ErasedTween::move_to] is to save
+    /// on computational time in the Tween.
+    fn set_current_time(&mut self, time: Time);
+
+    /// The Tweener's total duration.
+    fn duration(&self) -> Time;
+
+    /// Sets the total duration. This is semi-chaotic to do to a Tween, and could give a very
+    /// strange output, especially for In-Out tweens, but for smooth tweens, will work just
+    /// fine.
+    fn set_duration(&mut self, time: Time);
 
     /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower
     /// bound of the tween's percent range, given by [Tween::percent_bounds]. For most tweens, this
@@ -87,7 +104,19 @@ where
     }
 
     fn current_time(&self) -> Time {
-        self.current_time()
+        self.current_time
+    }
+
+    fn set_current_time(&mut self, time: Time) {
+        self.current_time = time;
+    }
+
+    fn duration(&self) -> Time {
+        self.duration
+    }
+
+    fn set_duration(&mut self, time: Time) {
+        self.duration = time;
     }
 
     fn is_started(&self) -> bool {
@@ -134,6 +163,18 @@ where
         self.tweener.current_time()
     }
 
+    fn set_current_time(&mut self, time: Time) {
+        self.current_time = time;
+    }
+
+    fn duration(&self) -> Time {
+        self.duration
+    }
+
+    fn set_duration(&mut self, time: Time) {
+        self.duration = time;
+    }
+
     fn is_started(&self) -> bool {
         self.tweener.is_started()
     }
@@ -157,8 +198,18 @@ where
     }
 }
 
-/// !!!
+/// A dynamically accessed trait for [Tweener] and [FixedTweener]. To get an owned, boxed struct,
+/// use [Tweener::into_erased] or [FixedTweener::into_erased].
+///
+/// The purpose of this trait is to allow users to create Boxed tweeners generic over only type and
+/// value, not the inner tween. This allows users to create complex tweens, but store them simply.
 pub trait FixedErasedTweener<Value, Time>: ErasedTweener<Value, Time> + Iterator<Item = Value> {
+    /// Sets the inner delta time.
+    fn set_delta(&mut self, delta: Time);
+
+    /// Gets the inner delta time.
+    fn delta(&self) -> Time;
+
     /// This is the exact same as called `next` via [Iterator] except **we clamp the output.**
     fn move_next(&mut self) -> Value;
 }
@@ -169,6 +220,14 @@ where
     Time: TweenTime + 'static,
     T: Tween<Value, Time> + 'static,
 {
+    fn set_delta(&mut self, delta: Time) {
+        self.delta = delta;
+    }
+
+    fn delta(&self) -> Time {
+        self.delta
+    }
+
     fn move_next(&mut self) -> Value {
         self.move_next()
     }
