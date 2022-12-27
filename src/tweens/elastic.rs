@@ -210,7 +210,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.run(time);
+            let v = tweener.move_to(time);
             let o = Elastic::ease_in(time, 0.0, 100.0, 10.0);
 
             assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -224,7 +224,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.run(time);
+            let v = tweener.move_to(time);
             let o = Elastic::ease_in(time, 100.0, -100.0, 10.0);
 
             assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -238,7 +238,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.run(time);
+            let v = tweener.move_to(time);
             let o = Elastic::ease_out(time, 0.0, 100.0, 10.0);
 
             assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -252,7 +252,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.run(time);
+            let v = tweener.move_to(time);
             let o = Elastic::ease_out(time, 100.0, -100.0, 10.0);
 
             assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -266,7 +266,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let our_value = tweener.run(time);
+            let our_value = tweener.move_to(time);
             let easer = Elastic::ease_in_out(time, 0.0, 100.0, 10.0);
 
             assert_relative_eq!(our_value, easer, max_relative = 0.000001);
@@ -280,7 +280,7 @@ mod tests {
         for time in 0..=10 {
             let time = time as f64;
 
-            let v = tweener.run(time);
+            let v = tweener.move_to(time);
             let o = Elastic::ease_in_out(time, 100.0, -100.0, 10.0);
 
             assert_relative_eq!(v, o, max_relative = 0.000001);

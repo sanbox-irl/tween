@@ -87,7 +87,7 @@ macro_rules! declare_tween {
         $tween:item
     ) => {
         $(#[$struct_meta])*
-        #[derive(Debug, PartialEq, Eq, Clone)]
+        #[derive(Debug, PartialEq, Eq, Clone, Default)]
         pub struct $name;
 
         impl $name {
@@ -147,74 +147,6 @@ macro_rules! declare_tween {
             }
         }
     };
-
-    (
-        $(#[$struct_meta:meta])*
-        pub struct $name:ident;
-
-        $tween:item
-
-        $percent:item
-    ) => {
-        $(#[$struct_meta])*
-        #[derive(Debug, PartialEq, Eq, Clone)]
-        pub struct $name;
-
-        // impl<Value, Time> $name
-        // where
-        //     Value: $crate::TweenValue,
-        //     Time: $crate::TweenTime,
-        // {
-        //     /// Creates a new tween out of a range with a duration.
-        //     pub fn new() -> Self {
-        //         <Self as $crate::SizedTween<Value, Time>>::new()
-        //     }
-
-        //     /// Calculate what a percent into the Tween based on time. For almost all Tweens,
-        //     /// this is simply `current_time / duration` (`Bounce` and `Elastic` are the exceptions).
-        //     pub fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
-        //         <Self as $crate::Tween<Value, Time>>::percent(self, current_time, duration)
-        //     }
-
-        //     /// Run the given Tween with a new time.
-        //     pub fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
-        //         // we pass this through so that we don't require users to (annoyingly) import
-        //         // a trait. Inherent methods in traits pls!
-        //         <Self as $crate::Tween<Value, Time>>::tween(self, value_delta, percent)
-        //     }
-        // }
-
-        // impl<Value, Time> Default for $name<Value, Time>
-        // where
-        //     Value: $crate::TweenValue,
-        //     Time: $crate::TweenTime,
-        // {
-        //     fn default() -> Self {
-        //         <Self as $crate::SizedTween<Value, Time>>::new()
-        //     }
-        // }
-
-        impl<Value, Time> $crate::Tween<Value, Time> for $name
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            $tween
-
-            $percent
-        }
-
-        impl<Value, Time> $crate::SizedTween<Value, Time> for $name
-        where
-            Value: $crate::TweenValue,
-            Time: $crate::TweenTime,
-        {
-            /// Creates a new Tween
-            fn new() -> Self {
-                Self
-            }
-        }
-    };
 }
 
 macro_rules! test_tween {
@@ -233,7 +165,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let v = tweener.run(time);
+                        let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in(time, 0.0, 100.0, 10.0);
 
                         assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -247,7 +179,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let v = tweener.run(time);
+                        let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
 
                         assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -261,7 +193,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let v = tweener.run(time);
+                        let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_out(time, 0.0, 100.0, 10.0);
 
                         assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -275,7 +207,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let v = tweener.run(time);
+                        let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_out(time, 100.0, -100.0, 10.0);
 
                         assert_relative_eq!(v, o, max_relative = 0.000001);
@@ -289,7 +221,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let our_value = tweener.run(time);
+                        let our_value = tweener.move_to(time);
                         let easer = [<Ease $name>]::ease_in_out(time, 0.0, 100.0, 10.0);
 
                         assert_relative_eq!(our_value, easer, max_relative = 0.000001);
@@ -304,7 +236,7 @@ macro_rules! test_tween {
                     for time in 0..=10 {
                         let time = time as f64;
 
-                        let v = tweener.run(time);
+                        let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in_out(time, 100.0, -100.0, 10.0);
 
                         assert_relative_eq!(v, o, max_relative = 0.000001);

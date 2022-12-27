@@ -44,87 +44,24 @@ pub trait Tween<Value, Time: TweenTime> {
 
     /// Returns a percent, which is used in Tweeners as the `percent` argument in [Tween::tween].
     /// All Tweens in this library *expect* [Bounce] use this default implementation.
-    fn percent(&mut self, current_time: Time, duration: Time) -> f64 {
+    fn percent(&self, current_time: Time, duration: Time) -> f64 {
         current_time.to_f64() / duration.to_f64()
     }
-}
 
-/// A Tweener is a wrapper around a Tween. Although you can tween dynamically using just a raw
-/// Tween, this will manage all state, and allow you to work in *relative absolute time*, rather
-/// than *percentage* time.
-///
-/// In situations where instead of knowing relative absolute time, you instead more easily know
-/// delta times, or even fixed delta times, such as in most game engines, you'll want to look at
-/// [DeltaTweener] and [FixedTweener].
-#[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
-pub struct Tweener<Value, Time, T> {
-    initial_value: Value,
-    final_value: Value,
-    value_delta: Value,
-    duration: Time,
-    tween: T,
-}
-
-impl<Value, Time, T> Tweener<Value, Time, T>
-where
-    Value: TweenValue,
-    Time: TweenTime,
-    T: Tween<Value, Time>,
-{
-    /// Runs the inner Tween, returning the result.
-    /// Nb: this does **not** clamp `current_time`, so if you provide a `current_time >
-    /// self.duration`, chaotic results may occur.
-    pub fn run(&mut self, current_time: Time) -> Value {
-        let pct = self.tween.percent(current_time, self.duration);
-
-        self.tween.tween(self.value_delta, pct) + self.initial_value
-    }
-
-    /// The initial value a tween was set to start at.
-    pub fn initial_value(&self) -> Value {
-        self.initial_value
-    }
-
-    /// The final value the tween should end at.
-    pub fn final_value(&self) -> Value {
-        self.final_value
-    }
-
-    /// Get a reference to the Tween's total duration.
-    pub fn duration(&self) -> Time {
-        self.duration
-    }
-}
-
-impl<Value, Time, T> Tweener<Value, Time, T>
-where
-    Value: TweenValue,
-    Time: TweenTime,
-{
-    /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], and [TweenTime]
-    /// duration.
-    pub fn new(start: Value, end: Value, duration: Time, tween: T) -> Self
-    where
-        T: Tween<Value, Time>,
-    {
-        Self {
-            initial_value: start,
-            final_value: end,
-            value_delta: end - start,
-            duration,
-            tween,
-        }
-    }
-}
-
-impl<Value, Time> Tweener<Value, Time, SineIn>
-where
-    Value: TweenValue,
-    Time: TweenTime,
-{
-    /// Creates a new [SineIn] tween.
-    pub fn sine_in(start: Value, end: Value, duration: Time) -> Self {
-        Self::new(start, end, duration, SineIn)
+    /// This returns *inclusive percentage* bounds under which a tween is valid. A "percentage"
+    /// range is an f64 denoting the percentage of a tween, and it is inclusive so that top and
+    /// bottom numbers are both within the range.
+    ///
+    /// This is used by [Tweener], [DeltaTweener], and [FixedTweener] to determine returning [Some]
+    /// or [None].
+    ///
+    /// If you have a [Tween] which returns valid values at all percentage sranges at all times, you
+    /// should return [None].
+    ///
+    /// All normal Tweens in this library use the default method, which means that a Tweener,
+    /// whereas [Looper] and [Oscillator] both override it to return [None].
+    fn percent_bounds(&self) -> Option<(f64, f64)> {
+        Some((0.0, 1.0))
     }
 }
 

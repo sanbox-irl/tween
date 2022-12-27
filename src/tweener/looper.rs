@@ -1,12 +1,12 @@
 use crate::{Tween, TweenTime, TweenValue};
 
-/// A [Looper] is a wrapper around a [Tweener], which makes it so that
+/// A [Looper] is a wrapper around a [Tween], which makes it so that
 /// every time the tweener *would* fuse (end), it loops from the start.
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct Looper<T>(T);
 
 impl<T> Looper<T> {
-    /// Creates a new Looper around a [Tweener].
+    /// Creates a new Looper around a [Tween].
     pub fn new(tween: T) -> Self {
         Self(tween)
     }

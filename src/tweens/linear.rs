@@ -18,7 +18,7 @@ mod tests {
         let mut tweener = crate::Tweener::new(0.0, 100.0, 10, Linear);
 
         for val in 1..=10 {
-            value = tweener.run(val);
+            value = tweener.move_to(val);
             assert_ulps_eq!(value, val as f32 * 10.0);
         }
     }
@@ -29,7 +29,7 @@ mod tests {
         let mut tweener = crate::Tweener::new(100.0, 0.0, 10, Linear);
 
         for val in 1..=10 {
-            value = tweener.run(val);
+            value = tweener.move_to(val);
             assert_ulps_eq!(value, 100.0 - val as f32 * 10.0);
         }
     }
