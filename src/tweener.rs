@@ -337,4 +337,39 @@ mod tests {
         checker(Tweener::new(0, 2, 2, BounceIn));
         checker(Tweener::new(0, 2, 2, BounceOut));
     }
+
+    #[test]
+    fn shortcuts() {
+        Tweener::back_in(0, 0, 0);
+        Tweener::back_out(0, 0, 0);
+        Tweener::back_in_out(0, 0, 0);
+        Tweener::bounce_in(0, 0, 0);
+        Tweener::bounce_out(0, 0, 0);
+        Tweener::bounce_in_out(0, 0, 0);
+        Tweener::circ_in(0, 0, 0);
+        Tweener::circ_out(0, 0, 0);
+        Tweener::circ_in_out(0, 0, 0);
+        Tweener::cubic_in(0, 0, 0);
+        Tweener::cubic_out(0, 0, 0);
+        Tweener::cubic_in_out(0, 0, 0);
+        Tweener::elastic_in(0, 0, 0);
+        Tweener::elastic_out(0, 0, 0);
+        Tweener::elastic_in_out(0, 0, 0);
+        Tweener::expo_in(0, 0, 0);
+        Tweener::expo_out(0, 0, 0);
+        Tweener::expo_in_out(0, 0, 0);
+        Tweener::linear(0, 0, 0);
+        Tweener::quad_in(0, 0, 0);
+        Tweener::quad_out(0, 0, 0);
+        Tweener::quad_in_out(0, 0, 0);
+        Tweener::quart_in(0, 0, 0);
+        Tweener::quart_out(0, 0, 0);
+        Tweener::quart_in_out(0, 0, 0);
+        Tweener::quint_in(0, 0, 0);
+        Tweener::quint_out(0, 0, 0);
+        Tweener::quint_in_out(0, 0, 0);
+        Tweener::sine_in(0, 0, 0);
+        Tweener::sine_out(0, 0, 0);
+        Tweener::sine_in_out(0, 0, 0);
+    }
 }

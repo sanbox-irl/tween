@@ -68,8 +68,8 @@ declare_tween!(
     /// A bouncy tween, similar to gravity. Go [here](https://easings.net/#easeOutBounce) for a visual demonstration.
     pub struct BounceOut;
 
-    /// Creates a new [BackIn] Tweener.
-    pub fn back_in;
+    /// Creates a new [BounceOut] Tweener.
+    pub fn bounce_out;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         let multip = if percent < STAGE_ZERO {
@@ -161,7 +161,7 @@ where
     Value: TweenValue,
 {
     /// Creates a new [BounceInOut] tween.
-    pub fn bounce_in(start: Value, end: Value, duration: Time) -> crate::Tweener<Value, Time, BounceInOut> {
+    pub fn bounce_in_out(start: Value, end: Value, duration: Time) -> crate::Tweener<Value, Time, BounceInOut> {
         crate::Tweener::new(start, end, duration, BounceInOut)
     }
 }
