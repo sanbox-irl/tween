@@ -13,7 +13,7 @@ declare_tween! {
     /// Creates a new [BackIn] Tweener.
     pub fn back_in;
 
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         let scalar = percent * percent * ((BACK_CONST + 1.0) * percent - BACK_CONST);
 
         value_delta.scale(scalar)
@@ -27,7 +27,7 @@ declare_tween! {
     /// Creates a new [BackOut] Tweener.
     pub fn back_out;
 
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         let t = percent - 1.0;
         let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
 
@@ -42,7 +42,7 @@ declare_tween! {
     /// Creates a new [BackInOut] Tweener.
     pub fn back_in_out;
 
-    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
         percent *= 2.0;
 
         let scalar = if percent < 1.0 {

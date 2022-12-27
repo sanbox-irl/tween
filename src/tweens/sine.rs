@@ -7,7 +7,7 @@ declare_tween!(
     /// Creates a new [SineIn] Tweener.
     pub fn sine_in;
 
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         #[cfg(feature = "libm")]
         let time = libm::cos(percent * PI / 2.0);
 
@@ -25,7 +25,7 @@ declare_tween!(
     /// Creates a new [SineOut] Tweener.
     pub fn sine_out;
 
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
         #[cfg(feature = "libm")]
         let time = libm::sin(percent * PI / 2.0);
 
@@ -43,12 +43,13 @@ declare_tween!(
     /// Creates a new [SineOut] Tweener.
     pub fn sine_in_out;
 
-    fn tween(&mut self, value_delta: Value, percent_time: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value
+    {
         #[cfg(feature = "libm")]
-        let time = libm::cos(percent_time * PI) - 1.0;
+        let time = libm::cos(percent * PI) - 1.0;
 
         #[cfg(feature = "std")]
-        let time = (percent_time * PI).cos() - 1.0;
+        let time = (percent * PI).cos() - 1.0;
         value_delta.scale(-time / 2.0)
     }
 );

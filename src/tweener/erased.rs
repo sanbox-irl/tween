@@ -253,6 +253,7 @@ mod test {
         assert_eq!(tweener.move_to(0), 0);
         assert_eq!(tweener.move_to(1), 1);
         assert_eq!(tweener.move_to(2), 2);
+        assert_eq!(tweener.move_to(3), 2);
         assert!(tweener.is_finished());
     }
 

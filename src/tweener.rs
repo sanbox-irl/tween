@@ -61,7 +61,8 @@ where
     /// always clamp the output time**.
     pub fn move_to(&mut self, position: Time) -> Value {
         self.current_time = position;
-        let pct = self.tween.percent(self.current_time, self.duration);
+
+        let pct = position.to_f64() / self.duration.to_f64();
         if let Some((lower, upper)) = self.tween.percent_bounds() {
             if pct < lower {
                 return self.initial_value();
@@ -101,7 +102,7 @@ where
     /// return `true`. Moreover, this method does not check if a tweener is *finished*. For
     /// that, use [Self::is_finished].
     pub fn is_started(&self) -> bool {
-        let pct = self.tween.percent(self.current_time, self.duration);
+        let pct = self.current_time.to_f64() / self.duration.to_f64();
 
         if let Some((lower, _upper)) = self.tween.percent_bounds() {
             pct.partial_cmp(&lower).map(|v| v.is_ge()).unwrap_or(false)
@@ -118,10 +119,10 @@ where
     /// return `false`. Moreover, this method does not check if a tweener is *started*. For
     /// that, use [Self::is_started].
     pub fn is_finished(&self) -> bool {
-        let pct = self.tween.percent(self.current_time, self.duration);
+        let pct = self.current_time.to_f64() / self.duration.to_f64();
 
         if let Some((_, upper)) = self.tween.percent_bounds() {
-            pct.partial_cmp(&upper).map(|v| v.is_ge()).unwrap_or(false)
+            pct.partial_cmp(&upper).map(|v| v.is_gt()).unwrap_or(true)
         } else {
             false
         }
@@ -137,7 +138,8 @@ where
     ///
     /// This method is **rarely needed** -- only use it if you are doing some second-order tweening.
     pub fn is_valid(&self) -> bool {
-        let pct = self.tween.percent(self.current_time, self.duration);
+        let pct = self.current_time.to_f64() / self.duration.to_f64();
+
         if let Some((lower, upper)) = self.tween.percent_bounds() {
             if pct < lower || pct > upper {
                 return false;
@@ -161,7 +163,7 @@ where
         Time: 'static,
         T: 'static,
     {
-        std::boxed::Box::new(self) as std::boxed::Box<dyn ErasedTweener<Value, Time>>
+        std::boxed::Box::new(self)
     }
 }
 
@@ -262,7 +264,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Linear;
+    use crate::{BounceIn, BounceInOut, BounceOut, ElasticIn, Linear};
 
     #[test]
     fn tweener() {
@@ -297,5 +299,50 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
+    }
+
+    #[test]
+    fn bounds_checker() {
+        fn checker<T: 'static>(mut tweener: Tweener<i32, i32, T>)
+        where
+            T: Tween<i32, i32>,
+        {
+            fn move_and_return<T>(
+                tweener: &mut Tweener<i32, i32, T>,
+                f: impl FnOnce(&Tweener<i32, i32, T>) -> bool,
+            ) -> bool
+            where
+                T: Tween<i32, i32> + 'static,
+            {
+                tweener.move_by(1);
+                f(tweener)
+            }
+
+            assert!(move_and_return(&mut tweener, |t| !t.is_finished()));
+            assert!(move_and_return(&mut tweener, |t| !t.is_finished()));
+            assert!(move_and_return(&mut tweener, |t| t.is_finished()));
+
+            tweener.move_to(-2);
+
+            assert!(move_and_return(&mut tweener, |t| !t.is_started()));
+            assert!(move_and_return(&mut tweener, |t| t.is_started()));
+            assert!(move_and_return(&mut tweener, |t| t.is_started()));
+            assert!(move_and_return(&mut tweener, |t| t.is_started()));
+            assert!(move_and_return(&mut tweener, |t| t.is_started()));
+
+            tweener.move_to(-2);
+
+            assert!(move_and_return(&mut tweener, |t| !t.is_valid()));
+            assert!(move_and_return(&mut tweener, |t| t.is_valid()));
+            assert!(move_and_return(&mut tweener, |t| t.is_valid()));
+            assert!(move_and_return(&mut tweener, |t| t.is_valid()));
+            assert!(move_and_return(&mut tweener, |t| !t.is_valid()));
+        }
+
+        checker(Tweener::new(0, 2, 2, Linear));
+        checker(Tweener::new(0, 2, 2, ElasticIn::new(2)));
+        checker(Tweener::new(0, 2, 2, BounceInOut));
+        checker(Tweener::new(0, 2, 2, BounceIn));
+        checker(Tweener::new(0, 2, 2, BounceOut));
     }
 }

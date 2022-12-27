@@ -42,12 +42,6 @@ pub trait Tween<Value, Time: TweenTime> {
     /// which is just `value_delta * percent`.
     fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
 
-    /// Returns a percent, which is used in Tweeners as the `percent` argument in [Tween::tween].
-    /// All Tweens in this library *expect* [Bounce] use this default implementation.
-    fn percent(&self, current_time: Time, duration: Time) -> f64 {
-        current_time.to_f64() / duration.to_f64()
-    }
-
     /// This returns *inclusive percentage* bounds under which a tween is valid. A "percentage"
     /// range is an f64 denoting the percentage of a tween, and it is inclusive so that top and
     /// bottom numbers are both within the range.
@@ -244,6 +238,8 @@ mod tests {
         assert_eq!(tweener.move_by(1), 100);
         assert_eq!(tweener.move_by(1), 100);
         assert_eq!(tweener.move_by(1), 100);
+        // because we're clamped to the tween's original bounds!
+        assert_eq!(tweener.move_by(1), 1);
         assert!(tweener.is_finished());
         assert!(pct_50_or_over);
     }

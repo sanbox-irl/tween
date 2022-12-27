@@ -19,23 +19,18 @@ where
     Time: TweenTime,
     T: Tween<Value, Time>,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+        if percent == 0.0 {
+            return self.0.tween(value_delta, percent);
+        }
+
+        percent %= 1.0;
+        if percent == 0.0 {
+            percent = 1.0
+        }
+
         // pass through to the underlying tween
         self.0.tween(value_delta, percent)
-    }
-
-    // this is the looping work
-    fn percent(&self, current_time: Time, duration: Time) -> f64 {
-        if current_time == Time::ZERO {
-            return 0.0;
-        }
-
-        let mod_val = current_time % duration;
-        if mod_val == Time::ZERO {
-            1.0
-        } else {
-            self.0.percent(mod_val, duration)
-        }
     }
 
     fn percent_bounds(&self) -> Option<(f64, f64)> {
