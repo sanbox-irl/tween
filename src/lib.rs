@@ -138,10 +138,6 @@ pub trait TweenTime:
     /// The ZERO value. This is 0 or 0.0.
     const ZERO: Self;
 
-    /// This should be implemented as a simple division. For f32, for example,
-    /// it's implemented as `(current_time / duration) as f64`.
-    fn percent(duration: Self, current_time: Self) -> f32;
-
     /// Converts the given number to an `f32`.
     fn to_f32(self) -> f32;
 
@@ -155,11 +151,6 @@ impl TweenTime for f32 {
     const ZERO: Self = 0.0;
 
     #[inline(always)]
-    fn percent(duration: Self, current_time: Self) -> f32 {
-        current_time / duration
-    }
-
-    #[inline(always)]
     fn to_f32(self) -> f32 {
         self
     }
@@ -171,11 +162,6 @@ impl TweenTime for f32 {
 }
 impl TweenTime for f64 {
     const ZERO: Self = 0.0;
-
-    #[inline(always)]
-    fn percent(duration: Self, current_time: Self) -> f32 {
-        current_time as f32 / duration as f32
-    }
 
     #[inline(always)]
     fn to_f32(self) -> f32 {

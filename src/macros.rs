@@ -7,11 +7,6 @@ macro_rules! declare_time {
             const ZERO: Self = 0;
 
             #[inline(always)]
-            fn percent(duration: Self, current_time: Self) -> f32 {
-                current_time as f32 / duration as f32
-            }
-
-            #[inline(always)]
             fn to_f32(self) -> f32 {
                 self as f32
             }
