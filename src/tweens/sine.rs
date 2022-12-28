@@ -1,4 +1,4 @@
-use core::f64::consts::PI;
+use core::f32::consts::PI;
 
 declare_tween!(
     /// An sine based tween in. Go [here](https://easings.net/#easeInSine) for a visual demonstration.
@@ -7,7 +7,7 @@ declare_tween!(
     /// Creates a new [SineIn] Tweener.
     pub fn sine_in;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
         let time = libm::cos(percent * PI / 2.0);
 
@@ -25,7 +25,7 @@ declare_tween!(
     /// Creates a new [SineOut] Tweener.
     pub fn sine_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
         let time = libm::sin(percent * PI / 2.0);
 
@@ -43,7 +43,7 @@ declare_tween!(
     /// Creates a new [SineOut] Tweener.
     pub fn sine_in_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value
     {
         #[cfg(feature = "libm")]
         let time = libm::cos(percent * PI) - 1.0;

@@ -61,15 +61,16 @@ where
     ///
     /// Giving a time outside [Tween::percent_bounds] will move the tween there, but **we will
     /// always clamp the output time**.
+    #[inline]
     pub fn move_to(&mut self, position: Time) -> Value {
         self.current_time = position;
 
-        let pct = position.to_f64() / self.duration.to_f64();
+        let pct = position.to_f32() / self.duration.to_f32();
         if self.tween.is_finite() {
             if pct < 0.0 {
-                return self.initial_value();
+                return self.values.0;
             } else if pct > 1.0 {
-                return self.final_value();
+                return self.values.1;
             }
         }
 
@@ -80,6 +81,7 @@ where
     ///
     /// If an input higher than the tween's `duration` is given, you will
     /// receive the max value of the tween.
+    #[inline]
     pub fn move_by(&mut self, delta: Time) -> Value {
         self.current_time += delta;
 
@@ -87,11 +89,13 @@ where
     }
 
     /// The initial value a tween was set to start at.
+    #[inline]
     pub fn initial_value(&self) -> Value {
         self.values.0
     }
 
     /// The final value the tween should end at.
+    #[inline]
     pub fn final_value(&self) -> Value {
         self.values.1
     }
@@ -104,7 +108,7 @@ where
     /// return `true`. Moreover, this method does not check if a tweener is *finished*. For
     /// that, use [Self::is_finished].
     pub fn is_started(&self) -> bool {
-        let pct = self.current_time.to_f64() / self.duration.to_f64();
+        let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() { pct >= 0.0 } else { true }
     }
@@ -117,7 +121,7 @@ where
     /// return `false`. Moreover, this method does not check if a tweener is *started*. For
     /// that, use [Self::is_started].
     pub fn is_finished(&self) -> bool {
-        let pct = self.current_time.to_f64() / self.duration.to_f64();
+        let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() { pct > 1.0 } else { false }
     }
@@ -132,7 +136,7 @@ where
     ///
     /// This method is **rarely needed** -- only use it if you are doing some second-order tweening.
     pub fn is_valid(&self) -> bool {
-        let pct = self.current_time.to_f64() / self.duration.to_f64();
+        let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() {
             (0.0..=1.0).contains(&pct)
@@ -206,6 +210,7 @@ where
 
     /// This is the exact same as called `next` via [Iterator] except that it doesn't require a
     /// useless `.unwrap()` because it *clamps* instead.
+    #[inline]
     pub fn move_next(&mut self) -> Value {
         self.tweener.move_by(self.delta)
     }
@@ -226,12 +231,14 @@ where
 impl<Value, Time, T> core::ops::Deref for FixedTweener<Value, Time, T> {
     type Target = Tweener<Value, Time, T>;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.tweener
     }
 }
 
 impl<Value, Time, T> core::ops::DerefMut for FixedTweener<Value, Time, T> {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.tweener
     }
@@ -245,6 +252,7 @@ where
 {
     type Item = Value;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let output = self.move_next();
 

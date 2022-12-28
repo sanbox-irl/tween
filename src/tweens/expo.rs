@@ -5,7 +5,7 @@ declare_tween!(
     /// Creates a new [ExpoIn] Tweener.
     pub fn expo_in;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         // weird edge in this tween?
         if percent == 0.0 {
             return value_delta.scale(0.0);
@@ -17,7 +17,7 @@ declare_tween!(
         let scalar = libm::pow(2.0, percent);
 
         #[cfg(feature = "std")]
-        let scalar = 2.0f64.powf(percent);
+        let scalar = 2.0f32.powf(percent);
 
         value_delta.scale(scalar)
     }
@@ -30,7 +30,7 @@ declare_tween!(
     /// Creates a new [ExpoOut] Tweener.
     pub fn expo_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         if percent == 1.0 {
             value_delta
         } else {
@@ -38,7 +38,7 @@ declare_tween!(
             let powf = libm::pow(2.0, -10.0 * percent);
 
             #[cfg(feature = "std")]
-            let powf = 2.0f64.powf(-10.0 * percent);
+            let powf = 2.0f32.powf(-10.0 * percent);
 
             value_delta.scale(1.0 - powf)
         }
@@ -52,7 +52,7 @@ declare_tween!(
     /// Creates a new [ExpoInOut] Tweener.
     pub fn expo_in_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
         }
@@ -68,7 +68,7 @@ declare_tween!(
             let scalar = libm::pow(2.0, 10.0 * (percent - 1.0));
 
             #[cfg(feature = "std")]
-            let scalar = 2.0f64.powf(10.0 * (percent - 1.0));
+            let scalar = 2.0f32.powf(10.0 * (percent - 1.0));
 
             scalar / 2.0
         } else {
@@ -78,7 +78,7 @@ declare_tween!(
             let scalar = libm::pow(2.0, -10.0 * percent);
 
             #[cfg(feature = "std")]
-            let scalar = 2.0f64.powf(-10.0 * percent);
+            let scalar = 2.0f32.powf(-10.0 * percent);
 
             (2.0 - scalar) / 2.0
         };

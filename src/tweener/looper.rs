@@ -18,7 +18,7 @@ where
     Value: TweenValue,
     T: Tween<Value>,
 {
-    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return self.0.tween(value_delta, percent);
         }

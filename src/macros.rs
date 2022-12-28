@@ -6,20 +6,17 @@ macro_rules! declare_time {
         impl TweenTime for $t {
             const ZERO: Self = 0;
 
-            fn percent(duration: Self, current_time: Self) -> f64 {
-                current_time as f64 / duration as f64
+            fn percent(duration: Self, current_time: Self) -> f32 {
+                current_time as f32 / duration as f32
             }
 
             fn to_f32(self) -> f32 {
                 self as f32
             }
 
-            fn to_f64(self) -> f64 {
-                self as f64
-            }
 
-            fn scale(self, other: f64) -> Self {
-                (self as f64 * other) as Self
+            fn scale(self, other: f32) -> Self {
+                (self as f32 * other) as Self
             }
         }
         )*
@@ -32,8 +29,8 @@ macro_rules! declare_value {
     ($($t:ident),*) => {
         $(
         impl TweenValue for $t {
-            fn scale(self, scale: f64) -> Self {
-                (self as f64 * scale) as $t
+            fn scale(self, scale: f32) -> Self {
+                (self as f32 * scale) as $t
             }
         })*
     };
@@ -73,7 +70,7 @@ macro_rules! declare_tween {
         where
             Value: $crate::TweenValue,
         {
-            fn tween(&mut self, value_delta: Value, percent_time: f64) -> Value {
+            fn tween(&mut self, value_delta: Value, percent_time: f32) -> Value {
                 self.tween(value_delta, percent_time)
             }
         }
@@ -105,7 +102,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in(time, 0.0, 100.0, 10.0);
@@ -116,17 +113,17 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_f() {
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.0), [<Ease $name>]::ease_in(0.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.1), [<Ease $name>]::ease_in(0.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.2), [<Ease $name>]::ease_in(1.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.3), [<Ease $name>]::ease_in(1.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.4), [<Ease $name>]::ease_in(2.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.5), [<Ease $name>]::ease_in(2.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.6), [<Ease $name>]::ease_in(3.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.7), [<Ease $name>]::ease_in(3.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.8), [<Ease $name>]::ease_in(4.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 0.9), [<Ease $name>]::ease_in(4.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name In>].tween(5.0, 1.0), [<Ease $name>]::ease_in(5.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.0), [<Ease $name>]::ease_in(0.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.1), [<Ease $name>]::ease_in(0.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.2), [<Ease $name>]::ease_in(1.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.3), [<Ease $name>]::ease_in(1.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.4), [<Ease $name>]::ease_in(2.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.5), [<Ease $name>]::ease_in(2.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.6), [<Ease $name>]::ease_in(3.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.7), [<Ease $name>]::ease_in(3.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.8), [<Ease $name>]::ease_in(4.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 0.9), [<Ease $name>]::ease_in(4.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name In>].tween(5.0, 1.0), [<Ease $name>]::ease_in(5.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
                 }
 
                 #[test]
@@ -134,7 +131,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name In>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
@@ -148,7 +145,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_out(time, 0.0, 100.0, 10.0);
@@ -159,17 +156,17 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_out_f() {
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.0), [<Ease $name>]::ease_out(0.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.1), [<Ease $name>]::ease_out(0.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.2), [<Ease $name>]::ease_out(1.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.3), [<Ease $name>]::ease_out(1.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.4), [<Ease $name>]::ease_out(2.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.5), [<Ease $name>]::ease_out(2.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.6), [<Ease $name>]::ease_out(3.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.7), [<Ease $name>]::ease_out(3.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.8), [<Ease $name>]::ease_out(4.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 0.9), [<Ease $name>]::ease_out(4.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name Out>].tween(5.0, 1.0), [<Ease $name>]::ease_out(5.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.0), [<Ease $name>]::ease_out(0.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.1), [<Ease $name>]::ease_out(0.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.2), [<Ease $name>]::ease_out(1.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.3), [<Ease $name>]::ease_out(1.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.4), [<Ease $name>]::ease_out(2.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.5), [<Ease $name>]::ease_out(2.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.6), [<Ease $name>]::ease_out(3.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.7), [<Ease $name>]::ease_out(3.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.8), [<Ease $name>]::ease_out(4.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 0.9), [<Ease $name>]::ease_out(4.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name Out>].tween(5.0, 1.0), [<Ease $name>]::ease_out(5.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
                 }
 
                 #[test]
@@ -177,7 +174,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name Out>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_out(time, 100.0, -100.0, 10.0);
@@ -191,7 +188,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(0.0, 100.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let our_value = tweener.move_to(time);
                         let easer = [<Ease $name>]::ease_in_out(time, 0.0, 100.0, 10.0);
@@ -202,17 +199,17 @@ macro_rules! test_tween {
 
                 #[test]
                 fn t_in_out_f() {
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.0), [<Ease $name>]::ease_in_out(0.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.1), [<Ease $name>]::ease_in_out(0.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.2), [<Ease $name>]::ease_in_out(1.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.3), [<Ease $name>]::ease_in_out(1.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.4), [<Ease $name>]::ease_in_out(2.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.5), [<Ease $name>]::ease_in_out(2.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.6), [<Ease $name>]::ease_in_out(3.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.7), [<Ease $name>]::ease_in_out(3.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.8), [<Ease $name>]::ease_in_out(4.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.9), [<Ease $name>]::ease_in_out(4.5, 0.0, 5.0, 5.0), max_relative = 0.000001);
-                    assert_relative_eq!([<$name InOut>].tween(5.0, 1.0), [<Ease $name>]::ease_in_out(5.0, 0.0, 5.0, 5.0), max_relative = 0.000001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.0), [<Ease $name>]::ease_in_out(0.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.1), [<Ease $name>]::ease_in_out(0.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.2), [<Ease $name>]::ease_in_out(1.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.3), [<Ease $name>]::ease_in_out(1.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.4), [<Ease $name>]::ease_in_out(2.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.5), [<Ease $name>]::ease_in_out(2.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.6), [<Ease $name>]::ease_in_out(3.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.7), [<Ease $name>]::ease_in_out(3.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.8), [<Ease $name>]::ease_in_out(4.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 0.9), [<Ease $name>]::ease_in_out(4.5, 0.0, 5.0, 5.0), epsilon = 0.00001);
+                    assert_relative_eq!([<$name InOut>].tween(5.0, 1.0), [<Ease $name>]::ease_in_out(5.0, 0.0, 5.0, 5.0), epsilon = 0.00001);
                 }
 
                 #[test]
@@ -220,7 +217,7 @@ macro_rules! test_tween {
                     let mut tweener = $crate::Tweener::new(100.0, 0.0, 10.0, [<$name InOut>]);
 
                     for time in 0..=10 {
-                        let time = time as f64;
+                        let time = time as f32;
 
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in_out(time, 100.0, -100.0, 10.0);

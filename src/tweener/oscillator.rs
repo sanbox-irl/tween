@@ -22,7 +22,7 @@ where
     Value: TweenValue,
     T: Tween<Value>,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         let temp = percent % 2.0;
 
         #[cfg(feature = "std")]

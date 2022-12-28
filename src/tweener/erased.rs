@@ -99,11 +99,11 @@ where
     }
 
     fn initial_value(&self) -> Value {
-        self.initial_value()
+        self.values.0
     }
 
     fn final_value(&self) -> Value {
-        self.final_value()
+        self.values.1
     }
 
     fn current_time(&self) -> Time {

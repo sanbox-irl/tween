@@ -1,10 +1,10 @@
 /// This appears to be a magic constant for Back eases. I have no idea
 /// where it's from, but we'll use it
-const BACK_CONST: f64 = 1.70158;
+const BACK_CONST: f32 = 1.70158;
 
 /// This is another magic constant for the back in out tween.
 /// Where it comes from, I do not know!
-const BACK_IN_OUT_CONST: f64 = BACK_CONST * 1.525;
+const BACK_IN_OUT_CONST: f32 = BACK_CONST * 1.525;
 
 declare_tween! {
     /// A tween that goes out and then back in a bit. Go [here](https://easings.net/#easeInBack) for a visual demonstration.
@@ -13,7 +13,7 @@ declare_tween! {
     /// Creates a new [BackIn] Tweener.
     pub fn back_in;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         let scalar = percent * percent * ((BACK_CONST + 1.0) * percent - BACK_CONST);
 
         value_delta.scale(scalar)
@@ -27,7 +27,7 @@ declare_tween! {
     /// Creates a new [BackOut] Tweener.
     pub fn back_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         let t = percent - 1.0;
         let scalar = t * t * ((BACK_CONST + 1.0) * t + BACK_CONST) + 1.0;
 
@@ -42,7 +42,7 @@ declare_tween! {
     /// Creates a new [BackInOut] Tweener.
     pub fn back_in_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         percent *= 2.0;
 
         let scalar = if percent < 1.0 {

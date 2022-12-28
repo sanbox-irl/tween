@@ -35,7 +35,7 @@ pub trait Tween<Value> {
     /// value_delta.scale(percent)
     /// ```
     /// which is just `value_delta * percent`.
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value;
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value;
 
     /// All Tweens in this library use this default method, except [Looper] and [Oscillator], which
     /// are both unbounded (because they never stop returning values).
@@ -77,17 +77,17 @@ impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value>>
 where
     Value: TweenValue,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         (**self).tween(value_delta, percent)
     }
 }
 
 impl<Value, F> Tween<Value> for F
 where
-    F: FnMut(Value, f64) -> Value,
+    F: FnMut(Value, f32) -> Value,
     Value: TweenValue,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         self(value_delta, percent)
     }
 }
@@ -109,9 +109,9 @@ pub trait TweenValue:
     + core::ops::Sub<Output = Self>
     + core::ops::SubAssign
 {
-    /// This should be implemented as a simple multiplication. For f32, for example,
-    /// it's implemented as `(self as f64 * scale) as f32`.
-    fn scale(self, scale: f64) -> Self;
+    /// This should be implemented as a simple multiplication. For f64, for example,
+    /// it's implemented as `(self as f32 * scale) as f64`.
+    fn scale(self, scale: f32) -> Self;
 }
 
 /// A `TweenTime` is a representation of Time. The two most common will be `f32`/`f64` for
@@ -139,16 +139,13 @@ pub trait TweenTime:
 
     /// This should be implemented as a simple division. For f32, for example,
     /// it's implemented as `(current_time / duration) as f64`.
-    fn percent(duration: Self, current_time: Self) -> f64;
+    fn percent(duration: Self, current_time: Self) -> f32;
 
     /// Converts the given number to an `f32`.
     fn to_f32(self) -> f32;
 
-    /// Converts the self to an `f64`. This is only used in `Elastic` in this library.
-    fn to_f64(self) -> f64;
-
     /// This is implemented as a simple multipler, such as `self * multiplier`.
-    fn scale(self, multiplier: f64) -> Self;
+    fn scale(self, multiplier: f32) -> Self;
 }
 
 declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
@@ -156,53 +153,45 @@ declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
 impl TweenTime for f32 {
     const ZERO: Self = 0.0;
 
-    fn percent(duration: Self, current_time: Self) -> f64 {
-        current_time as f64 / duration as f64
+    fn percent(duration: Self, current_time: Self) -> f32 {
+        current_time / duration
     }
 
     fn to_f32(self) -> f32 {
         self
     }
 
-    fn to_f64(self) -> f64 {
-        self as f64
-    }
-
-    fn scale(self, other: f64) -> Self {
-        (self as f64 * other) as Self
+    fn scale(self, other: f32) -> Self {
+        (self * other) as Self
     }
 }
 impl TweenTime for f64 {
     const ZERO: Self = 0.0;
 
-    fn percent(duration: Self, current_time: Self) -> f64 {
-        current_time / duration
+    fn percent(duration: Self, current_time: Self) -> f32 {
+        current_time as f32 / duration as f32
     }
 
     fn to_f32(self) -> f32 {
         self as f32
     }
 
-    fn to_f64(self) -> f64 {
-        self
-    }
-
-    fn scale(self, other: f64) -> Self {
-        self * other
+    fn scale(self, other: f32) -> Self {
+        (self as f32 * other) as f64
     }
 }
 
 declare_value!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
 
 impl TweenValue for f32 {
-    fn scale(self, scale: f64) -> Self {
-        (self as f64 * scale) as f32
+    fn scale(self, scale: f32) -> Self {
+        self * scale
     }
 }
 
 impl TweenValue for f64 {
-    fn scale(self, scale: f64) -> Self {
-        self * scale
+    fn scale(self, scale: f32) -> Self {
+        (self as f32 * scale) as Self
     }
 }
 

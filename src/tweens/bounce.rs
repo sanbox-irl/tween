@@ -1,9 +1,9 @@
 use crate::{Tween, TweenTime, TweenValue};
 
-const MAGIC: f64 = 7.5625;
-const STAGE_ZERO: f64 = 1.0 / 2.75;
-const STAGE_ONE: f64 = 2.0 / 2.75;
-const STAGE_TWO: f64 = 2.5 / 2.75;
+const MAGIC: f32 = 7.5625;
+const STAGE_ZERO: f32 = 1.0 / 2.75;
+const STAGE_ONE: f32 = 2.0 / 2.75;
+const STAGE_TWO: f32 = 2.5 / 2.75;
 
 /// A bouncy tween, similar to gravity. Go [here](https://easings.net/#easeInBounce) for a visual demonstration.
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
@@ -16,7 +16,7 @@ impl BounceIn {
     }
 
     /// Run the given Tween with a new time.
-    pub fn tween<Value>(&mut self, value_delta: Value, mut percent: f64) -> Value
+    pub fn tween<Value>(&mut self, value_delta: Value, mut percent: f32) -> Value
     where
         Value: TweenValue,
     {
@@ -48,7 +48,7 @@ impl<Value> Tween<Value> for BounceIn
 where
     Value: TweenValue,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         self.tween(value_delta, percent)
     }
 }
@@ -71,7 +71,7 @@ declare_tween!(
     /// Creates a new [BounceOut] Tweener.
     pub fn bounce_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         let multip = if percent < STAGE_ZERO {
             MAGIC * percent * percent
         } else if percent < STAGE_ONE {
@@ -101,7 +101,7 @@ impl BounceInOut {
     }
 
     /// Run the given Tween with a new time.
-    pub fn tween<Value>(&mut self, value_delta: Value, mut percent: f64) -> Value
+    pub fn tween<Value>(&mut self, value_delta: Value, mut percent: f32) -> Value
     where
         Value: TweenValue,
     {
@@ -150,7 +150,7 @@ impl<Value> Tween<Value> for BounceInOut
 where
     Value: TweenValue,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         self.tween(value_delta, percent)
     }
 }
@@ -167,28 +167,3 @@ where
 }
 
 test_tween!(Bounce);
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use easer::functions::{Bounce, Easing};
-
-    #[test]
-    fn explore() {
-        println!("{}", BounceIn.tween(5.0, 0.0));
-        println!("{}", BounceIn.tween(5.0, 0.2));
-        println!("{}", BounceIn.tween(5.0, 0.4));
-        println!("{}", BounceIn.tween(5.0, 0.6));
-        println!("{}", BounceIn.tween(5.0, 0.8));
-        println!("{}", BounceIn.tween(5.0, 1.0));
-
-        println!();
-
-        println!("{}", Bounce::ease_in(0.0, 0.0, 5.0, 5.0));
-        println!("{}", Bounce::ease_in(1.0, 0.0, 5.0, 5.0));
-        println!("{}", Bounce::ease_in(2.0, 0.0, 5.0, 5.0));
-        println!("{}", Bounce::ease_in(3.0, 0.0, 5.0, 5.0));
-        println!("{}", Bounce::ease_in(4.0, 0.0, 5.0, 5.0));
-        println!("{}", Bounce::ease_in(5.0, 0.0, 5.0, 5.0));
-    }
-}

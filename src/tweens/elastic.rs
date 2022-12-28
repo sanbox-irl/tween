@@ -1,12 +1,12 @@
 use crate::{Tween, TweenTime, TweenValue};
-use core::{f64::consts::PI, marker::PhantomData};
+use core::{f32::consts::PI, marker::PhantomData};
 
 /// An elastic tween in. Go [here](https://easings.net/#easeInElastic) for a visual demonstration.
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticIn<Value, Time> {
     duration: Time,
-    three_tenths: f64,
-    s: f64,
+    three_tenths: f32,
+    s: f32,
     _value: PhantomData<Value>,
 }
 
@@ -17,7 +17,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(duration: Time) -> Self {
-        let three_tenths = duration.to_f64() * 0.3;
+        let three_tenths = duration.to_f32() * 0.3;
         Self {
             duration,
             three_tenths,
@@ -32,7 +32,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
-    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
         }
@@ -47,10 +47,10 @@ where
         let scalar = libm::pow(2.0, percent * 10.0);
 
         #[cfg(feature = "std")]
-        let scalar = 2f64.powf(percent * 10.0);
+        let scalar = 2f32.powf(percent * 10.0);
 
         let post_fix = value_delta.scale(scalar);
-        let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.three_tenths;
+        let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
         let scalar = -libm::sin(temp);
@@ -77,8 +77,8 @@ where
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticOut<Value, Time> {
     duration: Time,
-    three_tenths: f64,
-    s: f64,
+    three_tenths: f32,
+    s: f32,
     _value: PhantomData<Value>,
 }
 
@@ -89,7 +89,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(duration: Time) -> Self {
-        let three_tenths = duration.to_f64() * 0.3;
+        let three_tenths = duration.to_f32() * 0.3;
         Self {
             duration,
             three_tenths,
@@ -104,7 +104,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
-    fn tween(&mut self, value_delta: Value, percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
         }
@@ -113,13 +113,13 @@ where
             return value_delta;
         }
 
-        let temp = (percent * self.duration.to_f64() - self.s) * (2.0 * PI) / self.three_tenths;
+        let temp = (percent * self.duration.to_f32() - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
         let scalar = libm::pow(2.0, -10.0 * percent) * libm::sin(temp);
 
         #[cfg(feature = "std")]
-        let scalar = 2f64.powf(-10.0 * percent) * temp.sin();
+        let scalar = 2f32.powf(-10.0 * percent) * temp.sin();
 
         value_delta.scale(scalar) + value_delta
     }
@@ -144,8 +144,8 @@ where
 #[derive(Debug, PartialEq, Clone)]
 pub struct ElasticInOut<Value, Time> {
     duration: Time,
-    p: f64,
-    s: f64,
+    p: f32,
+    s: f32,
     _value: PhantomData<Value>,
 }
 
@@ -156,7 +156,7 @@ where
 {
     /// Creates a new tween out of a range with a duration.
     pub fn new(duration: Time) -> Self {
-        let p = duration.to_f64() * 0.45;
+        let p = duration.to_f32() * 0.45;
 
         Self {
             duration,
@@ -172,7 +172,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
-    fn tween(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    fn tween(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
         }
@@ -188,10 +188,10 @@ where
             let scalar = libm::pow(2.0, percent * 10.0);
 
             #[cfg(feature = "std")]
-            let scalar = 2f64.powf(percent * 10.0);
+            let scalar = 2f32.powf(percent * 10.0);
 
             let post_fix = value_delta.scale(scalar);
-            let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.p;
+            let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
             let temp_sin = libm::sin(temp);
@@ -205,10 +205,10 @@ where
             let scalar = libm::pow(2.0, percent * -10.0);
 
             #[cfg(feature = "std")]
-            let scalar = 2f64.powf(-10.0 * percent);
+            let scalar = 2f32.powf(-10.0 * percent);
 
             let post_fix = value_delta.scale(scalar);
-            let temp = (self.duration.to_f64() * percent - self.s) * (2.0 * PI) / self.p;
+            let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
             let temp_sin = libm::sin(temp);
@@ -249,7 +249,7 @@ mod tests {
         let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticIn::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let v = tweener.move_to(time);
             let o = Elastic::ease_in(time, 0.0, 100.0, 10.0);
@@ -263,7 +263,7 @@ mod tests {
         let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticIn::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let v = tweener.move_to(time);
             let o = Elastic::ease_in(time, 100.0, -100.0, 10.0);
@@ -277,7 +277,7 @@ mod tests {
         let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticOut::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let v = tweener.move_to(time);
             let o = Elastic::ease_out(time, 0.0, 100.0, 10.0);
@@ -291,7 +291,7 @@ mod tests {
         let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticOut::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let v = tweener.move_to(time);
             let o = Elastic::ease_out(time, 100.0, -100.0, 10.0);
@@ -305,7 +305,7 @@ mod tests {
         let mut tweener = Tweener::new(0.0, 100.0, 10.0, ElasticInOut::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let our_value = tweener.move_to(time);
             let easer = Elastic::ease_in_out(time, 0.0, 100.0, 10.0);
@@ -319,7 +319,7 @@ mod tests {
         let mut tweener = Tweener::new(100.0, 0.0, 10.0, ElasticInOut::new(10.0));
 
         for time in 0..=10 {
-            let time = time as f64;
+            let time = time as f32;
 
             let v = tweener.move_to(time);
             let o = Elastic::ease_in_out(time, 100.0, -100.0, 10.0);

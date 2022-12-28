@@ -5,7 +5,7 @@ declare_tween!(
     /// Creates a new [QuartIn] Tweener.
     pub fn quart_in;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         value_delta.scale(percent * percent * percent * percent)
     }
 );
@@ -17,7 +17,7 @@ declare_tween!(
     /// Creates a new [QuartOut] Tweener.
     pub fn quart_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         percent -= 1.0;
         value_delta.scale(-(percent * percent * percent * percent - 1.0))
     }
@@ -30,7 +30,7 @@ declare_tween!(
     /// Creates a new [QuartInOut] Tweener.
     pub fn quart_in_out;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f64) -> Value {
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         percent *= 2.0;
 
         let scalar = if percent < 1.0 {
