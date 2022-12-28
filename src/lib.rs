@@ -48,6 +48,7 @@ pub trait Tween<Value> {
     ///
     /// If you would like to extrapolate a tween *beyond* its bounds, you can wrap it in
     /// [Extrapolate].
+    #[inline]
     fn is_finite(&self) -> bool {
         true
     }
@@ -153,14 +154,17 @@ declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
 impl TweenTime for f32 {
     const ZERO: Self = 0.0;
 
+    #[inline]
     fn percent(duration: Self, current_time: Self) -> f32 {
         current_time / duration
     }
 
+    #[inline]
     fn to_f32(self) -> f32 {
         self
     }
 
+    #[inline]
     fn scale(self, other: f32) -> Self {
         (self * other) as Self
     }
@@ -168,14 +172,17 @@ impl TweenTime for f32 {
 impl TweenTime for f64 {
     const ZERO: Self = 0.0;
 
+    #[inline]
     fn percent(duration: Self, current_time: Self) -> f32 {
         current_time as f32 / duration as f32
     }
 
+    #[inline]
     fn to_f32(self) -> f32 {
         self as f32
     }
 
+    #[inline]
     fn scale(self, other: f32) -> Self {
         (self as f32 * other) as f64
     }

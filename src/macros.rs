@@ -6,15 +6,17 @@ macro_rules! declare_time {
         impl TweenTime for $t {
             const ZERO: Self = 0;
 
+            #[inline]
             fn percent(duration: Self, current_time: Self) -> f32 {
                 current_time as f32 / duration as f32
             }
 
+            #[inline]
             fn to_f32(self) -> f32 {
                 self as f32
             }
 
-
+            #[inline]
             fn scale(self, other: f32) -> Self {
                 (self as f32 * other) as Self
             }
@@ -29,6 +31,7 @@ macro_rules! declare_value {
     ($($t:ident),*) => {
         $(
         impl TweenValue for $t {
+            #[inline]
             fn scale(self, scale: f32) -> Self {
                 (self as f32 * scale) as $t
             }
@@ -63,6 +66,7 @@ macro_rules! declare_tween {
             }
 
             /// Run the given Tween with a new time.
+            #[inline]
             $tween
         }
 
@@ -70,6 +74,7 @@ macro_rules! declare_tween {
         where
             Value: $crate::TweenValue,
         {
+            #[inline]
             fn tween(&mut self, value_delta: Value, percent_time: f32) -> Value {
                 self.tween(value_delta, percent_time)
             }
