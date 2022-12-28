@@ -13,18 +13,87 @@ pub use oscillator::Oscillator;
 /// A Tweener is a wrapper around a Tween. Although you can tween dynamically using just a raw
 /// Tween, this struct will manage state and allow for more naturalistic handling.
 ///
+/// When you create a Tweener, you'll provide the `start`, `end,` and `duration` of the Tween (along
+/// with the actual tween itself). All of these are in absolute values. Internally, the Tweener, as
+/// with this library, works in "parametric" space, which is a fancy way of describing `0.0..=1.0`,
+/// or a percentage of the Tween.
+///
+/// This struct has two important methods: `move_to` and `move_by`. `move_to` effectively just moves
+/// your time into parametric space (ie, takes a tween of length 4, and time 2, and gets the percent
+/// 0.5) and clamps the output to the `start` and `end` value in case you tried to `move_to` a time
+/// beyond the tween's duration (a negative time, or a `time > duration`). `move_by` does the same,
+/// but given a relative value.
+///
 /// ## Clamping
+///
+/// A Tweener clamps its output value to within the range of `start..=end` given in [Tweener::new].
+/// This can easily happen moving a Tweener with [Tweener::move_by]. To check if that's occured, use
+/// [Tweener::is_finished], or, if negative movement is possible, invert [Tweener::is_valid].
+///
+/// For most users of this library, a common pattern will be:
+///
+/// ```
+/// # use tween::Tweener;
+///
+/// let (start, end) = (0, 100);
+/// let duration = 1;
+/// let mut tweener = Tweener::linear(start, end, duration);
+///
+/// // and then in your main loop...
+/// let dt = 1;
+/// let mut last_value = None;
+/// loop {
+///     last_value = Some(tweener.move_by(dt));
+///     // we'd want to run `!is_valid()` if negative movement was possible, but we know its not.
+///     if tweener.is_finished() {
+///         break;
+///     }
+/// }
+/// assert_eq!(last_value, Some(100));
+/// ```
+///
+/// What is `finished` and what is `started` exactly, though? In this library **`is_finished`
+/// returns `true` when the Time is at or beyond the duration of the Tweener.** This is a fancy way
+/// of saying if the Tweener has ran 5 frames, and its duration was 5, it will return `true` on
+/// `is_finished`.
+///
+/// We can demonstrate that here:
+///
+/// ```
+/// # use tween::Tweener;
+/// let (start, end) = (0, 2);
+/// let duration = 2;
+/// let mut tweener = Tweener::linear(start, end, duration);
+///
+/// let mut accum = 0;
+///
+/// loop {
+///     accum += dbg!(tweener.move_by(1));
+///     if tweener.is_finished() {
+///         break;
+///     }
+/// }
+///
+/// assert_eq!(accum, 3);
+/// ```
+///
+/// NB: this is probably your assumption as to how this library works, but does mean that in a loop
+/// constructed like so, you will never actually see a clamp occur within `move_by`.
+///
+/// Finally, if you'd like this library to actually *not* clamp your tween, take a look at
+/// [Extrapolator].
 ///
 /// ## Iterator
 ///
-/// In situations where the same delta time is alwayas used for (move_by)[Self::move_by], you can
-/// instead convert a [Tweener] into a [FixedTweener] by [Tweener::into_fixed]. See [FixedTweener]
+/// In situations where the same delta time is alwayas used for `move_by`, you can
+/// instead convert a [Tweener] into a [FixedTweener] by `into_fixed`. See [FixedTweener]
 /// for more information.
 #[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
 pub struct Tweener<Value, Time, T: ?Sized> {
     /// The current time of the Tweener. You can change this value at will without running the
     /// Tween, or change it with `move_by`.
     pub current_time: Time,
+
     /// The Tweener's total duration.
     pub duration: Time,
 
@@ -123,7 +192,7 @@ where
     pub fn is_finished(&self) -> bool {
         let pct = self.current_time.to_f32() / self.duration.to_f32();
 
-        if self.tween.is_finite() { pct > 1.0 } else { false }
+        if self.tween.is_finite() { pct >= 1.0 } else { false }
     }
 
     /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower
@@ -139,7 +208,7 @@ where
         let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() {
-            (0.0..=1.0).contains(&pct)
+            (0.0..1.0).contains(&pct)
         } else {
             true
         }
@@ -254,9 +323,11 @@ where
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        let output = self.move_next();
-
-        if self.tweener.is_valid() { Some(output) } else { None }
+        if self.tweener.is_valid() {
+            Some(self.move_next())
+        } else {
+            None
+        }
     }
 }
 
@@ -286,6 +357,7 @@ mod tests {
         assert_eq!(fixed_tweener.next().unwrap(), 2);
         assert_eq!(fixed_tweener.next().unwrap(), 3);
         assert_eq!(fixed_tweener.next().unwrap(), 4);
+        assert!(fixed_tweener.is_finished());
         assert_eq!(fixed_tweener.next(), None);
     }
 
@@ -319,7 +391,6 @@ mod tests {
             }
 
             assert!(move_and_return(&mut tweener, |t| !t.is_finished()));
-            assert!(move_and_return(&mut tweener, |t| !t.is_finished()));
             assert!(move_and_return(&mut tweener, |t| t.is_finished()));
 
             tweener.move_to(-2);
@@ -333,7 +404,6 @@ mod tests {
             tweener.move_to(-2);
 
             assert!(move_and_return(&mut tweener, |t| !t.is_valid()));
-            assert!(move_and_return(&mut tweener, |t| t.is_valid()));
             assert!(move_and_return(&mut tweener, |t| t.is_valid()));
             assert!(move_and_return(&mut tweener, |t| t.is_valid()));
             assert!(move_and_return(&mut tweener, |t| !t.is_valid()));
