@@ -9,10 +9,8 @@
 #[macro_use]
 extern crate std;
 
-#[cfg(all(not(feature = "std"), not(feature = "libm")))]
-compile_error!(
-    "Please enable feature `libm` (You used `no-default-features`, turning off `std`, but we need `libm` for `f64` math.)"
-);
+#[cfg(all(feature = "std", feature = "libm"))]
+compile_error!("Please disable feature `libm` or disable default features -- both cannot be active at once.");
 
 #[macro_use]
 mod macros;
