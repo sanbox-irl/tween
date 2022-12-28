@@ -410,7 +410,7 @@ mod tests {
         }
 
         checker(Tweener::new(0, 2, 2, Linear));
-        checker(Tweener::new(0, 2, 2, ElasticIn::new(2)));
+        checker(Tweener::new(0, 2, 2, ElasticIn));
         checker(Tweener::new(0, 2, 2, BounceInOut));
         checker(Tweener::new(0, 2, 2, BounceIn));
         checker(Tweener::new(0, 2, 2, BounceOut));
