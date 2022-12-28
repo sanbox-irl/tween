@@ -7,7 +7,7 @@ declare_tween!(
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
-        let scalar = 1.0 - libm::sqrt(1.0 - percent * percent);
+        let scalar = 1.0 - libm::sqrtf(1.0 - percent * percent);
 
         #[cfg(feature = "std")]
         let scalar = 1.0 - (1.0 - percent * percent).sqrt();
@@ -27,7 +27,7 @@ declare_tween!(
         let t = percent - 1.0;
 
         #[cfg(feature = "libm")]
-        let scalar = libm::sqrt(1.0 - t * t);
+        let scalar = libm::sqrtf(1.0 - t * t);
 
         #[cfg(feature = "std")]
         let scalar = (1.0 - t * t).sqrt();
@@ -48,7 +48,7 @@ declare_tween!(
 
         let scalar = if percent < 1.0 {
             #[cfg(feature = "libm")]
-            let o = 1.0 - libm::sqrt(1.0 - percent * percent);
+            let o = 1.0 - libm::sqrtf(1.0 - percent * percent);
 
             #[cfg(feature = "std")]
             let o = 1.0 - (1.0 - percent * percent).sqrt();
@@ -58,7 +58,7 @@ declare_tween!(
             let percent = percent - 2.0;
 
             #[cfg(feature = "libm")]
-            let o = libm::sqrt(1.0 - percent * percent) + 1.0;
+            let o = libm::sqrtf(1.0 - percent * percent) + 1.0;
 
             #[cfg(feature = "std")]
             let o = (1.0 - percent * percent).sqrt() + 1.0;

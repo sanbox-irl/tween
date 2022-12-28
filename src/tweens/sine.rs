@@ -9,7 +9,7 @@ declare_tween!(
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
-        let time = libm::cos(percent * PI / 2.0);
+        let time = libm::cosf(percent * PI / 2.0);
 
         #[cfg(feature = "std")]
         let time = (percent * PI / 2.0).cos();
@@ -27,7 +27,7 @@ declare_tween!(
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
-        let time = libm::sin(percent * PI / 2.0);
+        let time = libm::sinf(percent * PI / 2.0);
 
         #[cfg(feature = "std")]
         let time = (percent * PI / 2.0).sin();
@@ -46,7 +46,7 @@ declare_tween!(
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value
     {
         #[cfg(feature = "libm")]
-        let time = libm::cos(percent * PI) - 1.0;
+        let time = libm::cosf(percent * PI) - 1.0;
 
         #[cfg(feature = "std")]
         let time = (percent * PI).cos() - 1.0;

@@ -44,7 +44,7 @@ where
         percent -= 1.0;
 
         #[cfg(feature = "libm")]
-        let scalar = libm::pow(2.0, percent * 10.0);
+        let scalar = libm::powf(2.0, percent * 10.0);
 
         #[cfg(feature = "std")]
         let scalar = 2f32.powf(percent * 10.0);
@@ -53,7 +53,7 @@ where
         let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
-        let scalar = -libm::sin(temp);
+        let scalar = -libm::sinf(temp);
 
         #[cfg(feature = "std")]
         let scalar = -temp.sin();
@@ -116,7 +116,7 @@ where
         let temp = (percent * self.duration.to_f32() - self.s) * (2.0 * PI) / self.three_tenths;
 
         #[cfg(feature = "libm")]
-        let scalar = libm::pow(2.0, -10.0 * percent) * libm::sin(temp);
+        let scalar = libm::powf(2.0, -10.0 * percent) * libm::sinf(temp);
 
         #[cfg(feature = "std")]
         let scalar = 2f32.powf(-10.0 * percent) * temp.sin();
@@ -185,7 +185,7 @@ where
 
         if percent < 0.0 {
             #[cfg(feature = "libm")]
-            let scalar = libm::pow(2.0, percent * 10.0);
+            let scalar = libm::powf(2.0, percent * 10.0);
 
             #[cfg(feature = "std")]
             let scalar = 2f32.powf(percent * 10.0);
@@ -194,7 +194,7 @@ where
             let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
-            let temp_sin = libm::sin(temp);
+            let temp_sin = libm::sinf(temp);
 
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();
@@ -202,7 +202,7 @@ where
             post_fix.scale(-0.5 * temp_sin)
         } else {
             #[cfg(feature = "libm")]
-            let scalar = libm::pow(2.0, percent * -10.0);
+            let scalar = libm::powf(2.0, percent * -10.0);
 
             #[cfg(feature = "std")]
             let scalar = 2f32.powf(-10.0 * percent);
@@ -211,7 +211,7 @@ where
             let temp = (self.duration.to_f32() * percent - self.s) * (2.0 * PI) / self.p;
 
             #[cfg(feature = "libm")]
-            let temp_sin = libm::sin(temp);
+            let temp_sin = libm::sinf(temp);
 
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();

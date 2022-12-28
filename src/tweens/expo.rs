@@ -14,7 +14,7 @@ declare_tween!(
         let percent = 10.0 * (percent - 1.0);
 
         #[cfg(feature = "libm")]
-        let scalar = libm::pow(2.0, percent);
+        let scalar = libm::powf(2.0, percent);
 
         #[cfg(feature = "std")]
         let scalar = 2.0f32.powf(percent);
@@ -35,7 +35,7 @@ declare_tween!(
             value_delta
         } else {
             #[cfg(feature = "libm")]
-            let powf = libm::pow(2.0, -10.0 * percent);
+            let powf = libm::powf(2.0, -10.0 * percent);
 
             #[cfg(feature = "std")]
             let powf = 2.0f32.powf(-10.0 * percent);
@@ -65,7 +65,7 @@ declare_tween!(
 
         let powf = if percent < 1.0 {
             #[cfg(feature = "libm")]
-            let scalar = libm::pow(2.0, 10.0 * (percent - 1.0));
+            let scalar = libm::powf(2.0, 10.0 * (percent - 1.0));
 
             #[cfg(feature = "std")]
             let scalar = 2.0f32.powf(10.0 * (percent - 1.0));
@@ -75,7 +75,7 @@ declare_tween!(
             let percent = percent - 1.0;
 
             #[cfg(feature = "libm")]
-            let scalar = libm::pow(2.0, -10.0 * percent);
+            let scalar = libm::powf(2.0, -10.0 * percent);
 
             #[cfg(feature = "std")]
             let scalar = 2.0f32.powf(-10.0 * percent);

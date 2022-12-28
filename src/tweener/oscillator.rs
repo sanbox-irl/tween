@@ -29,7 +29,7 @@ where
         let (which_tween, percent) = { (temp.trunc(), percent.fract()) };
 
         #[cfg(feature = "libm")]
-        let (which_tween, percent) = { (libm::trunc(temp), percent - libm::trunc(percent)) };
+        let (which_tween, percent) = { (libm::truncf(temp), percent - libm::truncf(percent)) };
 
         // note: we don't have to worry about 0/1 difference here, since the tween
         // will get us to the same place
