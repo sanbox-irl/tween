@@ -23,6 +23,7 @@ where
     Value: TweenValue,
     T: Tween<Value>,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         // pass through to the underlying tween
         self.0.tween(value_delta, percent)

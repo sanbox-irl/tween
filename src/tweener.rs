@@ -130,7 +130,7 @@ where
     ///
     /// Giving a time outside [Tween::percent_bounds] will move the tween there, but **we will
     /// always clamp the output time**.
-    #[inline]
+    #[inline(always)]
     pub fn move_to(&mut self, position: Time) -> Value {
         self.current_time = position;
 

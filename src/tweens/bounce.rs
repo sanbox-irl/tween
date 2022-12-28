@@ -48,6 +48,7 @@ impl<Value> Tween<Value> for BounceIn
 where
     Value: TweenValue,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         self.tween(value_delta, percent)
     }
@@ -150,6 +151,7 @@ impl<Value> Tween<Value> for BounceInOut
 where
     Value: TweenValue,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         self.tween(value_delta, percent)
     }

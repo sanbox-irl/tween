@@ -22,6 +22,7 @@ where
     Value: TweenValue,
     T: Tween<Value>,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         let temp = percent % 2.0;
 

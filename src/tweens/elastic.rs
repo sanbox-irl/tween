@@ -32,6 +32,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
@@ -104,6 +105,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
@@ -172,6 +174,7 @@ where
     Value: TweenValue,
     Time: TweenTime,
 {
+    #[inline(always)]
     fn tween(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
