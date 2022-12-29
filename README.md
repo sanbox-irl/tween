@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = "2.0.0"
+tween = { git = "https://github.com/sanbox-irl/tween" } 
 ```
 
 You can make a tweener, which drives a tween, like this:
@@ -21,12 +21,13 @@ use tween::Tweener;
 
 let (start, end) = (0, 100);
 let duration = 15.0;
+
 let mut tweener = Tweener::sine_in_out(start, end, duration);
-// and then in your main loop...
 let mut position = 0;
 
 const DT: f32 = 1.0 / 60.0;
 
+// and then in your main loop...
 loop {
     position = tweener.move_by(DT);
     if tweener.is_finished() {
@@ -41,11 +42,11 @@ assert_eq!(position, 100, "we've moved to the end of the tween");
 
 This library exposes three kinds of structs:
 
-- ZST Tweens which implement the `Tween` trait. They also expose the method `tween` inherently, so you can tween arbitrarily with them.
+- Zero-Sized Tweens which implement the `Tween` trait. They also expose the method `tween` inherently, so you can tween easily with them, like `tween::Linear.tween`.
 - Wrapper Tweens which implement the `Tween` trait. These are `Looper`, `Oscillator` and `Extrapolator`. These all wrap *around* other Tweens. See their documentation for more information.
 - `Tweener` and `FixedTweener`, both of which "drive" a `Tween`. You should use `FixedTweener` in a fixed timestep application; otherwise, use `Tweener`. Although you can use a `Tween` directly, a `Tweener` manages all the Tween state for you.
 
-For 99% of users, you'll want to construct `Tweener`s or `FixedTweener`s with a Tween for this library, occasionally looping them.
+For 99% of users, you'll want to construct `Tweener`s or `FixedTweener`s with a Tween for this library, occasionally looping or oscillating them.
 
 ## Making Tweens Yourself
 
@@ -67,7 +68,7 @@ To see a documented example of a Cubic Bezier Tween, see `examples/cubic_bezier.
 
 Very often in a game or animation engine, you'll want to store Tweens by what they act *on*, without caring about what kind of Tween example it is. To do that, you'll want to *erase* the Tweener.
 
-```rust ignore
+```rust no_run
 use tween::{Tweener, ErasedTweener, Looper, Linear, SineIn};
 
 let mut my_tweener: Box<dyn ErasedTweener<i32, u32>> = Tweener::new(0, 100, 100, Linear).into_erased();

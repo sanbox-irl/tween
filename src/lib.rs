@@ -1,4 +1,5 @@
-#![doc = include_str!("../README.md")]
+#![cfg_attr(feature = "std", doc = include_str!("../README.md"))]
+#![cfg_attr(not(feature = "std"), doc = "no-std stand in")]
 #![deny(unsafe_code)]
 #![deny(rust_2018_idioms)]
 #![deny(missing_docs)]
