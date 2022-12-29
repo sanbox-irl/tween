@@ -115,6 +115,16 @@ This library uses `std` with the default feature `std`. Disable default features
 tween = { verison = "2.0.0", default_features = false, features = ["libm"] }
 ```
 
+## MSRV and Safety
+
+This crate has no MSRV yet. If it sees good adoption, an MSRV policy will be decided.
+
+Additionally, this crate is `#![deny(unsafe_code)]`, since no unsafe code was needed. Changing this policy would constitute a minor breaking change.
+
 ## Roadmap
 
 Next up for this library is handling Splines of Tweeners.
+
+## License
+
+Dual-licensed under MIT or APACHE 2.0.
