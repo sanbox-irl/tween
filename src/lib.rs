@@ -101,15 +101,7 @@ where
 ///
 /// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
 /// issue if that is needed for your workflow.
-pub trait TweenValue:
-    Copy
-    + PartialEq
-    + core::fmt::Debug
-    + core::ops::Add<Output = Self>
-    + core::ops::AddAssign
-    + core::ops::Sub<Output = Self>
-    + core::ops::SubAssign
-{
+pub trait TweenValue: Copy + core::fmt::Debug + core::ops::Add<Output = Self> + core::ops::Sub<Output = Self> {
     /// This should be implemented as a simple multiplication. For f64, for example,
     /// it's implemented as `(self as f32 * scale) as f64`.
     fn scale(self, scale: f32) -> Self;
@@ -119,10 +111,7 @@ pub trait TweenValue:
 /// seconds and `u32`/`u64`/`usize` for frames.
 ///
 /// If you want to implement your own time for duration, then you'll need to implement this
-/// trait somewhere.
-///
-/// For now, we require `Copy`, but can reduce this to a `Clone` implementation. Please file an
-/// issue if that is needed for your workflow.
+/// trait.
 pub trait TweenTime:
     Copy
     + PartialEq
@@ -131,18 +120,13 @@ pub trait TweenTime:
     + core::ops::Add<Output = Self>
     + core::ops::AddAssign
     + core::ops::Rem<Output = Self>
-    + core::ops::RemAssign
     + core::ops::Sub<Output = Self>
-    + core::ops::SubAssign
 {
     /// The ZERO value. This is 0 or 0.0.
     const ZERO: Self;
 
     /// Converts the given number to an `f32`.
     fn to_f32(self) -> f32;
-
-    /// This is implemented as a simple multipler, such as `self * multiplier`.
-    fn scale(self, multiplier: f32) -> Self;
 }
 
 declare_time!(u8, i8, i16, u16, i32, i64, u32, u64, i128, u128, usize, isize);
@@ -154,11 +138,6 @@ impl TweenTime for f32 {
     fn to_f32(self) -> f32 {
         self
     }
-
-    #[inline(always)]
-    fn scale(self, other: f32) -> Self {
-        (self * other) as Self
-    }
 }
 impl TweenTime for f64 {
     const ZERO: Self = 0.0;
@@ -166,11 +145,6 @@ impl TweenTime for f64 {
     #[inline(always)]
     fn to_f32(self) -> f32 {
         self as f32
-    }
-
-    #[inline(always)]
-    fn scale(self, other: f32) -> Self {
-        (self as f32 * other) as f64
     }
 }
 
@@ -214,5 +188,56 @@ mod tests {
         assert_eq!(tweener.move_by(1), 1);
         assert!(tweener.is_finished());
         assert!(pct_50_or_over);
+    }
+
+    #[test]
+    fn cubic_bezier() {
+        use std::ops::{Add, Sub};
+        #[derive(Debug, Clone, Copy, PartialEq)]
+        struct Point(f32, f32);
+        impl Add for Point {
+            type Output = Self;
+
+            fn add(self, rhs: Self) -> Self::Output {
+                Self(self.0 + rhs.0, self.1 + rhs.1)
+            }
+        }
+        impl Sub for Point {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self::Output {
+                Self(self.0 - rhs.0, self.1 - rhs.1)
+            }
+        }
+        impl TweenValue for Point {
+            fn scale(self, scale: f32) -> Self {
+                Self(self.0 * scale, self.1 * scale)
+            }
+        }
+
+        let start = Point(0.0, 0.0);
+        let destination = Point(10.0, 0.0);
+
+        let ctrl_one = Point(2.5, 10.0);
+        let ctrl_two = Point(7.5, 10.0);
+
+        // decasteljau for simplicity
+        let mut tweener = Tweener::new(start, destination, 10.0, |delta, t| {
+            fn lerp(a: Point, b: Point, t: f32) -> Point {
+                (b - a).scale(t) + a
+            }
+
+            let a = lerp(Point(0.0, 0.0), ctrl_one, t);
+            let b = lerp(ctrl_two, ctrl_one, t);
+            let c = lerp(ctrl_two, delta, t);
+
+            let d = lerp(a, b, t);
+            let e = lerp(b, c, t);
+
+            lerp(d, e, t)
+        });
+
+        assert_eq!(tweener.move_to(5.0), Point(5.0, 7.5));
+        assert_eq!(tweener.move_to(10.0), Point(10.0, 0.0));
     }
 }

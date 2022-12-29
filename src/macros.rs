@@ -10,11 +10,6 @@ macro_rules! declare_time {
             fn to_f32(self) -> f32 {
                 self as f32
             }
-
-            #[inline(always)]
-            fn scale(self, other: f32) -> Self {
-                (self as f32 * other) as Self
-            }
         }
         )*
     };
