@@ -56,8 +56,11 @@ jobs:
             ${{ runner.os }}-target-test-${{ matrix.rust }}-${{ hashFiles('**/Cargo.toml') }}
             ${{ runner.os }}-target-test-${{ matrix.rust }}-
 
-      - name: test
-        run: cargo test
+      - name: test with glam
+        run: cargo test --features=glam
 
       - name: test libm
         run: cargo test --no-default-features --features=libm
+
+      - name: run cubic_bezier
+        run: cargo run --example=cubic_bezier
