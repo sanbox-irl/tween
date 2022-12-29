@@ -67,7 +67,7 @@ To see a documented example of a Cubic Bezier Tween, see `examples/cubic_bezier.
 
 Very often in a game or animation engine, you'll want to store Tweens by what they act *on*, without caring about what kind of Tween example it is. To do that, you'll want to *erase* the Tweener.
 
-```rust no_run
+```rust ignore
 use tween::{Tweener, ErasedTweener, Looper, Linear, SineIn};
 
 let mut my_tweener: Box<dyn ErasedTweener<i32, u32>> = Tweener::new(0, 100, 100, Linear).into_erased();
