@@ -1,5 +1,9 @@
 # Changelog
 
+## [unreleased] - 2022-12-28
+
+- Rewrote the library from scratch. Ignore all versions before this!
+
 ## [1.0.1] - 2022-04-08
 
 - Updated typings on the Tweener to be less difficult.

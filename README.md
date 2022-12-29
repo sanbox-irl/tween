@@ -114,3 +114,7 @@ This library uses `std` with the default feature `std`. Disable default features
 ```toml
 tween = { verison = "2.0.0", default_features = false, features = ["libm"] }
 ```
+
+## Roadmap
+
+Next up for this library is handling Splines of Tweeners.
