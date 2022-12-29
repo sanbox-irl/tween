@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn cubic_bezier() {
-        use std::ops::{Add, Sub};
+        use core::ops::{Add, Sub};
         #[derive(Debug, Clone, Copy, PartialEq)]
         struct Point(f32, f32);
         impl Add for Point {
