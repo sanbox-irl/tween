@@ -224,7 +224,7 @@ mod tests {
         // decasteljau for simplicity
         let mut tweener = Tweener::new(start, destination, 10.0, |delta, t| {
             fn lerp(a: Point, b: Point, t: f32) -> Point {
-                (b - a).scale(t) + a
+                a.scale(1.0 - t) + b.scale(t)
             }
 
             let a = lerp(Point(0.0, 0.0), ctrl_one, t);

@@ -73,7 +73,7 @@ use tween::{Tweener, ErasedTweener, Looper, Linear, SineIn};
 let mut my_tweener: Box<dyn ErasedTweener<i32, u32>> = Tweener::new(0, 100, 100, Linear).into_erased();
 let mut going_up = true;
 
-// we lerp from 0 to 100 over 100 frames, and then we flip our tween back into a SineIn tween over 10 frames.
+// we lerp from 0 to 100 over 100 frames, and then we flip our tween back into a SineIn tween over 10 frames, so this looks like a slowwwwwww buildup and then a SHARP drop down.
 loop {
     let _output_assigned_somewhere = my_tweener.move_by(1);
     if my_tweener.is_finished() {
@@ -86,8 +86,6 @@ loop {
     }
 }
 ```
-
-To see a documented example of erased tweens, see `examples/erasing_tweens.rs`
 
 ## Implementing `TweenValue`
 
