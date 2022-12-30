@@ -74,14 +74,6 @@ pub trait ErasedTweener<Value, Time> {
     ///
     /// This method is **rarely needed** -- only use it if you are doing some second-order tweening.
     fn is_valid(&self) -> bool;
-
-    /// Converts this [ErasedTweener] into an [ErasedFixedTweener]. See its documentation for more
-    /// information.
-    #[cfg(feature = "std")]
-    fn into_fixed(self: std::boxed::Box<Self>, delta: Time) -> std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
-    where
-        Value: 'static,
-        Time: 'static;
 }
 
 impl<Value, Time, T> ErasedTweener<Value, Time> for Tweener<Value, Time, T>
@@ -133,15 +125,6 @@ where
     fn is_valid(&self) -> bool {
         self.is_valid()
     }
-
-    #[cfg(feature = "std")]
-    fn into_fixed(self: std::boxed::Box<Self>, delta: Time) -> std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
-    where
-        Value: 'static,
-        Time: 'static,
-    {
-        (*self).into_fixed(delta).into_erased()
-    }
 }
 
 impl<Value, Time, T> ErasedTweener<Value, Time> for FixedTweener<Value, Time, T>
@@ -192,17 +175,6 @@ where
 
     fn is_valid(&self) -> bool {
         self.tweener.is_valid()
-    }
-
-    #[cfg(feature = "std")]
-    fn into_fixed(mut self: std::boxed::Box<Self>, delta: Time) -> std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
-    where
-        Value: 'static,
-        Time: 'static,
-    {
-        // i guess we'll make sure to apply that delta?
-        self.delta = delta;
-        self as _
     }
 }
 
