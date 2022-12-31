@@ -229,7 +229,7 @@ where
 /// let (start, end) = (0, 4);
 /// let duration = 4;
 /// let delta = 1;
-/// let mut fixed_tweener = FixedTweener::new(start, end, duration, Linear, delta);
+/// let mut fixed_tweener = FixedTweener::linear(start, end, duration, delta);
 /// assert_eq!(fixed_tweener.next().unwrap(), 1);
 /// assert_eq!(fixed_tweener.next().unwrap(), 2);
 /// assert_eq!(fixed_tweener.next().unwrap(), 3);

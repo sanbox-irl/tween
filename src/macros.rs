@@ -80,6 +80,17 @@ macro_rules! declare_tween {
                 $crate::Tweener::new(start, end, duration, $crate::$name)
             }
         }
+
+        impl<Value, Time> $crate::FixedTweener<Value, Time, $crate::$name>
+        where
+            Time: $crate::TweenTime,
+            Value: $crate::TweenValue,
+        {
+            $(#[$method_meta])*
+            pub fn $tweener_method_name(start: Value, end: Value, duration: Time, delta: Time) -> $crate::FixedTweener<Value, Time, $crate::$name> {
+                $crate::FixedTweener::new(start, end, duration, $crate::$name, delta)
+            }
+        }
     };
 }
 
