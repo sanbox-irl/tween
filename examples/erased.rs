@@ -2,6 +2,7 @@
 
 use tween::{FixedTweener, Linear, Tween, Tweener};
 
+#[cfg(feature = "std")]
 pub fn main() {
     // we do some chaos to erase it...
     let tweener_of_erased: Tweener<i32, i32, Box<dyn Tween<i32>>> = Tweener::new(0, 0, 0, Box::new(Linear));
@@ -22,7 +23,11 @@ pub fn main() {
     access_tweener(&fixed_tweener);
 }
 
+#[cfg(not(feature = "std"))]
+pub fn main() {}
+
 /// This is how you write a generic function which needs to access a variety of tweeners!
+#[cfg(feature = "std")]
 fn access_tweener<Value, Time, T>(tweener: &Tweener<Value, Time, T>)
 where
     Value: tween::TweenValue,
