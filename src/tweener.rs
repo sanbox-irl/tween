@@ -220,6 +220,8 @@ where
 
 /// A FixedTweener is a [Tweener] wrapper which implements [Iterator]. To do this,
 /// it takes a "fixed" delta on its constructor.
+/// 
+/// ## Basic Example
 ///
 /// ```
 /// # use tween::{FixedTweener, Tweener, Linear};
@@ -235,6 +237,32 @@ where
 /// assert_eq!(fixed_tweener.next().unwrap(), 3);
 /// assert_eq!(fixed_tweener.next().unwrap(), 4);
 /// assert_eq!(fixed_tweener.next(), None);
+/// ```
+///
+/// ## Clamping
+///
+/// `FixedTweener`, just [Tweener], clamps its output, but **in its [Iterator] implementation,
+/// it returns `None` when it would otherwise clamp!**
+///
+/// Therefore, in all cases where a `fixed_tweener.is_finished()` is `true`,
+/// `fixed_tweener.next().is_none` as well.
+///
+/// If you *don't* want this behavior, you can instead use `move_next()`, which clamps.
+/// 
+/// ```
+/// # use tween::{FixedTweener, Tweener, Linear};
+/// // a single iteration length tween
+/// let mut fixed_tweener = FixedTweener::linear(0, 1, 1, 1);
+/// 
+/// // move it to its end...
+/// assert_eq!(fixed_tweener.next().unwrap(), 1);
+/// 
+/// // and now `.next` returns `None`!
+/// assert!(fixed_tweener.next().is_none());
+/// assert!(fixed_tweener.is_finished());
+/// 
+/// // but you can still use `move_next`. Note how it returns `Value`, not `Option<Value>`
+/// assert_eq!(fixed_tweener.move_next(), 1);
 /// ```
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 pub struct FixedTweener<Value, Time, T: ?Sized> {
