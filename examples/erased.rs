@@ -1,5 +1,6 @@
 //! In this example, we explore working with erased tweeners.
 
+#[cfg(feature = "std")]
 use tween::{FixedTweener, Linear, Tween, Tweener};
 
 #[cfg(feature = "std")]
