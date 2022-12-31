@@ -83,6 +83,39 @@ where
     }
 }
 
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Sync>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
 impl<Value, F> Tween<Value> for F
 where
     F: FnMut(Value, f32) -> Value,

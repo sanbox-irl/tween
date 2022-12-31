@@ -66,27 +66,38 @@ To see a documented example of a Cubic Bezier Tween, see `examples/cubic_bezier.
 
 ## Storing Tweens
 
-Very often in a game or animation engine, you'll want to store Tweens by what they act *on*, without caring about what kind of Tween example it is. To do that, you'll want to *erase* the Tweener.
+Very often in a game or animation engine, you'll want to store Tweens by what they act *on*, without caring about what kind of Tween example it is. To do that, you'll want to box the Tween within the Tweener. Since all the Tweens in this library are ZSTs, the Box won't actually allocate, though you will have to use dynamic access (which will be more than fast enough).
 
 ```rust no_run
-use tween::{Tweener, ErasedTweener, Looper, Linear, SineIn};
+use tween::{Tweener, Looper, Linear, SineIn, Tween};
 
-let mut my_tweener: Box<dyn ErasedTweener<i32, u32>> = Tweener::new(0, 100, 100, Linear).into_erased();
+// very often game engines need sync/sync
+type SendSyncTween<Value, Time> = Tweener<Value, Time, Box<dyn Tween<Value> + Send + Sync>>;
+
+let mut my_tweener: SendSyncTween<i32, i32> = Tweener::new(0, 100, 100, Box::new(Linear));
 let mut going_up = true;
 
-// we lerp from 0 to 100 over 100 frames, and then we flip our tween back into a SineIn tween over 10 frames, so this looks like a slowwwwwww buildup and then a SHARP drop down.
-loop {
-    let _output_assigned_somewhere = my_tweener.move_by(1);
-    if my_tweener.is_finished() {
-        my_tweener = if going_up {
-            Tweener::new(100, 0, 10, SineIn).into_erased()
-        } else {
-            Tweener::new(0, 100, 100, Linear).into_erased()
-        };
-        going_up = !going_up;
+// we lerp from 0 to 100 over 100 frames, and then we flip our tween back
+// into a SineIn tween over 10 frames, so this looks like a slowwwwwww buildup
+// and then a SHARP drop down.
+//
+// we put this in a thread here to demonstrate `Send + Sync`
+std::thread::spawn(move || {
+    loop {
+        let _output_assigned_somewhere = my_tweener.move_by(1);
+        if my_tweener.is_finished() {
+            my_tweener = if going_up {
+                Tweener::new(100, 0, 10, Box::new(SineIn))
+            } else {
+                Tweener::new(0, 100, 100, Box::new(Linear))
+            };
+            going_up = !going_up;
+        }
     }
-}
+});
 ```
+
+To see a documented example of erased Tweeners, see `examples/erased.rs`.
 
 ## Implementing `TweenValue`
 

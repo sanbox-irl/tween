@@ -1,11 +1,9 @@
 use crate::{Tween, TweenTime, TweenValue};
 
-mod erased;
 mod extrapolator;
 mod looper;
 mod oscillator;
 
-pub use erased::{ErasedTweener, FixedErasedTweener};
 pub use extrapolator::Extrapolator;
 pub use looper::Looper;
 pub use oscillator::Oscillator;
@@ -218,29 +216,6 @@ where
     pub fn into_fixed(self, delta: Time) -> FixedTweener<Value, Time, T> {
         FixedTweener::from_tweener(self, delta)
     }
-
-    /// Converts the [Tweener] to a boxed [ErasedTweener].
-    ///
-    /// This function is provided as a simple shortcut, but you can *trivially* Box `self`
-    /// yourself to get the same effect. This is especially important if you need the output
-    /// of this function to be `Send + Sync`, or any other trait, like this:
-    /// ```
-    /// # use tween::{Tweener, ErasedTweener};
-    ///
-    /// let mut erased_tweener: Box<dyn ErasedTweener<i32, i32>> =
-    ///     Box::new(Tweener::new(0, 10, 10, tween::Linear));
-    ///
-    /// erased_tweener = Box::new(Tweener::new(10, 0, 10, tween::SineIn));
-    /// ```
-    #[cfg(feature = "std")]
-    pub fn into_erased(self) -> std::boxed::Box<dyn ErasedTweener<Value, Time>>
-    where
-        Value: 'static,
-        Time: 'static,
-        T: 'static,
-    {
-        std::boxed::Box::new(self)
-    }
 }
 
 /// A FixedTweener is a [Tweener] wrapper which implements [Iterator]. To do this,
@@ -293,30 +268,6 @@ where
     #[inline]
     pub fn move_next(&mut self) -> Value {
         self.tweener.move_by(self.delta)
-    }
-
-    /// Converts the [FixedTweener] to a boxed [FixedErasedTweener]. This can be extremely
-    /// convenient to store different types of tweens.
-    ///
-    /// This function is provided as a simple shortcut, but you can *trivially* Box `self`
-    /// yourself to get the same effect. This is especially important if you need the output
-    /// of this function to be `Send + Sync`, or any other trait, like this:
-    /// ```
-    /// # use tween::{FixedTweener, FixedErasedTweener};
-    ///
-    /// let mut fixed_erased_tweener: Box<dyn FixedErasedTweener<i32, i32>> =
-    ///     Box::new(FixedTweener::new(0, 10, 10, tween::Linear, 1));
-    ///
-    /// fixed_erased_tweener = Box::new(FixedTweener::new(10, 0, 10, tween::SineIn, 1));
-    /// ```
-    #[cfg(feature = "std")]
-    pub fn into_erased(self) -> std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
-    where
-        Value: 'static,
-        Time: 'static,
-        T: 'static,
-    {
-        std::boxed::Box::new(self) as std::boxed::Box<dyn FixedErasedTweener<Value, Time>>
     }
 }
 
