@@ -40,6 +40,12 @@ assert_eq!(position, 100, "we've moved to the end of the tween");
 
 ## Overview
 
+A `Tween` is a function which returns values from one specified number to another specified number over a specified amount of time. The simplest `Tween` which everyone is familiar with is `lerp`, or `Linear intERPolation`. In this library, it called `Linear` -- a Linear Tween moves from its start to its end by the formula `start * (1.0 - p) + end * p`, where `p` is the percent over time you are into the tween. So at time 0, or 0%, you end up with the `start` value, and at time `100%`, or `1`, you end up with the end value.
+
+There are many kinds of Tweens beyond Linear, however, all of which can produce feel and animations! We often use tweens to move positions of objects in games, but you can use Tweens for animating a sprite, selecting behavior, audio manipulation, or even drawing fonts with Cubic Bezier Tweens.
+
+This library gives you access to all the tweens initially made by Robert Penner -- you can see them in action [here](https://easings.net/).
+
 This library exposes three kinds of structs:
 
 - Zero-Sized Tweens which implement the `Tween` trait. They also expose the method `tween` inherently, so you can tween easily with them, like `tween::Linear.tween`.
