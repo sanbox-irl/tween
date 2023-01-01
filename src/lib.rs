@@ -23,6 +23,8 @@ mod tweens;
 mod glam;
 #[cfg(feature = "nalgebra")]
 mod na;
+#[cfg(feature = "vek")]
+mod vek;
 
 pub use tweener::*;
 pub use tweens::*;
