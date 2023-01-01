@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = { git = "https://github.com/sanbox-irl/tween" } 
+tween = 2.0.0
 ```
 
 You can make a tweener, which drives a tween, like this:
@@ -115,7 +115,7 @@ If you'd like to PR a math library's types to implement `TweenValue` in this cra
 
 ## Going Fast ⚡️
 
-This library is, ultimately, a math library, and benefits enormously from being in release mode and having link-time optimization enabled. If Debug releases feel slow, consider having this compiled in release mode nonetheless, and enabling LTO.
+This library is, ultimately, a math library, and benefits enormously from being in release mode.
 
 ## Features
 

@@ -1,8 +1,14 @@
 # Changelog
 
-## [unreleased] - 2022-12-28
+## [unreleased] - 2023-01-01
 
-- Rewrote the library from scratch. Ignore all versions before this!
+## [2.0.0] - 2023-01-01
+
+- Rewrote the library:
+  - `Tween` is generic about only `Value`,
+  - All `Tween`s have become ZSTs, and all state has moved to `Tweener`s.
+  - The library no longer uses Ranges.
+  - Added `Looper`, `Oscillator`, and `Extrapolator`
 
 ## [1.0.1] - 2022-04-08
 
