@@ -16,15 +16,9 @@ compile_error!("Please disable feature `libm` or disable default features -- bot
 #[macro_use]
 mod macros;
 
+mod math;
 mod tweener;
 mod tweens;
-
-#[cfg(feature = "glam")]
-mod glam;
-#[cfg(feature = "nalgebra")]
-mod na;
-#[cfg(feature = "vek")]
-mod vek;
 
 pub use tweener::*;
 pub use tweens::*;
