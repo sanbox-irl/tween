@@ -124,6 +124,10 @@ This library is, ultimately, a math library, and benefits enormously from being 
 - `std`: **enabled by default**, gives access to faster floating point math and helper methods with `Box`
 - `libm`: enable this, without default features, for no-std tweening
 - `glam`: enable this for `glam` types to implement `TweenValue`
+- `nalgebra`: enable this for `nalgebra` types to implement `TweenValue`
+- `vek`: enable this for `vek` types to implement `TweenValue`
+- `ultraviolet`: enable this for `ultraviolet` types to implement `TweenValue`
+- `ultraviolet-f64`: enable this for `ultraviolet/f64`, and for f64 vectors in ultraviolet to implement `TweenValue`
 
 ## Std Optional
 
