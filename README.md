@@ -14,7 +14,7 @@ To install, add the following to your Cargo.toml:
 tween = "2.0.0"
 ```
 
-You can make a tweener, which drives a tween, like this:
+You can make a Tweener, like this:
 
 ```rust
 use tween::Tweener;
@@ -40,9 +40,9 @@ assert_eq!(position, 100, "we've moved to the end of the tween");
 
 ## Overview
 
-A `Tween` is a function which returns values from one specified number to another specified number over a specified amount of time. The simplest `Tween` which everyone is familiar with is `lerp`, or `Linear intERPolation`. In this library, it called `Linear` -- a Linear Tween moves from its start to its end by the formula `start * (1.0 - p) + end * p`, where `p` is the percent over time you are into the tween. So at time 0, or 0%, you end up with the `start` value, and at time `100%`, or `1`, you end up with the end value.
+A `Tween` is a function which returns values from one specified number to another specified number over a specified amount of time. The simplest `Tween` which everyone is familiar with is `lerp`, or "linear interpolation". In this library, it is called `Linear` -- a Linear Tween moves from its start to its end by the formula `start * (1.0 - p) + end * p`, where `p` is the percent over time you are into the tween. So at time `0`, or `0%`, you end up with the `start` value, and at time `1`, or ``100%`, you end up with the end value.
 
-There are many kinds of Tweens beyond Linear, however, all of which can produce feel and animations! We often use tweens to move positions of objects in games, but you can use Tweens for animating a sprite, selecting behavior, audio manipulation, or even drawing fonts with Cubic Bezier Tweens.
+There are many kinds of Tweens beyond Linear, of course; all of which can produce feel and animations! We often use tweens to move positions of objects in games, but you can use Tweens for animating a sprite, selecting behavior, audio manipulation, or even drawing fonts with Cubic Bezier Tweens.
 
 This library gives you access to all the tweens initially made by Robert Penner -- you can see them in action [here](https://easings.net/).
 
@@ -111,8 +111,6 @@ This library uses two traits: `TweenTime` and `TweenValue`. You can implement th
 
 On the other hand, `TweenValue` needs to be implemented for any tweenable value. By default, all numerical types are already implemented in this library. Additionally, several math libs have a feature flag (see below) which gates an implementation for their structs as appropriate.
 
-If you'd like to PR a math library's types to implement `TweenValue` in this crate, please let me know.
-
 ## Going Fast ⚡️
 
 This library is, ultimately, a math library, and benefits enormously from being in release mode.
@@ -127,7 +125,9 @@ This library is, ultimately, a math library, and benefits enormously from being 
 - `nalgebra`: enable this for `nalgebra` types to implement `TweenValue`
 - `vek`: enable this for `vek` types to implement `TweenValue`
 - `ultraviolet`: enable this for `ultraviolet` types to implement `TweenValue`
-- `ultraviolet-f64`: enable this for `ultraviolet/f64`, and for f64 vectors in ultraviolet to implement `TweenValue`
+- `ultraviolet-f64`: enable this for `ultraviolet/f64` types to implement `TweenValue`
+
+This library supports `glam` as its first-class math lib.
 
 ## Std Optional
 
@@ -145,7 +145,7 @@ Additionally, this crate is `#![deny(unsafe_code)]`, since no unsafe code was ne
 
 ## Breaking Changes
 
-This crate follows normal rules for breaking changes **except for math libraries.** We make no promises that we'll update perfectly with math libraries -- you are encouraged to make forks of this repo instead if you have version handling requirements.
+This crate follows normal rules for breaking changes **except for math libraries besides `glam`.** We make no promises that we'll update perfectly with math libraries -- you are encouraged to make forks of this repo instead if you have version handling requirements.
 
 ## Roadmap
 
