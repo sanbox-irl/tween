@@ -143,6 +143,10 @@ This crate has no MSRV yet. If it sees good adoption, an MSRV policy will be dec
 
 Additionally, this crate is `#![deny(unsafe_code)]`, since no unsafe code was needed. Changing this policy would constitute a minor breaking change.
 
+## Breaking Changes
+
+This crate follows normal rules for breaking changes **except for math libraries.** We make no promises that we'll update perfectly with math libraries -- you are encouraged to make forks of this repo instead if you have version handling requirements.
+
 ## Roadmap
 
 Next up for this library is handling Splines of Tweeners.
