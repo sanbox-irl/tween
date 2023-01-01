@@ -24,6 +24,14 @@ approx = "0.5"
 easer = "0.2.1"
 static_assertions = "1.1"
 
+[[example]]
+name = "erased"
+required-features = ["std"]
+
 [[bench]]
 name = "benchmark"
+harness = false
+
+[[bench]]
+name = "dyn_vs_not"
 harness = false

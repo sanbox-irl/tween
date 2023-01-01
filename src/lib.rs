@@ -73,6 +73,17 @@ pub trait Tween<Value> {
 static_assertions::assert_obj_safe!(Tween<i32>);
 
 #[cfg(feature = "std")]
+impl<'a, Value> Tween<Value> for &'a mut dyn Tween<Value>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
 impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value>>
 where
     Value: TweenValue,
@@ -107,6 +118,50 @@ where
 
 #[cfg(feature = "std")]
 impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Unpin>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + core::panic::UnwindSafe>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync + Unpin>
+where
+    Value: TweenValue,
+{
+    #[inline(always)]
+    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+        (**self).tween(value_delta, percent)
+    }
+}
+
+#[cfg(feature = "std")]
+impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync + Unpin + core::panic::UnwindSafe>
 where
     Value: TweenValue,
 {
