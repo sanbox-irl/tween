@@ -15,6 +15,7 @@ std = []
 [dependencies]
 libm = { version = "0.2.2", optional = true }
 glam = { version = "0.21", optional = true }
+nalgebra = { version = "0.31.4", optional = true }
 
 [dev-dependencies]
 criterion = "0.4"

@@ -21,6 +21,8 @@ mod tweens;
 
 #[cfg(feature = "glam")]
 mod glam;
+#[cfg(feature = "nalgebra")]
+mod na;
 
 pub use tweener::*;
 pub use tweens::*;
