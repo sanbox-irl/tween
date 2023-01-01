@@ -1,66 +1,122 @@
+on: [push, pull_request]
+
 name: ci
-on:
-  pull_request:
-  push:
-    branches:
-      - main
+
 jobs:
-  test:
-    name: Run tests
-    runs-on: ${{ matrix.os }}
-    env:
-      RUSTFLAGS: -D warnings
-      RUST_BACKTRACE: 1
-    strategy:
-      fail-fast: false
-      matrix:
-        rust:
-          - stable
-        os:
-          - ubuntu-latest
+  check:
+    name: Check
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: stable
           override: true
-      - run: sudo apt install libxcb-shape0-dev libxcb-xfixes0-dev
-        if: runner.os == 'Linux'
-      # workaround for https://github.com/actions/cache/issues/403
-      - name: Install GNU tar
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install gnu-tar
-          echo PATH="/usr/local/opt/gnu-tar/libexec/gnubin:$PATH" >> $GITHUB_ENV
-      - name: Cache cargo directories
-        uses: actions/cache@v2
+      - uses: actions-rs/cargo@v1
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-            ${{ runner.os }}-cargo-
-      - name: Cache cargo target dirs
-        uses: actions/cache@v2
+          command: check
+
+  check_libm:
+    name: Check Libm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          path: target
-          # note `cargo test` and `cargo clippy` don't use the same build
-          # artifacts, so this has a different key
-          key: ${{ runner.os }}-target-test-${{ matrix.rust }}-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-target-test-${{ matrix.rust }}-${{ hashFiles('**/Cargo.toml') }}
-            ${{ runner.os }}-target-test-${{ matrix.rust }}-
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check --features=libm --no-default-features
 
-      - name: test with glam
-        run: cargo test --features=glam
+  check_math:
+    name: Check math
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
 
-      - name: test libm
-        run: cargo test --no-default-features --features=libm
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
 
-      - name: run cubic_bezier
-        run: cargo run --example=cubic_bezier
+  test-no-std:
+    name: Test Suite No Std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test --features libm,glam,nalgebra,vek,ultraviolet,ultraviolet-f64 --no-default-features
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+      - run: rustup component add rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64 -- -D warnings
+
+  clippy_no_std:
+    name: Clippy no-std
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --features libm,glam,nalgebra,vek,ultraviolet,ultraviolet-f64 --no-default-features -- -D warnings

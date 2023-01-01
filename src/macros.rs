@@ -94,7 +94,6 @@ macro_rules! declare_tween {
     };
 }
 
-
 macro_rules! impl_tween_for_box {
     ($($trait_bounds:ident),*) => {
         #[cfg(feature = "std")]
@@ -107,7 +106,7 @@ macro_rules! impl_tween_for_box {
             fn is_finite(&self) -> bool {
                 (**self).is_finite()
             }
-        }  
+        }
     };
 }
 

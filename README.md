@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = 2.0.0
+tween = "2.0.0"
 ```
 
 You can make a tweener, which drives a tween, like this:
