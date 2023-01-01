@@ -4,9 +4,14 @@ use crate::{Tween, TweenValue};
 /// `0.0` to `1.0`. Note that for [Looper], [Oscillator], or any [Tween] whose [Tween::is_finite]
 /// returns false, wrapping in an Extrapolator is unnecssary, as they are already infinite tween.
 ///
-/// As a note of caution, some Tweens, like [Linear](crate::Linear) handle extrapolation just fine,
-/// but many others, like [SineIn](crate::SineIn) will give unhelpful results. They are clamped for
+/// As a note of caution, some Tweens, like [Linear] handle extrapolation just fine,
+/// but many others, like [SineIn] will give unhelpful results. They are clamped for
 /// a reason!
+///
+/// [Looper]: crate::Looper
+/// [Oscillator]: crate::Oscillator
+/// [Linear]: crate::Linear
+/// [SineIn]: crate::SineIn
 #[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
 #[repr(transparent)]
 pub struct Extrapolator<T: ?Sized>(pub T);

@@ -24,9 +24,9 @@ pub use oscillator::Oscillator;
 ///
 /// ## Clamping
 ///
-/// A Tweener clamps its output value to within the range of `start..=end` given in [Tweener::new].
-/// This can easily happen moving a Tweener with [Tweener::move_by]. To check if that's occured, use
-/// [Tweener::is_finished], or, if negative movement is possible, invert [Tweener::is_valid].
+/// A Tweener clamps its output value to within the range of `start..=end` given in [new].
+/// This can easily happen moving a Tweener with [move_by]. To check if that's occured, use
+/// [is_finished], or, if negative movement is possible, invert [is_valid].
 ///
 /// For most users of this library, a common pattern will be:
 ///
@@ -86,6 +86,11 @@ pub use oscillator::Oscillator;
 /// In situations where the same delta time is alwayas used for `move_by`, you can
 /// instead convert a [Tweener] into a [FixedTweener] by `into_fixed`. See [FixedTweener]
 /// for more information.
+/// 
+/// [new]: Tweener::new
+/// [move_by]: Tweener::move_by
+/// [is_finished]: Tweener::is_finished
+/// [is_valid]: Tweener::is_valid
 #[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
 pub struct Tweener<Value, Time, T: ?Sized> {
     /// The current time of the Tweener. You can change this value at will without running the
@@ -133,12 +138,12 @@ where
     }
 
     /// Moves the tween to a given Time. If this Tween previously was outside
-    /// the allowed range given by [Tween::percent_bounds], this can move it back
-    /// into bounds.
+    /// `0..=1` in parametric (percentage) space, ie. outside the duration of the tween or in
+    /// negative time, this can move it back into bounds.
     ///
     /// Giving [TweenTime::ZERO] to this function effectively resets a tweener.
     ///
-    /// Giving a time outside [Tween::percent_bounds] will move the tween there, but **we will
+    /// Giving a negative time or a time beyond `duration` will move the tween there, but **we will
     /// always clamp the output time**.
     #[inline(always)]
     pub fn move_to(&mut self, position: Time) -> Value {
@@ -156,7 +161,7 @@ where
         self.tween.tween(self.value_delta, pct) + self.values.0
     }
 
-    /// Drives the [TweenDriver] forward X steps in time.
+    /// Drives the [Tweener] forward X steps in time.
     ///
     /// If an input higher than the tween's `duration` is given, you will
     /// receive the max value of the tween.
@@ -179,41 +184,44 @@ where
         self.values.1
     }
 
-    /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower
-    /// bound of the tween's percent range, given by [Tween::percent_bounds]. For most tweens, this
-    /// just means that we check if the `tweener.current_time >= 0`.
+    /// Returns `true` is the Tweener's [current_time] is greater than or equal to `0`. Only
+    /// negative times will return `false`.
     ///
     /// Note that for tweens without bounds (infinite tweens like [Looper]), this method will always
     /// return `true`. Moreover, this method does not check if a tweener is *finished*. For
-    /// that, use [Self::is_finished].
+    /// that, use [is_finished].
+    /// 
+    /// [current_time]: Self::current_time
+    /// [is_finished]: Self::is_finished
     pub fn is_started(&self) -> bool {
         let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() { pct >= 0.0 } else { true }
     }
 
-    /// Returns `true` is the Tweener's [Self::current_time] is less than or equal to the upper
-    /// bound of the tween's percent range, given by [Tween::percent_bounds]. For most tweens, this
-    /// just means that we check if the `tweener.current_time <= self.duration()`.
+    /// Returns `true` is the Tweener's [current_time] is greater than or equal to `duration`.
     ///
     /// Note that for tweens without bounds (infinite tweens like [Looper]), this method will always
     /// return `false`. Moreover, this method does not check if a tweener is *started*. For
-    /// that, use [Self::is_started].
+    /// that, use [is_started].
+    /// 
+    /// [current_time]: Self::current_time
+    /// [is_started]: Self::is_started
     pub fn is_finished(&self) -> bool {
         let pct = self.current_time.to_f32() / self.duration.to_f32();
 
         if self.tween.is_finite() { pct >= 1.0 } else { false }
     }
 
-    /// Returns `true` is the Tweener's [Self::current_time] is greater than or equal to the lower
-    /// bound and less than or equal to the upper bound given by [Tween::percent_bounds]. For
-    /// most tweens, this just means that we check if the ` && tweener.current_time >= 0 &&
-    /// tweener.current_time <= self.duration()`.
+    /// Returns `true` is the Tweener's [current_time] is greater than or equal to `0` but less than
+    /// `duration`.
     ///
     /// Note that for tweens without bounds (infinite tweens like [Looper]), this method will always
     /// return `true`.
     ///
     /// This method is **rarely needed** -- only use it if you are doing some second-order tweening.
+    /// 
+    /// [current_time]: Self::current_time
     pub fn is_valid(&self) -> bool {
         let pct = self.current_time.to_f32() / self.duration.to_f32();
 
