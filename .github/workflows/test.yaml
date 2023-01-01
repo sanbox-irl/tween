@@ -16,6 +16,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: check
+          args: --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
 
   check_libm:
     name: Check Libm
@@ -29,21 +30,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: check --features=libm --no-default-features
-
-  check_math:
-    name: Check math
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
+          command: check
+          args: --features=libm --no-default-features
 
   test:
     name: Test Suite
@@ -57,7 +45,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
+          command: test
+          args: --features glam,nalgebra,vek,ultraviolet,ultraviolet-f64
 
   test-no-std:
     name: Test Suite No Std
@@ -71,7 +60,8 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test --features libm,glam,nalgebra,vek,ultraviolet,ultraviolet-f64 --no-default-features
+          command: test
+          args: --features libm,glam,nalgebra,vek,ultraviolet,ultraviolet-f64 --no-default-features
 
   fmt:
     name: Rustfmt
