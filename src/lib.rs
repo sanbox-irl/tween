@@ -51,22 +51,6 @@ pub trait Tween<Value> {
     fn is_finite(&self) -> bool {
         true
     }
-
-    /// Convenience shortcut to turn a tween into a [Looper].
-    fn into_loop(self) -> Looper<Self>
-    where
-        Self: Sized,
-    {
-        Looper::new(self)
-    }
-
-    /// Convenience shortcut to turn a tween into an [Oscillator].
-    fn into_oscillator(self) -> Oscillator<Self>
-    where
-        Self: Sized,
-    {
-        Oscillator::new(self)
-    }
 }
 
 #[cfg(test)]
@@ -81,95 +65,19 @@ where
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
         (**self).tween(value_delta, percent)
     }
-}
 
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value>>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
+    fn is_finite(&self) -> bool {
+        true
     }
 }
 
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Sync>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Unpin>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + core::panic::UnwindSafe>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync + Unpin>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
-
-#[cfg(feature = "std")]
-impl<Value> Tween<Value> for std::boxed::Box<dyn Tween<Value> + Send + Sync + Unpin + core::panic::UnwindSafe>
-where
-    Value: TweenValue,
-{
-    #[inline(always)]
-    fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
-        (**self).tween(value_delta, percent)
-    }
-}
+impl_tween_for_box!();
+impl_tween_for_box!(Send);
+impl_tween_for_box!(Sync);
+impl_tween_for_box!(Send, Sync);
+impl_tween_for_box!(Unpin);
+impl_tween_for_box!(Send, Unpin);
+impl_tween_for_box!(Send, Sync, Unpin);
 
 impl<Value, F> Tween<Value> for F
 where

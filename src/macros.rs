@@ -94,6 +94,23 @@ macro_rules! declare_tween {
     };
 }
 
+
+macro_rules! impl_tween_for_box {
+    ($($trait_bounds:ident),*) => {
+        #[cfg(feature = "std")]
+        impl<Value: TweenValue> Tween<Value> for std::boxed::Box<dyn Tween<Value> $(+ $trait_bounds)*> {
+            #[inline(always)]
+            fn tween(&mut self, value_delta: Value, percent: f32) -> Value {
+                (**self).tween(value_delta, percent)
+            }
+
+            fn is_finite(&self) -> bool {
+                (**self).is_finite()
+            }
+        }  
+    };
+}
+
 macro_rules! test_tween {
     ($name:ident) => {
         #[cfg(test)]

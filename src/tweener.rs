@@ -120,6 +120,18 @@ where
         }
     }
 
+    /// Maps a `Tweener<Value, Time, T>` to a `Tweener<Value, Time, R>`. This can be useful for
+    /// boxing inner tweens.
+    pub fn map<R: Tween<Value>>(self, mut f: impl FnMut(T) -> R) -> Tweener<Value, Time, R> {
+        Tweener {
+            current_time: self.current_time,
+            duration: self.duration,
+            values: self.values,
+            value_delta: self.value_delta,
+            tween: f(self.tween),
+        }
+    }
+
     /// Moves the tween to a given Time. If this Tween previously was outside
     /// the allowed range given by [Tween::percent_bounds], this can move it back
     /// into bounds.
@@ -220,7 +232,7 @@ where
 
 /// A FixedTweener is a [Tweener] wrapper which implements [Iterator]. To do this,
 /// it takes a "fixed" delta on its constructor.
-/// 
+///
 /// ## Basic Example
 ///
 /// ```
@@ -248,19 +260,19 @@ where
 /// `fixed_tweener.next().is_none` as well.
 ///
 /// If you *don't* want this behavior, you can instead use `move_next()`, which clamps.
-/// 
+///
 /// ```
 /// # use tween::{FixedTweener, Tweener, Linear};
 /// // a single iteration length tween
 /// let mut fixed_tweener = FixedTweener::linear(0, 1, 1, 1);
-/// 
+///
 /// // move it to its end...
 /// assert_eq!(fixed_tweener.next().unwrap(), 1);
-/// 
+///
 /// // and now `.next` returns `None`!
 /// assert!(fixed_tweener.next().is_none());
 /// assert!(fixed_tweener.is_finished());
-/// 
+///
 /// // but you can still use `move_next`. Note how it returns `Value`, not `Option<Value>`
 /// assert_eq!(fixed_tweener.move_next(), 1);
 /// ```
