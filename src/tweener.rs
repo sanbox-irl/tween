@@ -86,7 +86,7 @@ pub use oscillator::Oscillator;
 /// In situations where the same delta time is alwayas used for `move_by`, you can
 /// instead convert a [Tweener] into a [FixedTweener] by `into_fixed`. See [FixedTweener]
 /// for more information.
-/// 
+///
 /// [new]: Tweener::new
 /// [move_by]: Tweener::move_by
 /// [is_finished]: Tweener::is_finished
@@ -190,7 +190,7 @@ where
     /// Note that for tweens without bounds (infinite tweens like [Looper]), this method will always
     /// return `true`. Moreover, this method does not check if a tweener is *finished*. For
     /// that, use [is_finished].
-    /// 
+    ///
     /// [current_time]: Self::current_time
     /// [is_finished]: Self::is_finished
     pub fn is_started(&self) -> bool {
@@ -204,7 +204,7 @@ where
     /// Note that for tweens without bounds (infinite tweens like [Looper]), this method will always
     /// return `false`. Moreover, this method does not check if a tweener is *started*. For
     /// that, use [is_started].
-    /// 
+    ///
     /// [current_time]: Self::current_time
     /// [is_started]: Self::is_started
     pub fn is_finished(&self) -> bool {
@@ -220,7 +220,7 @@ where
     /// return `true`.
     ///
     /// This method is **rarely needed** -- only use it if you are doing some second-order tweening.
-    /// 
+    ///
     /// [current_time]: Self::current_time
     pub fn is_valid(&self) -> bool {
         let pct = self.current_time.to_f32() / self.duration.to_f32();

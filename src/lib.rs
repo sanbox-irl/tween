@@ -34,8 +34,8 @@ pub trait Tween<Value> {
     /// which is just `value_delta * percent`.
     fn tween(&mut self, value_delta: Value, percent: f32) -> Value;
 
-    /// All Tweens in this library use this default method, except [Looper], [Oscillator], and [Extrapolator], which
-    /// are both unbounded (because they never stop returning values).
+    /// All Tweens in this library use this default method, except [Looper], [Oscillator], and
+    /// [Extrapolator], which are both unbounded (because they never stop returning values).
     ///
     /// This is used by [Tweener] and [FixedTweener] to determine when to clamp and when a tween
     /// will return true for [Tweener::is_finished].
