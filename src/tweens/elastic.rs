@@ -12,6 +12,9 @@ declare_tween!(
     /// Creates a new [ElasticIn] Tweener.
     pub fn elastic_in;
 
+    /// Creates a new [ElasticIn] Tweener at the given time.
+    pub fn elastic_in_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
@@ -49,6 +52,9 @@ declare_tween!(
     /// Creates a new [ElasticOut] Tweener.
     pub fn elastic_out;
 
+    /// Creates a new [ElasticOut] Tweener at the given time.
+    pub fn elastic_out_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value,  percent: f32) -> Value {
         if percent == 0.0 {
             return value_delta.scale(0.0);
@@ -76,6 +82,9 @@ declare_tween!(
 
     /// Creates a new [ElasticInOut] Tweener.
     pub fn elastic_in_out;
+
+    /// Creates a new [ElasticInOut] Tweener at the given time.
+    pub fn elastic_in_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {

@@ -5,6 +5,9 @@ declare_tween!(
     /// Creates a new [ExpoIn] Tweener.
     pub fn expo_in;
 
+    /// Creates a new [ExpoIn] Tweener at the given time.
+    pub fn expo_in_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         // weird edge in this tween?
         if percent == 0.0 {
@@ -30,6 +33,9 @@ declare_tween!(
     /// Creates a new [ExpoOut] Tweener.
     pub fn expo_out;
 
+    /// Creates a new [ExpoOut] Tweener at the given time.
+    pub fn expo_out_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         if percent == 1.0 {
             value_delta
@@ -51,6 +57,9 @@ declare_tween!(
 
     /// Creates a new [ExpoInOut] Tweener.
     pub fn expo_in_out;
+
+    /// Creates a new [ExpoInOut] Tweener at the given time.
+    pub fn expo_in_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         if percent == 0.0 {

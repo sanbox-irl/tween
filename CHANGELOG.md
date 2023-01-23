@@ -2,6 +2,10 @@
 
 ## [unreleased] - 2023-01-01
 
+- Added better support for delayed tweens, including an example in `examples/delayed_tween.rs`
+- Added `new_at` which situations a tween in time. Added similar methods for shortcut constructors, such as
+support for `sine_in_at`.
+
 ## [2.0.0] - 2023-01-01
 
 - Rewrote the library:

@@ -5,6 +5,9 @@ declare_tween!(
     /// Creates a new [CircIn] Tweener.
     pub fn circ_in;
 
+    /// Creates a new [CircIn] Tweener at the given time.
+    pub fn circ_in_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         #[cfg(feature = "libm")]
         let scalar = 1.0 - libm::sqrtf(1.0 - percent * percent);
@@ -22,6 +25,9 @@ declare_tween!(
 
     /// Creates a new [CircOut] Tweener.
     pub fn circ_out;
+
+    /// Creates a new [CircOut] Tweener at the given time.
+    pub fn circ_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         let t = percent - 1.0;
@@ -42,6 +48,9 @@ declare_tween!(
 
     /// Creates a new [CircInOut] Tweener.
     pub fn circ_in_out;
+
+    /// Creates a new [CircInOut] Tweener at the given time.
+    pub fn circ_in_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
         percent *= 2.0;

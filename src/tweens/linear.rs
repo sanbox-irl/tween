@@ -5,6 +5,9 @@ declare_tween!(
     /// Creates a new [Linear] Tweener.
     pub fn linear;
 
+    /// Creates a new [Linear] Tweener at the given time.
+    pub fn linear_at;
+
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         value_delta.scale(percent)
     }

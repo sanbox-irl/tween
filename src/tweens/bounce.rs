@@ -63,6 +63,16 @@ where
     pub fn bounce_in(start: Value, end: Value, duration: Time) -> crate::Tweener<Value, Time, BounceIn> {
         crate::Tweener::new(start, end, duration, BounceIn)
     }
+
+    /// Creates a new [BounceIn] tween at the given time.
+    pub fn bounce_in_at(
+        start: Value,
+        end: Value,
+        duration: Time,
+        current_time: Time,
+    ) -> crate::Tweener<Value, Time, BounceInOut> {
+        crate::Tweener::new_at(start, end, duration, BounceInOut, current_time)
+    }
 }
 
 declare_tween!(
@@ -71,6 +81,9 @@ declare_tween!(
 
     /// Creates a new [BounceOut] Tweener.
     pub fn bounce_out;
+
+    /// Creates a new [BounceOut] Tweener at the given time.
+    pub fn bounce_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
         let multip = if percent < STAGE_ZERO {
@@ -165,6 +178,16 @@ where
     /// Creates a new [BounceInOut] tween.
     pub fn bounce_in_out(start: Value, end: Value, duration: Time) -> crate::Tweener<Value, Time, BounceInOut> {
         crate::Tweener::new(start, end, duration, BounceInOut)
+    }
+
+    /// Creates a new [BounceInOut] tween at the given time.
+    pub fn bounce_in_out_at(
+        start: Value,
+        end: Value,
+        duration: Time,
+        current_time: Time,
+    ) -> crate::Tweener<Value, Time, BounceInOut> {
+        crate::Tweener::new_at(start, end, duration, BounceInOut, current_time)
     }
 }
 

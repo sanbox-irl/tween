@@ -125,6 +125,21 @@ where
         }
     }
 
+    /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], [TweenTime]
+    /// duration, and [TweenTime] current time.
+    ///
+    /// Use this to have "negative" times in Tweeners. This can be useful for starting tweens "with
+    /// a delay". See the example in `examples/delayed_tween.rs`
+    pub fn new_at(start: Value, end: Value, duration: Time, tween: T, current_time: Time) -> Self {
+        Self {
+            values: (start, end),
+            value_delta: end - start,
+            duration,
+            tween,
+            current_time,
+        }
+    }
+
     /// Maps a `Tweener<Value, Time, T>` to a `Tweener<Value, Time, R>`. This can be useful for
     /// boxing inner tweens.
     pub fn map<R: Tween<Value>>(self, mut f: impl FnMut(T) -> R) -> Tweener<Value, Time, R> {
@@ -194,9 +209,7 @@ where
     /// [current_time]: Self::current_time
     /// [is_finished]: Self::is_finished
     pub fn is_started(&self) -> bool {
-        let pct = self.current_time.to_f32() / self.duration.to_f32();
-
-        if self.tween.is_finite() { pct >= 0.0 } else { true }
+        self.current_time_state() != CurrentTimeState::Waiting
     }
 
     /// Returns `true` is the Tweener's [current_time] is greater than or equal to `duration`.
@@ -208,9 +221,7 @@ where
     /// [current_time]: Self::current_time
     /// [is_started]: Self::is_started
     pub fn is_finished(&self) -> bool {
-        let pct = self.current_time.to_f32() / self.duration.to_f32();
-
-        if self.tween.is_finite() { pct >= 1.0 } else { false }
+        self.current_time_state() == CurrentTimeState::Finished
     }
 
     /// Returns `true` is the Tweener's [current_time] is greater than or equal to `0` but less than
@@ -223,12 +234,28 @@ where
     ///
     /// [current_time]: Self::current_time
     pub fn is_valid(&self) -> bool {
-        let pct = self.current_time.to_f32() / self.duration.to_f32();
+        self.current_time_state() == CurrentTimeState::Valid
+    }
 
+    /// Returns `CurrentTimeState` based on the Tweener's [current_time].
+    ///
+    /// Note that for tweens without bounds (in this library, [Looper], [Oscillator], and
+    /// [Extrapolator]), this method will always return `CurrentTimeState::Valid`.
+    ///
+    /// [current_time]: Self::current_time
+    pub fn current_time_state(&self) -> CurrentTimeState {
         if self.tween.is_finite() {
-            (0.0..1.0).contains(&pct)
+            let pct = self.current_time.to_f32() / self.duration.to_f32();
+
+            if pct < 0.0 {
+                CurrentTimeState::Waiting
+            } else if pct >= 1.0 {
+                CurrentTimeState::Finished
+            } else {
+                CurrentTimeState::Valid
+            }
         } else {
-            true
+            CurrentTimeState::Valid
         }
     }
 
@@ -299,10 +326,19 @@ where
     Time: TweenTime,
     T: Tween<Value>,
 {
-    /// Creates a new [Tweener] out of a [Tween], start and end [TweenValue], [TweenTime]
+    /// Creates a new [FixedTweener] out of a [Tween], start and end [TweenValue], [TweenTime]
     /// duration, and [TweenTime] delta.
     pub fn new(start: Value, end: Value, duration: Time, tween: T, delta: Time) -> Self {
         Self::from_tweener(Tweener::new(start, end, duration, tween), delta)
+    }
+
+    /// Creates a new [FixedTweener] out of a [Tween], start and end [TweenValue], [TweenTime]
+    /// duration, and [TweenTime] current time.
+    ///
+    /// Use this to have "negative" times in Tweeners. This can be useful for starting tweens "with
+    /// a delay". See the example in `examples/delayed_tween.rs`
+    pub fn new_at(start: Value, end: Value, duration: Time, tween: T, current_time: Time, delta: Time) -> Self {
+        Self::from_tweener(Tweener::new_at(start, end, duration, tween, current_time), delta)
     }
 
     /// Creates a new [FixedTweener], and takes in the delta time
@@ -351,6 +387,19 @@ where
             None
         }
     }
+}
+
+/// This enum indicates a [Tweener] or [FixedTweener]'s current state.
+/// It returns `Waiting` is the current time is less than 0, `Finished` if it's at the duration of
+/// the [Tweener] or greater, and valid otherwise.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum CurrentTimeState {
+    /// Indicates the Tweener's current time was before `0`
+    Waiting,
+    /// Indicates the Tweener's current time in after `0` and before the `duration`.
+    Valid,
+    /// Indicates the Tweener's current time is after `duration`
+    Finished,
 }
 
 #[cfg(feature = "std")]
@@ -471,5 +520,37 @@ mod tests {
         Tweener::sine_in(0, 0, 0);
         Tweener::sine_out(0, 0, 0);
         Tweener::sine_in_out(0, 0, 0);
+
+        Tweener::back_in_at(0, 0, 0, 0);
+        Tweener::back_out_at(0, 0, 0, 0);
+        Tweener::back_in_out_at(0, 0, 0, 0);
+        Tweener::bounce_in_at(0, 0, 0, 0);
+        Tweener::bounce_out_at(0, 0, 0, 0);
+        Tweener::bounce_in_out_at(0, 0, 0, 0);
+        Tweener::circ_in_at(0, 0, 0, 0);
+        Tweener::circ_out_at(0, 0, 0, 0);
+        Tweener::circ_in_out_at(0, 0, 0, 0);
+        Tweener::cubic_in_at(0, 0, 0, 0);
+        Tweener::cubic_out_at(0, 0, 0, 0);
+        Tweener::cubic_in_out_at(0, 0, 0, 0);
+        Tweener::elastic_in_at(0, 0, 0, 0);
+        Tweener::elastic_out_at(0, 0, 0, 0);
+        Tweener::elastic_in_out_at(0, 0, 0, 0);
+        Tweener::expo_in_at(0, 0, 0, 0);
+        Tweener::expo_out_at(0, 0, 0, 0);
+        Tweener::expo_in_out_at(0, 0, 0, 0);
+        Tweener::linear_at(0, 0, 0, 0);
+        Tweener::quad_in_at(0, 0, 0, 0);
+        Tweener::quad_out_at(0, 0, 0, 0);
+        Tweener::quad_in_out_at(0, 0, 0, 0);
+        Tweener::quart_in_at(0, 0, 0, 0);
+        Tweener::quart_out_at(0, 0, 0, 0);
+        Tweener::quart_in_out_at(0, 0, 0, 0);
+        Tweener::quint_in_at(0, 0, 0, 0);
+        Tweener::quint_out_at(0, 0, 0, 0);
+        Tweener::quint_in_out_at(0, 0, 0, 0);
+        Tweener::sine_in_at(0, 0, 0, 0);
+        Tweener::sine_out_at(0, 0, 0, 0);
+        Tweener::sine_in_out_at(0, 0, 0, 0);
     }
 }

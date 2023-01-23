@@ -39,6 +39,9 @@ macro_rules! declare_tween {
         $(#[$method_meta:meta])*
         pub fn $tweener_method_name:ident;
 
+        $(#[$at_method_meta:meta])*
+        pub fn $tweener_at_method_name:ident;
+
         $tween:item
     ) => {
         $(#[$struct_meta])*
@@ -79,6 +82,11 @@ macro_rules! declare_tween {
             pub fn $tweener_method_name(start: Value, end: Value, duration: Time) -> $crate::Tweener<Value, Time, $crate::$name> {
                 $crate::Tweener::new(start, end, duration, $crate::$name)
             }
+
+            $(#[$at_method_meta])*
+            pub fn $tweener_at_method_name(start: Value, end: Value, duration: Time, current_time: Time) -> $crate::Tweener<Value, Time, $crate::$name> {
+                $crate::Tweener::new_at(start, end, duration, $crate::$name, current_time)
+            }
         }
 
         impl<Value, Time> $crate::FixedTweener<Value, Time, $crate::$name>
@@ -89,6 +97,11 @@ macro_rules! declare_tween {
             $(#[$method_meta])*
             pub fn $tweener_method_name(start: Value, end: Value, duration: Time, delta: Time) -> $crate::FixedTweener<Value, Time, $crate::$name> {
                 $crate::FixedTweener::new(start, end, duration, $crate::$name, delta)
+            }
+
+            $(#[$at_method_meta])*
+            pub fn $tweener_at_method_name(start: Value, end: Value, duration: Time, current_time: Time) -> $crate::Tweener<Value, Time, $crate::$name> {
+                $crate::Tweener::new_at(start, end, duration, $crate::$name, current_time)
             }
         }
     };
