@@ -50,11 +50,7 @@ macro_rules! declare_tween {
 
         impl $name {
             /// Creates a new tween out of a range with a duration.
-            pub fn new<Value, Time>() -> Self
-            where
-                Value: $crate::TweenValue,
-                Time: $crate::TweenTime,
-            {
+            pub fn new() -> Self{
                 Self
             }
 
