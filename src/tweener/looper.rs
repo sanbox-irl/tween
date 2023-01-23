@@ -2,7 +2,7 @@ use crate::{Tween, TweenValue};
 
 /// A [Looper] is a wrapper around a [Tween], which makes it so that
 /// every time the tweener *would* fuse (end), it loops from the start.
-#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[repr(transparent)]
 pub struct Looper<T: ?Sized>(pub T);
 

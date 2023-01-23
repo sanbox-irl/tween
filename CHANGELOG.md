@@ -5,6 +5,8 @@
 - Added better support for delayed tweens, including an example in `examples/delayed_tween.rs`
 - Added `new_at` which situations a tween in time. Added similar methods for shortcut constructors, such as
 support for `sine_in_at`.
+- Fixed the `new` method for most Tweens and added support for `Copy`, `Ord`, and `Eq`.
+- Added support for `Copy`, `Ord`, and `Eq` to all Tweener adapters.
 
 ## [2.0.0] - 2023-01-01
 

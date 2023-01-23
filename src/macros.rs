@@ -45,7 +45,7 @@ macro_rules! declare_tween {
         $tween:item
     ) => {
         $(#[$struct_meta])*
-        #[derive(Debug, PartialEq, Eq, Clone, Default)]
+        #[derive(Debug, PartialEq, Eq, Clone, Copy, Default, PartialOrd, Ord)]
         pub struct $name;
 
         impl $name {

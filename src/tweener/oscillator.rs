@@ -6,7 +6,7 @@ use crate::{Tween, TweenValue};
 /// This is similar to a [Looper](super::Looper), but instead of restarting the tween at the
 /// beginning, it restarts it at the end and travels backwards. For many Tweens in this library,
 /// this is the same
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[repr(transparent)]
 pub struct Oscillator<T: ?Sized>(pub T);
 

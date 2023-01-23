@@ -91,7 +91,7 @@ pub use oscillator::Oscillator;
 /// [move_by]: Tweener::move_by
 /// [is_finished]: Tweener::is_finished
 /// [is_valid]: Tweener::is_valid
-#[derive(Debug, PartialEq, Clone, PartialOrd, Copy)]
+#[derive(Debug, PartialEq, Clone, PartialOrd, Eq, Ord, Copy)]
 pub struct Tweener<Value, Time, T: ?Sized> {
     /// The current time of the Tweener. You can change this value at will without running the
     /// Tween, or change it with `move_by`.
@@ -311,7 +311,7 @@ where
 /// // but you can still use `move_next`. Note how it returns `Value`, not `Option<Value>`
 /// assert_eq!(fixed_tweener.move_next(), 1);
 /// ```
-#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, PartialOrd, Eq, Ord, Copy)]
 pub struct FixedTweener<Value, Time, T: ?Sized> {
     /// The delta upon which we move.
     pub delta: Time,

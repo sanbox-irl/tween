@@ -12,7 +12,7 @@ use crate::{Tween, TweenValue};
 /// [Oscillator]: crate::Oscillator
 /// [Linear]: crate::Linear
 /// [SineIn]: crate::SineIn
-#[derive(Debug, PartialEq, PartialOrd, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[repr(transparent)]
 pub struct Extrapolator<T: ?Sized>(pub T);
 
