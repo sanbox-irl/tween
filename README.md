@@ -40,7 +40,7 @@ assert_eq!(position, 100, "we've moved to the end of the tween");
 
 ## Overview
 
-A `Tween` is a function which returns values from one specified number to another specified number over a specified amount of time. The simplest `Tween` which everyone is familiar with is `lerp`, or "linear interpolation". In this library, it is called `Linear` -- a Linear Tween moves from its start to its end by the formula `start * (1.0 - p) + end * p`, where `p` is the percent over time you are into the tween. So at time `0`, or `0%`, you end up with the `start` value, and at time `1`, or ``100%`, you end up with the end value.
+A `Tween` is a function which returns values from one specified number to another specified number over a specified amount of time. The simplest `Tween` which everyone is familiar with is `lerp`, or "linear interpolation". In this library, it is called `Linear` -- a Linear Tween moves from its start to its end by the formula `start * (1.0 - p) + end * p`, where `p` is the percent over time you are into the tween. So at time `0`, or `0%`, you end up with the `start` value, and at time `1`, or `100%`, you end up with the end value.
 
 There are many kinds of Tweens beyond Linear, of course; all of which can produce feel and animations! We often use tweens to move positions of objects in games, but you can use Tweens for animating a sprite, selecting behavior, audio manipulation, or even drawing fonts with Cubic Bezier Tweens.
 
