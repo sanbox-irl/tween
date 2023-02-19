@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = "2.0.0"
+tween = "2.0.1"
 ```
 
 You can make a Tweener, like this:
@@ -134,7 +134,7 @@ This library supports `glam` as its first-class math lib.
 This library uses `std` with the default feature `std`. Disable default features, and enable `libm`, for a no-std experience. (We need to use `libm` for the floating point math), like so:
 
 ```toml
-tween = { verison = "2.0.0", default_features = false, features = ["libm"] }
+tween = { verison = "2.0.1", default_features = false, features = ["libm"] }
 ```
 
 ## MSRV and Safety

@@ -1,12 +1,15 @@
 # Changelog
 
-## [unreleased] - 2023-01-01
+## [unreleased]
+
+## [2.0.1] - 2023-02-19
 
 - Added better support for delayed tweens, including an example in `examples/delayed_tween.rs`
 - Added `new_at` which situations a tween in time. Added similar methods for shortcut constructors, such as
 support for `sine_in_at`.
 - Fixed the `new` method for most Tweens and added support for `Copy`, `Ord`, and `Eq`.
 - Added support for `Copy`, `Ord`, and `Eq` to all Tweener adapters.
+- Upgraded all math libraries
 
 ## [2.0.0] - 2023-01-01
 
@@ -25,6 +28,8 @@ support for `sine_in_at`.
 
 - Initial implementation of the library.
 
-[unreleased]: https://github.com/sanbox-irl/tween/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/sanbox-irl/tween/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/sanbox-irl/tween/releases/tag/v2.0.1
+[2.0.0]: https://github.com/sanbox-irl/tween/releases/tag/v2.0.0
 [1.0.1]: https://github.com/sanbox-irl/tween/releases/tag/v1.0.1
 [1.0.0]: https://github.com/sanbox-irl/tween/releases/tag/v1.0.0
