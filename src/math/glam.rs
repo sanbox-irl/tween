@@ -111,27 +111,3 @@ impl crate::TweenValue for glam::DMat4 {
         self * scale as f64
     }
 }
-
-impl crate::TweenValue for glam::Affine2 {
-    fn scale(self, scale: f32) -> Self {
-        self * scale
-    }
-}
-
-impl crate::TweenValue for glam::Affine3A {
-    fn scale(self, scale: f32) -> Self {
-        self * scale
-    }
-}
-
-impl crate::TweenValue for glam::DAffine2 {
-    fn scale(self, scale: f32) -> Self {
-        self * scale as f64
-    }
-}
-
-impl crate::TweenValue for glam::DAffine3 {
-    fn scale(self, scale: f32) -> Self {
-        self * scale as f64
-    }
-}
