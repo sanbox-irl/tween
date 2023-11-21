@@ -6,7 +6,7 @@
 #![deny(rustdoc::broken_intra_doc_links)]
 #![no_std]
 
-#[cfg(any(feature = "std"))]
+#[cfg(feature = "std")]
 #[macro_use]
 extern crate std;
 
