@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = "2.0.1"
+tween = "2.0.2"
 ```
 
 You can make a Tweener, like this:

@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+## [2.0.2] - 2023-12-10
+
+- Bumped math versions.
+
 ## [2.0.1] - 2023-02-19
 
 - Added better support for delayed tweens, including an example in `examples/delayed_tween.rs`
