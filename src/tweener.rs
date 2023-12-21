@@ -163,17 +163,13 @@ where
     #[inline(always)]
     pub fn move_to(&mut self, position: Time) -> Value {
         self.current_time = position;
-
-        let pct = position.to_f32() / self.duration.to_f32();
-        if self.tween.is_finite() {
-            if pct < 0.0 {
-                return self.values.0;
-            } else if pct > 1.0 {
-                return self.values.1;
-            }
+        match try_move_tween(self, position) {
+            Ok(v) => v,
+            Err(e) => match e {
+                TweenOutOfBounds::Before => self.values.0,
+                TweenOutOfBounds::After => self.values.1,
+            },
         }
-
-        self.tween.tween(self.value_delta, pct) + self.values.0
     }
 
     /// Drives the [Tweener] forward X steps in time.
@@ -197,6 +193,12 @@ where
     #[inline]
     pub fn final_value(&self) -> Value {
         self.values.1
+    }
+
+    /// The value-delta, or the difference between the final and end value. We cache for speed.
+    #[inline]
+    pub fn value_delta(&self) -> &Value {
+        &self.value_delta
     }
 
     /// Returns `true` is the Tweener's [current_time] is greater than or equal to `0`. Only
@@ -402,6 +404,30 @@ pub enum CurrentTimeState {
     Finished,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum TweenOutOfBounds {
+    Before,
+    After,
+}
+
+/// Note this *doesn't* set the internal time, so you'll need to remember to set `current_time`
+/// yourself
+pub(crate) fn try_move_tween<Value: TweenValue, Time: TweenTime, T: Tween<Value>>(
+    tweener: &mut Tweener<Value, Time, T>,
+    position: Time,
+) -> Result<Value, TweenOutOfBounds> {
+    let pct = position.to_f32() / tweener.duration.to_f32();
+    if tweener.tween.is_finite() {
+        if pct < 0.0 {
+            return Err(TweenOutOfBounds::Before);
+        } else if pct > 1.0 {
+            return Err(TweenOutOfBounds::After);
+        }
+    }
+
+    Ok(tweener.tween.tween(tweener.value_delta, pct) + tweener.values.0)
+}
+
 #[cfg(feature = "std")]
 #[cfg(test)]
 mod tests {
@@ -442,6 +468,23 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
+    }
+
+    #[test]
+    fn backwards() {
+        let mut tweener = Tweener::new(10.0f32, 0.0f32, 10, Linear);
+
+        assert_eq!(tweener.move_by(0), 10.0);
+        assert_eq!(tweener.move_by(1), 9.0);
+        assert_eq!(tweener.move_by(1), 8.0);
+        assert_eq!(tweener.move_by(1), 7.0);
+        assert_eq!(tweener.move_by(1), 6.0);
+        assert_eq!(tweener.move_by(1), 5.0);
+        assert_eq!(tweener.move_by(1), 4.0);
+        assert_eq!(tweener.move_by(1), 3.0);
+        assert_eq!(tweener.move_by(1), 2.0);
+        assert_eq!(tweener.move_by(1), 1.0);
+        assert_eq!(tweener.move_by(1), 0.0);
     }
 
     #[test]

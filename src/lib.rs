@@ -3,6 +3,7 @@
 #![deny(unsafe_code)]
 #![deny(rust_2018_idioms)]
 #![deny(missing_docs)]
+#![warn(clippy::print_stdout)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![no_std]
 
@@ -17,6 +18,7 @@ compile_error!("Please disable feature `libm` or disable default features -- bot
 mod macros;
 
 mod math;
+mod spline;
 mod tweener;
 mod tweens;
 
