@@ -126,6 +126,7 @@ This library is, ultimately, a math library, and benefits enormously from being 
 - `vek`: enable this for `vek` types to implement `TweenValue`
 - `ultraviolet`: enable this for `ultraviolet` types to implement `TweenValue`
 - `ultraviolet-f64`: enable this for `ultraviolet/f64` types to implement `TweenValue`
+- `cgmath`: enable this for `cgmath` types to implement `TweenValue`
 
 This library supports `glam` as its first-class math lib.
 
