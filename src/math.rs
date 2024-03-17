@@ -9,3 +9,6 @@ mod ultraviolet;
 
 #[cfg(feature = "vek")]
 mod vek;
+
+#[cfg(feature = "cgmath")]
+mod cgmath;
