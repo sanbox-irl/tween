@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+## [2.0.3] - 2023-04-02
+
+- Bumped math versions again.
+
 ## [2.0.2] - 2023-12-10
 
 - Bumped math versions.
@@ -10,7 +14,7 @@
 
 - Added better support for delayed tweens, including an example in `examples/delayed_tween.rs`
 - Added `new_at` which situations a tween in time. Added similar methods for shortcut constructors, such as
-support for `sine_in_at`.
+  support for `sine_in_at`.
 - Fixed the `new` method for most Tweens and added support for `Copy`, `Ord`, and `Eq`.
 - Added support for `Copy`, `Ord`, and `Eq` to all Tweener adapters.
 - Upgraded all math libraries
