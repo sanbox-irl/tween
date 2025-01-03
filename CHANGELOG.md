@@ -2,6 +2,10 @@
 
 ## [unreleased]
 
+## [2.0.4] - 2024-01-02
+
+- Bumped math versions again again.
+
 ## [2.0.3] - 2023-04-02
 
 - Bumped math versions again.
