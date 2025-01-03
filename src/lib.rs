@@ -56,7 +56,7 @@ pub trait Tween<Value> {
 static_assertions::assert_obj_safe!(Tween<i32>);
 
 #[cfg(feature = "std")]
-impl<'a, Value> Tween<Value> for &'a mut dyn Tween<Value>
+impl<Value> Tween<Value> for &'_ mut dyn Tween<Value>
 where
     Value: TweenValue,
 {

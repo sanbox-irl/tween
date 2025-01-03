@@ -87,33 +87,33 @@ fn cubic_bezier_for_real(
     quarter_pt: Point,
     three_quarter_pt: Point,
 ) -> Tweener<Point, f32, CubicBezier<Point>> {
-    impl<T: TweenValue> Tween<T> for CubicBezier<T> {
-        fn tween(&mut self, delta: T, t: f32) -> T {
-            // we need to write our own lerp with the generic functions available to us
-            fn lerp<T: TweenValue>(a: T, b: T, t: f32) -> T {
-                (b - a).scale(t) + a
-            }
+    Tweener::new(start, destination, duration, CubicBezier(quarter_pt, three_quarter_pt))
+}
 
-            // cheeky way to get a zero
-            let zero = delta.scale(0.0);
-
-            let a = lerp(zero, self.0, t);
-            let b = lerp(self.0, self.1, t);
-            let c = lerp(self.1, delta, t);
-
-            let d = lerp(a, b, t);
-            let e = lerp(b, c, t);
-
-            lerp(d, e, t)
+impl<T: TweenValue> Tween<T> for CubicBezier<T> {
+    fn tween(&mut self, delta: T, t: f32) -> T {
+        // we need to write our own lerp with the generic functions available to us
+        fn lerp<T: TweenValue>(a: T, b: T, t: f32) -> T {
+            (b - a).scale(t) + a
         }
 
-        // oh yeah, we're wild
-        fn is_finite(&self) -> bool {
-            false
-        }
+        // cheeky way to get a zero
+        let zero = delta.scale(0.0);
+
+        let a = lerp(zero, self.0, t);
+        let b = lerp(self.0, self.1, t);
+        let c = lerp(self.1, delta, t);
+
+        let d = lerp(a, b, t);
+        let e = lerp(b, c, t);
+
+        lerp(d, e, t)
     }
 
-    Tweener::new(start, destination, duration, CubicBezier(quarter_pt, three_quarter_pt))
+    // oh yeah, we're wild
+    fn is_finite(&self) -> bool {
+        false
+    }
 }
 
 // <-- Below is math stuff that any math lib would have -->
