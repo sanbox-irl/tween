@@ -11,7 +11,7 @@
 To install, add the following to your Cargo.toml:
 
 ```toml
-tween = "2.0.2"
+tween = "2.1.0"
 ```
 
 You can make a Tweener, like this:
@@ -123,19 +123,13 @@ This library is, ultimately, a math library, and benefits enormously from being 
 - `libm`: enable this, without default features, for no-std tweening
 - `glam`: enable this for `glam` types to implement `TweenValue`
 - `nalgebra`: enable this for `nalgebra` types to implement `TweenValue`
-- `vek`: enable this for `vek` types to implement `TweenValue`
-- `ultraviolet`: enable this for `ultraviolet` types to implement `TweenValue`
-- `ultraviolet-f64`: enable this for `ultraviolet/f64` types to implement `TweenValue`
-- `cgmath`: enable this for `cgmath` types to implement `TweenValue`
-
-This library supports `glam` as its first-class math lib.
 
 ## Std Optional
 
 This library uses `std` with the default feature `std`. Disable default features, and enable `libm`, for a no-std experience. (We need to use `libm` for the floating point math), like so:
 
 ```toml
-tween = { verison = "2.0.1", default_features = false, features = ["libm"] }
+tween = { verison = "2.1.0", default_features = false, features = ["libm"] }
 ```
 
 ## MSRV and Safety

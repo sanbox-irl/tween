@@ -2,6 +2,12 @@
 
 ## [unreleased]
 
+## [2.1.0] - 2025-05-12
+- **BREAKING**: Removed support for `vek`, `ultraviolet`, and `cgmath`, as they provided a maintenance
+  burden without apparent need.
+- Bumped math versions again again again.
+- Bumped MSRV to current Rust, and move version to `rust_version = 2024`.
+
 ## [2.0.4] - 2024-01-02
 
 - Bumped math versions again again.
