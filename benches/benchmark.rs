@@ -1,8 +1,8 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use tween::{Linear, Tweener};
 
 #[inline(never)]
-#[no_mangle]
+#[unsafe(no_mangle)]
 fn bencher_function(i: &mut [Tweener<f32, f32, Linear>]) {
     let mut output = 0.0;
     for tweener in i.iter_mut() {

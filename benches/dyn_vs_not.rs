@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 use tween::{Linear, Tween, Tweener};
 
 fn static_access(tweeners: &mut [Tweener<i32, i32, Linear>]) {
