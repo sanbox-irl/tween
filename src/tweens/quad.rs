@@ -46,7 +46,7 @@ declare_tween!(
         } else {
             let p = percent - 1.0;
 
-            (p * (p - 2.0) - 1.0) * -1.0
+            -(p * (p - 2.0) - 1.0)
         };
         value_delta.scale(scalar / 2.0)
     }

@@ -1,4 +1,4 @@
-use criterion::{Criterion, black_box, criterion_group, criterion_main};
+use criterion::{Criterion, criterion_group, criterion_main};
 use tween::{Linear, Tween, Tweener};
 
 fn static_access(tweeners: &mut [Tweener<i32, i32, Linear>]) {
@@ -9,7 +9,7 @@ fn static_access(tweeners: &mut [Tweener<i32, i32, Linear>]) {
         }
     }
 
-    black_box(output);
+    std::hint::black_box(output);
 }
 
 fn dynamic_access(tweeners: &mut [Tweener<i32, i32, Box<dyn Tween<i32>>>]) {
@@ -20,7 +20,7 @@ fn dynamic_access(tweeners: &mut [Tweener<i32, i32, Box<dyn Tween<i32>>>]) {
         }
     }
 
-    black_box(output);
+    std::hint::black_box(output);
 }
 
 fn bench_static_vs_dyn(c: &mut Criterion) {
