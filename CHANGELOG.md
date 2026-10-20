@@ -2,6 +2,8 @@
 
 ## [unreleased]
 
+- **BREAKING**: `FixedTweener` shortcut constructors ending in `_at`, such as `FixedTweener::linear_at`,
+  now take a `delta` and return a `FixedTweener`. They previously returned a `Tweener`.
 - Fixed `BounceInOut` never reaching its end value for odd integer deltas.
 - Fixed integer tweens rounding more than once in `QuadOut`, `SineIn`, `BounceIn`, `ElasticIn`,
   `ElasticOut`, and `ElasticInOut`.

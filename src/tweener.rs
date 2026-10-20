@@ -456,6 +456,14 @@ mod tests {
     }
 
     #[test]
+    fn fixed_shortcut_at() {
+        let mut fixed_tweener: FixedTweener<i32, i32, Linear> = FixedTweener::linear_at(0, 4, 4, 2, 1);
+        assert_eq!(fixed_tweener.next(), Some(3));
+        assert_eq!(fixed_tweener.next(), Some(4));
+        assert_eq!(fixed_tweener.next(), None);
+    }
+
+    #[test]
     fn zero_duration() {
         let mut tweener = Tweener::linear(0.0, 1.0, 0.0);
         assert_eq!(tweener.move_to(0.0), 1.0);
