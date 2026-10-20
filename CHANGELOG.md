@@ -2,6 +2,8 @@
 
 ## [unreleased]
 
+- Fixed `BounceInOut` never reaching its end value for odd integer deltas.
+
 ## [2.2.0] - 2026-02-24
 - Bumped math versions again again again.
 - Bumped MSRV to current Rust, and move version to `rust_version = 2024`.
