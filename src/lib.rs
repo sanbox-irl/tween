@@ -165,7 +165,7 @@ mod tests {
 
     #[test]
     fn lambda_test() {
-        // this tweener will always return `100` for `4` frames!
+        // this tweener will always return `100` until it finishes!
         let (start, end) = (0, 1); // this is basically ignored by the Lambda Tween
         let length = 4;
         let mut pct_50_or_over = false;
@@ -178,10 +178,10 @@ mod tests {
         assert_eq!(tweener.move_by(1), 100);
         assert_eq!(tweener.move_by(1), 100);
         assert_eq!(tweener.move_by(1), 100);
-        assert_eq!(tweener.move_by(1), 100);
-        // because we're clamped to the tween's original bounds!
+        // because we're clamped to the tween's original bounds once finished!
         assert_eq!(tweener.move_by(1), 1);
         assert!(tweener.is_finished());
+        assert_eq!(tweener.move_by(1), 1);
         assert!(pct_50_or_over);
     }
 

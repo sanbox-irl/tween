@@ -168,7 +168,8 @@ where
         if self.tween.is_finite() {
             if pct < 0.0 {
                 return self.values.0;
-            } else if pct > 1.0 {
+            } else if pct >= 1.0 {
+                // `start + (end - start)` isn't always `end` in floating point, so snap to it
                 return self.values.1;
             }
         }
@@ -453,6 +454,17 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
+    }
+
+    #[test]
+    fn finishes_exactly_at_end() {
+        for (start, end) in [(0.3, 1.9), (-5.7, 3.3)] {
+            let mut tweener = Tweener::linear(start, end, 60);
+            assert_eq!(tweener.move_to(60), end);
+
+            let mut tweener = Tweener::bounce_out(start, end, 60);
+            assert_eq!(tweener.move_to(60), end);
+        }
     }
 
     #[test]
