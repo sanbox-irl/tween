@@ -164,7 +164,7 @@ where
     pub fn move_to(&mut self, position: Time) -> Value {
         self.current_time = position;
 
-        let pct = position.to_f32() / self.duration.to_f32();
+        let pct = self.percent(position);
         if self.tween.is_finite() {
             if pct < 0.0 {
                 return self.values.0;
@@ -245,7 +245,7 @@ where
     /// [current_time]: Self::current_time
     pub fn current_time_state(&self) -> CurrentTimeState {
         if self.tween.is_finite() {
-            let pct = self.current_time.to_f32() / self.duration.to_f32();
+            let pct = self.percent(self.current_time);
 
             if pct < 0.0 {
                 CurrentTimeState::Waiting
@@ -256,6 +256,17 @@ where
             }
         } else {
             CurrentTimeState::Valid
+        }
+    }
+
+    /// Converts a time into parametric space. A zero duration Tweener has no middle, so it is
+    /// finished as soon as it is no longer waiting, rather than dividing by zero.
+    #[inline(always)]
+    fn percent(&self, time: Time) -> f32 {
+        if self.duration == Time::ZERO {
+            if time < Time::ZERO { -1.0 } else { 1.0 }
+        } else {
+            time.to_f32() / self.duration.to_f32()
         }
     }
 
@@ -406,7 +417,7 @@ pub enum CurrentTimeState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{BounceIn, BounceInOut, BounceOut, ElasticIn, Linear};
+    use crate::{BounceIn, BounceInOut, BounceOut, ElasticIn, Linear, Looper};
 
     #[test]
     fn tweener() {
@@ -442,6 +453,22 @@ mod tests {
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
         assert_eq!(tweener.move_by(0), 2);
+    }
+
+    #[test]
+    fn zero_duration() {
+        let mut tweener = Tweener::linear(0.0, 1.0, 0.0);
+        assert_eq!(tweener.move_to(0.0), 1.0);
+        assert!(tweener.is_finished());
+
+        let mut tweener = Tweener::linear_at(0.0, 1.0, 0.0, -1.0);
+        assert!(!tweener.is_started());
+        assert_eq!(tweener.move_to(-1.0), 0.0);
+        assert_eq!(tweener.move_by(1.0), 1.0);
+        assert!(tweener.is_finished());
+
+        let mut looper = Tweener::new(0.0, 1.0, 0.0, Looper::new(Linear));
+        assert_eq!(looper.move_by(0.1), 1.0);
     }
 
     #[test]
