@@ -55,7 +55,6 @@ pub trait Tween<Value> {
 #[cfg(test)]
 static_assertions::assert_obj_safe!(Tween<i32>);
 
-#[cfg(feature = "std")]
 impl<Value> Tween<Value> for &'_ mut dyn Tween<Value>
 where
     Value: TweenValue,
@@ -66,7 +65,7 @@ where
     }
 
     fn is_finite(&self) -> bool {
-        true
+        (**self).is_finite()
     }
 }
 
@@ -184,6 +183,13 @@ mod tests {
         assert_eq!(tweener.move_by(1), 1);
         assert!(tweener.is_finished());
         assert!(pct_50_or_over);
+    }
+
+    #[test]
+    fn dyn_ref_is_finite() {
+        let mut looper = Looper::new(Linear);
+        let mut tweener = Tweener::new(0, 10, 10, &mut looper as &mut dyn Tween<i32>);
+        assert_eq!(tweener.move_to(15), 5);
     }
 
     #[test]

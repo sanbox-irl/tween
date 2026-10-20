@@ -8,6 +8,7 @@
 - Fixed integer tweens rounding more than once in `QuadOut`, `SineIn`, `BounceIn`, `ElasticIn`,
   `ElasticOut`, and `ElasticInOut`.
 - Fixed zero duration Tweeners returning `NaN` and never finishing at time `0`.
+- Fixed `&mut dyn Tween` always reporting `is_finite` as `true`, and made it available without `std`.
 
 ## [2.2.0] - 2026-02-24
 - Bumped math versions again again again.
