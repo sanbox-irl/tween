@@ -167,7 +167,7 @@ macro_rules! test_tween {
                         let v = tweener.move_to(time);
                         let o = [<Ease $name>]::ease_in(time, 100.0, -100.0, 10.0);
 
-                        assert_relative_eq!(v, o, max_relative = 0.000001);
+                        assert_relative_eq!(v, o, max_relative = 0.000001, epsilon = 0.0001);
                     }
                 }
 

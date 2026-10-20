@@ -24,7 +24,7 @@ declare_tween!(
     pub fn quad_out_at;
 
     pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
-        value_delta.scale(-percent).scale(percent - 2.0)
+        value_delta.scale(-percent * (percent - 2.0))
     }
 );
 

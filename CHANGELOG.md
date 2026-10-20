@@ -3,6 +3,8 @@
 ## [unreleased]
 
 - Fixed `BounceInOut` never reaching its end value for odd integer deltas.
+- Fixed integer tweens rounding more than once in `QuadOut`, `SineIn`, `BounceIn`, `ElasticIn`,
+  `ElasticOut`, and `ElasticInOut`.
 
 ## [2.2.0] - 2026-02-24
 - Bumped math versions again again again.

@@ -27,21 +27,20 @@ declare_tween!(
         percent -= 1.0;
 
         #[cfg(feature = "libm")]
-        let scalar = libm::powf(2.0, percent * 10.0);
+        let powf = libm::powf(2.0, percent * 10.0);
 
         #[cfg(feature = "std")]
-        let scalar = 2f32.powf(percent * 10.0);
+        let powf = 2f32.powf(percent * 10.0);
 
-        let post_fix = value_delta.scale(scalar);
         let temp = (percent - SIGMA) * TAU * THREE_DOT_THREE_REPEATING;
 
         #[cfg(feature = "libm")]
-        let scalar = -libm::sinf(temp);
+        let temp_sin = libm::sinf(temp);
 
         #[cfg(feature = "std")]
-        let scalar = -temp.sin();
+        let temp_sin = temp.sin();
 
-        post_fix.scale(scalar)
+        value_delta.scale(-powf * temp_sin)
     }
 );
 
@@ -72,7 +71,7 @@ declare_tween!(
         #[cfg(feature = "std")]
         let scalar = 2f32.powf(-10.0 * percent) * temp.sin();
 
-        value_delta.scale(scalar) + value_delta
+        value_delta.scale(scalar + 1.0)
     }
 );
 
@@ -104,7 +103,6 @@ declare_tween!(
             #[cfg(feature = "std")]
             let scalar = 2f32.powf(percent * 10.0);
 
-            let post_fix = value_delta.scale(scalar);
             let temp = (percent - SIGMA_IN_OUT) * TAU * FORTY_FIVE;
 
             #[cfg(feature = "libm")]
@@ -113,7 +111,7 @@ declare_tween!(
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();
 
-            post_fix.scale(-0.5 * temp_sin)
+            value_delta.scale(scalar * -0.5 * temp_sin)
         } else {
             #[cfg(feature = "libm")]
             let scalar = libm::powf(2.0, percent * -10.0);
@@ -121,7 +119,6 @@ declare_tween!(
             #[cfg(feature = "std")]
             let scalar = 2f32.powf(-10.0 * percent);
 
-            let post_fix = value_delta.scale(scalar);
             let temp = (percent - SIGMA_IN_OUT) * TAU * FORTY_FIVE;
 
             #[cfg(feature = "libm")]
@@ -130,7 +127,7 @@ declare_tween!(
             #[cfg(feature = "std")]
             let temp_sin = temp.sin();
 
-            post_fix.scale(temp_sin * 0.5) + value_delta
+            value_delta.scale(scalar * temp_sin * 0.5 + 1.0)
         }
 
     }

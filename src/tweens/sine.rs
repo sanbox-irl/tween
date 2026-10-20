@@ -17,7 +17,7 @@ declare_tween!(
         #[cfg(feature = "std")]
         let time = (percent * PI / 2.0).cos();
 
-        value_delta.scale(-time) + value_delta
+        value_delta.scale(1.0 - time)
     }
 );
 

@@ -31,30 +31,9 @@ declare_tween!(
     /// Creates a new [BounceIn] Tweener at the given time.
     pub fn bounce_in_at;
 
-    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, mut percent: f32) -> Value {
-        percent = 1.0 - percent;
-
-        let v = {
-            let multip = if percent < STAGE_ZERO {
-                MAGIC * percent * percent
-            } else if percent < STAGE_ONE {
-                let t = percent - 1.5 / 2.75;
-                MAGIC * t * t + 0.75
-            } else if percent < STAGE_TWO {
-                let t = percent - 2.25 / 2.75;
-                MAGIC * t * t + 0.9375
-            } else {
-                let t = percent - 2.625 / 2.75;
-
-                MAGIC * t * t + 0.984375
-            };
-
-            value_delta.scale(multip)
-        };
-
-        value_delta - v
+    pub fn tween<Value: crate::TweenValue>(&mut self, value_delta: Value, percent: f32) -> Value {
+        value_delta.scale(1.0 - bounce(1.0 - percent))
     }
-
 );
 
 declare_tween!(
